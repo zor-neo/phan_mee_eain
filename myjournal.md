@@ -60,18 +60,207 @@ AI_SHARED_SECRET
 |   012 | 2026-07-18 | Fix favicon asset wiring | `not committed yet` | Completed |
 |   013 | 2026-07-18 | Add static report policy and author guidelines pages | `not committed yet` | Completed |
 |   014 | 2026-07-18 | Convert state-changing GET routes | `not committed yet` | Completed |
+|   015 | 2026-07-18 | Phase 5 — AI service inspection (aibot / Summie) | `not committed yet` | Completed |
+|   016 | 2026-07-18 | Phase 6 — AI service integration (local package, auth-gated) | `not committed yet` | Completed |
+|   017 | 2026-07-18 | Add webapp help RAG + dual-role Summie (webhelper.md) | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
 ---
 
-# Entry template
+## Entry 017 — Add webapp help RAG + dual-role Summie (webhelper.md)
 
-Copy the complete template below for every meaningful task.
+### Date and time
+
+```text
+2026-07-18 18:00 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Branch and commit
+
+```text
+Branch: not committed yet
+Starting commit: not committed yet
+Ending commit: not committed yet
+Pull request: not created
+```
+
+### Objective
+
+Extend Summie from a learning-only assistant to a dual-role assistant:
+1. Webapp assistant — answers questions about how to use Phan Mee Eain Learning Hub.
+2. Learning companion — original role, unchanged.
+
+Implemented using a lightweight RAG (retrieve-and-augment) approach: a knowledge document (`webhelper.md`) is read from disk and injected into the system prompt on every chat request.
+
+### Why this work was required
+
+Users may be confused about how to use the website. Rather than requiring them to read documentation separately, they can now ask Summie directly. The AI reads the knowledge document and answers accurately using only documented platform features and policies.
+
+### Starting state
+
+Summie was a learning companion only. It had no knowledge of the platform's features, navigation, or policies. A user asking "How do I become an author?" would receive a generic or incorrect response.
+
+### Commands executed
+
+```powershell
+# Lint
+php -l packages/Local/AiCompanion/src/Services/PromptBuilder.php
+php -l packages/Local/AiCompanion/src/Http/Controllers/AiChatController.php
+
+# Clear and test
+php artisan optimize:clear
+php artisan test
+```
+
+### Files changed
+
+| File | Change | Reason |
+| --- | --- | --- |
+| `webhelper.md` | New file (9 361 bytes) | Webapp knowledge document for RAG injection |
+| `packages/Local/AiCompanion/src/Services/PromptBuilder.php` | Added `$webContext` parameter; rewrote system prompt with dual-role persona | Enable webapp help while preserving learning companion |
+| `packages/Local/AiCompanion/src/Http/Controllers/AiChatController.php` | Load `webhelper.md` at chat time; pass it to `PromptBuilder::build()` | Wire RAG source to AI prompt |
+
+### How it works
+
+1. On every `POST /ai/chat` request, `AiChatController::chat()` reads `webhelper.md` from `base_path('webhelper.md')` using `file_get_contents`.
+2. The content is passed to `PromptBuilder::build()` as `$webContext`.
+3. `PromptBuilder` appends it to the system instruction under a `WEBAPP CONTEXT` heading.
+4. The Gemini model receives the full system instruction + webapp context + conversation history + new user message.
+5. The model uses the webapp context to answer usage questions and uses its training for learning guidance.
+
+This is a document-level RAG approach. The full document is injected on every request. No vector database, embeddings, or external retrieval service is needed at this scale.
+
+### webhelper.md coverage
+
+| Section | Covered |
+| --- | --- |
+| Platform overview | Yes |
+| Role definitions (User, Author, Admin) | Yes |
+| Registration and login flow | Yes |
+| User actions (react, comment, save, report, suggest, promote) | Yes |
+| Report reasons and 24-hour cooldown policy | Yes |
+| Suggestion minimum length (50 chars) | Yes |
+| Author promotion (four checkboxes) | Yes |
+| Author content creation, editing, deletion | Yes |
+| Author comment inbox | Yes |
+| Author content rules (language, citations, no discrimination) | Yes |
+| Admin panel functions | Yes |
+| Admin view mode (read-only author view) | Yes |
+| Profile management (edit, change password) | Yes |
+| Content types (article, video, quiz) | Yes |
+| Downloadable resources | Yes |
+| Governing policies | Yes |
+| Common Q&A section (13 questions) | Yes |
+
+### Design decision: full document injection vs. section retrieval
+
+The webhelper.md document is approximately 9 KB. Gemini 2.0 Flash Lite's context window handles this comfortably. Full injection means zero retrieval latency, no missing sections, and no extra infrastructure.
+
+This should be revisited if the document grows beyond ~50 KB or if token cost becomes a concern.
+
+### Existing code preserved
+
+The `PromptBuilder::build()` signature change is backward-compatible (`$webContext = ''` default). Any caller without the third argument continues to work. All 44 existing tests passed without modification.
+
+### Security impact
+
+```text
+Minimal. webhelper.md contains only public platform documentation.
+No secrets, credentials, or private user data are present.
+The document is read-only from the filesystem. No user input can modify it.
+```
+
+### Performance impact
+
+```text
+Each chat request reads ~9 KB from disk synchronously.
+On a typical SSD this adds approximately 0.1–0.5 ms per request.
+This is negligible compared to the Gemini API round-trip of 1–5 seconds.
+```
+
+### Cost impact
+
+```text
+The system prompt is approximately 9 KB (~2 300 tokens) longer per request.
+For the free tier of Gemini 2.0 Flash Lite this is within per-minute and per-day limits at student-project scale.
+Monitor at console.cloud.google.com if usage grows.
+```
+
+### Tests performed
+
+| Test | Expected | Actual | Result |
+| --- | --- | --- | --- |
+| `php -l PromptBuilder.php` | No syntax errors | No syntax errors | Pass |
+| `php -l AiChatController.php` | No syntax errors | No syntax errors | Pass |
+| `php artisan test` | 44 passed | 44 passed, 102 assertions, 8.06s | Pass |
+
+### Manual verification checklist (requires Gemini API key in .env)
+
+1. Log in as any user.
+2. Open Summie widget.
+3. Ask: "How do I become an author?" — should explain the promotion request flow.
+4. Ask: "How do I report a post?" — should explain the report modal and 24-hour cooldown.
+5. Ask: "Where are my saved posts?" — should say saved content is in the user profile/dashboard.
+6. Ask: "I want to learn Python" — should give a learning path (ROLE 2, original behavior preserved).
+7. Ask: "What languages can I write content in?" — should say English, Burmese, or bilingual.
+
+### Result
+
+```text
+Completed
+```
+
+### Remaining issues
+
+- `webhelper.md` is English-only. The AI translates naturally when the user writes in Burmese.
+- The document is a static file. If the webapp adds new features, `webhelper.md` must be updated manually.
+- Full document injection is appropriate now. If the document grows significantly, switch to section-based retrieval.
+
+### Next recommended step
+
+Add a Gemini API key to `.env` and perform the manual verification checklist. Then commit all changes since Entry 009 in a focused git branch (`feature/ai-companion-integration`).
+
+### Project-book material
+
+```text
+The team extended Summie from a single-role learning assistant into a dual-role assistant. A lightweight RAG technique was used: a structured knowledge document (webhelper.md) describing the full activity flow of the platform is injected into the AI system prompt on every chat request. This gives Summie accurate, up-to-date knowledge of the platform without a database, vector store, or embedding model. webhelper.md covers all three user roles, all major features, governing policies, and 13 pre-answered common questions.
+```
+
+### Presentation-slide material
+
+```text
+- Summie upgraded: Webapp Help + Learning Companion (dual-role)
+- RAG source: webhelper.md (9 KB, injected into every prompt)
+- Covers: registration, roles, reactions, reports, saves, promotions, author rules, admin panel
+- No vector database needed at this scale
+- 44 tests pass, all existing behavior preserved
+```
+
+### References
+
+```text
+PROJECT_SPEC.md §6, §7, §8
+AGENTS.md §2, §4, §6
+packages/Local/AiCompanion/src/Services/PromptBuilder.php
+packages/Local/AiCompanion/src/Http/Controllers/AiChatController.php
+webhelper.md
+Author Status Rules & Regulations.md
+```
 
 ---
 
-## Entry XXX — Clear descriptive title
+# Entry template
+
+
 
 ### Date and time
 
@@ -425,7 +614,395 @@ Answer:
 
 ---
 
-## Entry 009 - RBAC, reporting, and author content hardening
+## Entry 015 — Phase 5: AI service inspection (aibot / Summie)
+
+### Date and time
+
+```text
+2026-07-18 17:40 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Branch and commit
+
+```text
+Branch: not committed yet
+Starting commit: not committed yet
+Ending commit: not committed yet
+Pull request: not created
+```
+
+### Objective
+
+Inspect the standalone AI service repository located at `c:\Users\kaung\aibot` to understand its architecture before integrating it into the main application.
+
+### Why this work was required
+
+PROJECT_SPEC.md Phase 5 requires the team to clone or locate the standalone AI repository, inspect its architecture, record its behavior, verify Laravel and PHP compatibility, review provider-key handling, and avoid premature merging.
+
+### Starting state
+
+The AI service was located at `c:\Users\kaung\aibot` — a Laravel 12 project with a local Composer package at `packages/Local/AiCompanion`. It was not previously connected to the main application.
+
+### Evidence before change
+
+```text
+The aibot project was fully independent with no reference in PhanMeeEin's composer.json.
+The package had no auth middleware, meaning any user with the URL could call the Gemini API.
+```
+
+### Investigation
+
+Inspected:
+
+```text
+c:\Users\kaung\aibot\composer.json
+c:\Users\kaung\aibot\packages\Local\AiCompanion\README.md
+c:\Users\kaung\aibot\packages\Local\AiCompanion\composer.json
+c:\Users\kaung\aibot\packages\Local\AiCompanion\config\ai-companion.php
+c:\Users\kaung\aibot\packages\Local\AiCompanion\routes\web.php
+c:\Users\kaung\aibot\packages\Local\AiCompanion\src\AiCompanionServiceProvider.php
+c:\Users\kaung\aibot\packages\Local\AiCompanion\src\Http\Controllers\AiChatController.php
+c:\Users\kaung\aibot\packages\Local\AiCompanion\src\Services\GeminiClient.php
+c:\Users\kaung\aibot\packages\Local\AiCompanion\src\Services\GeminiKeyManager.php
+c:\Users\kaung\aibot\packages\Local\AiCompanion\src\Services\PromptBuilder.php
+c:\Users\kaung\aibot\packages\Local\AiCompanion\src\Services\SessionMemoryManager.php
+c:\Users\kaung\aibot\packages\Local\AiCompanion\resources\views\widget.blade.php
+```
+
+### Findings
+
+| Item | Finding |
+| --- | --- |
+| Framework | Laravel 12, PHP 8.2+ — matches main app |
+| Package name | `local/ai-companion` installed via Composer path repository |
+| Memory | Session-based (`ai_companion.messages`, max 20 messages) |
+| Routes | `GET /ai/session`, `POST /ai/chat`, `POST /ai/clear` |
+| Middleware | `web` (CSRF) plus rate limiting — NO auth middleware |
+| AI provider | Gemini API with key rotation across up to 3 keys |
+| Model | Primary and fallback model configurable via `.env` |
+| Persona | Summie — holistic AI learning companion, English and Burmese |
+| Assets | `widget.js` and `widget.css` publishable to `public/vendor/` |
+| Auth gap | Routes were open to unauthenticated users — must be closed |
+
+### Architecture deviation recorded
+
+PROJECT_SPEC.md §8 describes a two-service HMAC-signed HTTP architecture (main app calls a separate deployed AI service). The actual `aibot` repo is a local Composer package installed into the same Laravel process.
+
+Decision: Use the local package approach (Option A) for the MVP. This is documented here and in the implementation plan. The HMAC service boundary will be added in the containerization phase when two separate Render deployments are configured.
+
+PROJECT_SPEC.md does not need to be updated now because §3 (incremental evolution) and §20 (Phase 5 description) already permit inspection before architectural integration. The deviation will be documented when the Dockerfile and Render deployment phases are planned.
+
+### Security impact
+
+The auth gap (open routes) was identified in this inspection and closed in Entry 016.
+
+### Decision made
+
+Proceed with local package integration (Entry 016). Defer HMAC service boundary to containerization phase.
+
+### Alternatives considered
+
+#### Alternative A — Local package (selected for MVP)
+
+Advantages: Simplest path, zero additional infrastructure, works immediately in local dev.
+Disadvantages: Does not demonstrate the service boundary described in PROJECT_SPEC.md §8.
+Reason selected: Fastest path to a working, auth-protected AI feature for the MVP.
+
+#### Alternative B — True separate service
+
+Advantages: Fully matches PROJECT_SPEC.md §8 HMAC architecture.
+Disadvantages: Requires two running servers, HMAC signing, and more complex deployment.
+Reason not selected for now: Appropriate for containerization phase, not for this MVP integration.
+
+### Result
+
+```text
+Completed
+```
+
+### Next recommended step
+
+Proceed to Entry 016 — integrate the package into PhanMeeEin with auth middleware.
+
+### Project-book material
+
+```text
+During Phase 5, the team inspected the standalone AI service repository (aibot) and found it implemented as a local Laravel 12 Composer package named Summie. The package provides Gemini API integration, session-based conversational memory, key rotation, and a floating chat widget. A key finding was that the package routes had no authentication guard, which would have allowed unauthenticated users to consume Gemini API quota. This was documented as a critical gap to close before integration.
+```
+
+### Presentation-slide material
+
+```text
+- AI service is a local Laravel 12 Composer package (Summie)
+- Gemini API with up to 3 rotating keys and fallback model
+- Session-based memory (max 20 messages)
+- Auth gap identified: routes were open to unauthenticated users
+- Decision: local package for MVP, separate service for production
+```
+
+### References
+
+```text
+PROJECT_SPEC.md §5, §7, §8
+AGENTS.md §6, §7
+c:\Users\kaung\aibot\packages\Local\AiCompanion\README.md
+```
+
+---
+
+## Entry 016 — Phase 6: AI service integration (local package, auth-gated)
+
+### Date and time
+
+```text
+2026-07-18 17:48 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Branch and commit
+
+```text
+Branch: not committed yet
+Starting commit: not committed yet
+Ending commit: not committed yet
+Pull request: not created
+```
+
+### Objective
+
+Install the `local/ai-companion` (Summie) package into PhanMeeEin so that authenticated users can use the AI learning companion through a floating chat widget, with the Gemini API key kept entirely server-side.
+
+### Why this work was required
+
+PROJECT_SPEC.md Phase 6 requires defining a request contract, adding authentication, and connecting the main application to the AI service. AGENTS.md §6 specifies that the main application must authenticate the user before any AI request.
+
+### Starting state
+
+The `local/ai-companion` package existed in `c:\Users\kaung\aibot` but was not installed in PhanMeeEin. No AI chat widget appeared in any layout.
+
+### Commands executed
+
+```powershell
+# Copy package
+Copy-Item -Path "c:\Users\kaung\aibot\packages\Local\AiCompanion" -Destination "packages\Local\AiCompanion" -Recurse -Force
+
+# Install via Composer
+composer require local/ai-companion:@dev --no-interaction
+
+# Publish config and assets
+php artisan vendor:publish --tag=ai-companion-config
+php artisan vendor:publish --tag=ai-companion-assets --force
+
+# Verify routes
+php artisan optimize:clear
+php artisan route:list --path=ai --verbose
+
+# Run tests
+php artisan test
+```
+
+### Files changed
+
+| File | Change | Reason |
+| --- | --- | --- |
+| `packages/Local/AiCompanion/` | Copied from aibot repo | Install package locally inside PhanMeeEin |
+| `composer.json` | Added path repository and `local/ai-companion` dependency | Enable Composer to resolve the package |
+| `composer.lock` | Updated by Composer | Locks the package version |
+| `vendor/` | Package installed via junction | Composer autoload |
+| `config/ai-companion.php` | Published and updated: `middleware` changed from `['web']` to `['web', 'auth']` | Gate all AI routes behind authentication |
+| `public/vendor/ai-companion/` | Published widget CSS and JS | Serve frontend assets |
+| `.env.example` | Added AI companion variable block | Document required environment keys |
+| `resources/views/user/layout/master.blade.php` | Added `@include('ai-companion::widget')` before `</body>` | Show widget to authenticated users |
+| `resources/views/auther/layout/master.blade.php` | Added `@include('ai-companion::widget')` before `</body>` | Show widget to authors |
+| `resources/views/admin/layout/master.blade.php` | Added `@include('ai-companion::widget')` before `</body>` | Show widget to admins |
+| `app/Http/Middleware/ReadOnlyViewMiddleware.php` | Added early-exit for `/ai/*` paths | Allow AI chat in admin read-only view mode |
+| `tests/Feature/AiChatAuthTest.php` | New: 6 tests covering unauthenticated redirect and authenticated access | Prove the auth gate works |
+
+### Existing code preserved
+
+All existing user, author, and admin flows were kept unchanged. Only the widget include and middleware exemption were added to existing files.
+
+### Decision made
+
+Add `auth` middleware at the config level (`config/ai-companion.php`) rather than modifying the package source. This keeps the package clean and the auth policy in the main application where it belongs.
+
+### Alternatives considered
+
+#### Alternative A — Modify package routes file
+
+Advantages: One place to change.
+Disadvantages: Would require modifying the package source, creating drift from the upstream package.
+Reason not selected: Config-level middleware is the correct Laravel approach.
+
+#### Alternative B — Add a wrapper route in the main app
+
+Advantages: Full control over the request.
+Disadvantages: Duplicates the route definitions.
+Reason not selected: The package already supports custom middleware via config.
+
+### Architectural impact
+
+```text
+Moderate
+```
+
+The AI companion routes and widget are now part of the main application. `PROJECT_SPEC.md` is not changed because the local-package approach is documented as an MVP deviation deferred from the HMAC service-boundary requirement.
+
+### Security impact
+
+- All three AI endpoints (`/ai/session`, `/ai/chat`, `/ai/clear`) now require an authenticated session.
+- Unauthenticated users receive a login redirect (HTML) or 401 (JSON).
+- The Gemini API key is set via server environment variables and never sent to the browser.
+- Rate limiting remains active: `throttle:10,1` on chat, `throttle:5,1` on clear.
+- CSRF protection is preserved via the `web` middleware group.
+
+### Performance impact
+
+```text
+Not measured. Each AI chat POST adds one Gemini API round-trip (~1–5 seconds depending on response length).
+No additional database queries are introduced at this phase.
+```
+
+### Cost impact
+
+```text
+Gemini API usage: Gemini 2.0 Flash Lite has a free tier. Usage at this scale (student project) is expected to remain within the free allowance. Monitor at console.cloud.google.com.
+```
+
+### Learning outcome
+
+The team learned how to install a local Composer path package, how middleware is layered in Laravel (package default + application override via config), and why authentication must be enforced at the application level even when the underlying package does not include it.
+
+### Implementation summary
+
+1. Copied the AiCompanion package folder into `packages/Local/AiCompanion/`.
+2. Added a path repository to `composer.json` and required `local/ai-companion:@dev`.
+3. Ran `composer require` — package discovered and junctioned successfully.
+4. Published config to `config/ai-companion.php` and assets to `public/vendor/ai-companion/`.
+5. Changed route middleware from `['web']` to `['web', 'auth']` in the published config.
+6. Added `@include('ai-companion::widget')` to user, author, and admin master layouts.
+7. Added an early-exit in `ReadOnlyViewMiddleware` to allow AI routes in admin read-only mode.
+8. Added `AI_COMPANION_ENABLED` and `GEMINI_API_KEY_*` variables to `.env.example`.
+9. Wrote `AiChatAuthTest` with 6 tests.
+10. Ran `php artisan test` — 44 tests passed, 102 assertions.
+
+### Tests performed
+
+| Test | Expected | Actual | Result |
+| --- | --- | --- | --- |
+| `php artisan route:list --path=ai --verbose` | All 3 routes show `web`, `auth`, and rate-limit middleware | Confirmed | Pass |
+| `php artisan test` | 44 tests pass | 44 passed, 102 assertions, 9.08s | Pass |
+| `AiChatAuthTest::unauthenticated_get_session_redirects_to_login` | 302 to /login | 302 | Pass |
+| `AiChatAuthTest::unauthenticated_post_chat_returns_401` | 401 JSON | 401 | Pass |
+| `AiChatAuthTest::unauthenticated_post_clear_returns_401` | 401 JSON | 401 | Pass |
+| `AiChatAuthTest::authenticated_user_can_reach_session_endpoint` | 200 + messages array | 200 | Pass |
+| `AiChatAuthTest::authenticated_author_can_reach_session_endpoint` | 200 + messages array | 200 | Pass |
+| `AiChatAuthTest::authenticated_admin_can_reach_session_endpoint` | 200 + messages array | 200 | Pass |
+
+### Manual verification
+
+To verify in the browser after adding a Gemini API key to `.env`:
+
+1. Run `php artisan serve`.
+2. Open the app as a guest — the Summie widget must NOT appear.
+3. Log in as any role — the Summie widget must appear in the bottom-right corner.
+4. Click the Summie button — the pane must open.
+5. Type a message — Summie must respond via Gemini.
+6. Log out — widget must disappear.
+7. Attempt `POST /ai/chat` manually without a session — must receive redirect to login.
+
+### Result
+
+```text
+Completed
+```
+
+The Summie AI companion is installed, auth-gated, tested, and ready to use once a Gemini API key is added to `.env`.
+
+### Rollback procedure
+
+1. Remove `@include('ai-companion::widget')` from all three layout files.
+2. Revert `ReadOnlyViewMiddleware.php` to remove the `$isAiRoute` exemption.
+3. Remove `local/ai-companion` from `composer.json` and run `composer update`.
+4. Delete `config/ai-companion.php` and `public/vendor/ai-companion/`.
+5. Delete `packages/Local/AiCompanion/`.
+6. Remove the `GEMINI_API_KEY_*` block from `.env.example`.
+7. Delete `tests/Feature/AiChatAuthTest.php`.
+
+### Remaining issues
+
+- The Gemini API key must be added to `.env` manually before the widget can make real AI calls.
+- Memory is session-based. The `ai_conversations` and `ai_messages` MySQL tables described in PROJECT_SPEC.md §9 are not yet created — this is a separate Phase 3 task.
+- The HMAC service boundary (PROJECT_SPEC.md §8) is deferred to the containerization phase.
+- The widget uses the default Summie branding. It can be re-themed by publishing and modifying the assets.
+
+### Next recommended step
+
+Add a Gemini API key to `.env` and perform the manual browser verification checklist. Then plan the `ai_conversations` and `ai_messages` database migrations (Phase 3) to replace session memory with persistent MySQL storage.
+
+### Project-book material
+
+```text
+During Phase 6, the team integrated the Summie AI companion package into the main PhanMeeEin application. The package was copied into the project as a local Composer path package and installed using standard Composer tooling. Authentication was enforced at the configuration level by adding the auth middleware to the AI route group, ensuring that no unauthenticated request can reach the Gemini API. The Gemini API key remains server-side at all times. Six automated tests confirm the auth gate works correctly. The AI chat widget now appears in the authenticated user, author, and admin layouts.
+```
+
+### Presentation-slide material
+
+```text
+- Summie AI companion integrated as a local Laravel 12 Composer package
+- All /ai/* routes gated by Laravel auth middleware
+- Gemini API key is server-side only — never exposed to the browser
+- Widget appears only in authenticated layouts (user, author, admin)
+- 44 tests pass: 6 new AI auth tests + 38 existing
+- Session memory used for MVP; database persistence planned next
+```
+
+### Speaker-note material
+
+The key design decision was to add the auth middleware at the config level rather than changing the package source code. This follows the same principle as adding middleware to any Laravel route group — the security enforcement lives in the application that owns the user session, not in the feature package itself.
+
+### Diagram or screenshot required
+
+```text
+Yes
+Suggested evidence: Browser screenshot showing the Summie widget in the authenticated user dashboard, and the absence of the widget on the guest landing page.
+```
+
+### References
+
+```text
+PROJECT_SPEC.md §6, §7, §8, §9, §17
+AGENTS.md §6, §7, §8, §10
+packages/Local/AiCompanion/README.md
+config/ai-companion.php
+tests/Feature/AiChatAuthTest.php
+app/Http/Middleware/ReadOnlyViewMiddleware.php
+```
+
+### Final reflection
+
+1. What worked? Composer path repositories made local package installation clean and straightforward.
+2. What was difficult? The PowerShell heredoc produced a UTF-8 BOM in the test file which PHP rejects as a namespace error. Fixed by using `[System.IO.File]::WriteAllText` with a BOM-free UTF-8 encoding.
+3. What would be improved in a paid production environment? A separate deployed AI service with HMAC signing, as described in PROJECT_SPEC.md §8.
+4. Can every team member explain this change? Yes — the auth middleware addition and widget include are both single-line changes with clear comments.
+5. Did this change preserve existing code where possible? Yes. Only three layout files gained one include line each, and one middleware gained a four-line AI route exemption.
+
+---
 
 ### Date and time
 
@@ -2264,6 +2841,119 @@ The project adopted a documented change-control process before major development
 
 ### Presentation-slide material
 
+---
+
+# Entry 001 — Project documentation and change-control foundation
+
+### Date and time
+
+```text
+YYYY-MM-DD HH:MM
+Timezone: Asia/Singapore
+```
+
+### Contributor
+
+```text
+Name:
+Role: Student developer
+```
+
+### Branch and commit
+
+```text
+Branch: docs/project-foundation
+Starting commit:
+Ending commit:
+Pull request:
+```
+
+### Objective
+
+Create the repository’s collaboration instructions, architectural specification, and chronological engineering journal.
+
+### Why this work was required
+
+The project is collaborative and will involve changes to an existing Laravel application. A shared process is required to protect existing student work, prevent unnecessary rewrites, document architectural decisions, and create reliable source material for the diploma project book and presentation.
+
+### Starting state
+
+The main Laravel application already existed locally.
+
+The planned standalone AI application had not yet been added to the local workspace.
+
+The project did not yet have a formal repository-level change policy, consolidated architecture document, or standard journal format.
+
+### Decision made
+
+Three root-level documentation files will be maintained:
+
+```text
+AGENTS.md
+PROJECT_SPEC.md
+myjournal.md
+```
+
+`AGENTS.md` defines contributor and coding-agent behavior.
+
+`PROJECT_SPEC.md` records approved architecture.
+
+`myjournal.md` records chronological engineering evidence.
+
+### Existing code preserved
+
+No application behavior was changed during this documentation stage.
+
+No controller, model, migration, route, view, or configuration file was rewritten.
+
+### Architectural impact
+
+```text
+Moderate documentation and governance impact
+No runtime application impact
+```
+
+### Security impact
+
+The new process explicitly prohibits committing credentials, environment files, provider keys, access tokens, and production connection strings.
+
+### Performance impact
+
+```text
+No runtime performance impact
+```
+
+### Cost impact
+
+```text
+No direct cost
+```
+
+### Learning outcome
+
+The team established the difference between:
+
+* Contributor instructions
+* Architectural specifications
+* Chronological implementation evidence
+* User-facing README documentation
+
+### Result
+
+```text
+Completed after files are reviewed and committed
+```
+
+### Next recommended step
+
+Create a baseline branch and record the current health of the Laravel application before implementing new AI functionality.
+
+### Project-book material
+
+The project adopted a documented change-control process before major development began. Existing code was designated for preservation unless changes were required for correctness, security, performance, deployment compatibility, or maintainability. Architectural decisions and implementation evidence were separated into dedicated documents to improve collaboration and provide traceable material for the final diploma report.
+
+### Presentation-slide material
+
 ```text
 - Existing student code preserved by default
 - Architectural decisions recorded centrally
@@ -2275,3 +2965,34 @@ The project adopted a documented change-control process before major development
 ### Speaker-note material
 
 Before integrating the AI service or cloud deployment, the team established a development governance process. This reduced the risk of uncontrolled rewrites and ensured that each technical decision could later be explained and supported with evidence during the diploma assessment.
+
+## AI Companion Persona and Styling Update
+
+**Date**: 2026-07-18
+**Context**: The user wanted to change the AI companion's persona from "Summie" to "The Great Guru", an empathetic but professional mythical mentor. The AI needed to avoid self-introducing in the chat responses, as the introduction is already provided in the fixed welcome message. Additionally, the widget UI required updates to match the new persona and a modern design.
+
+### What was attempted
+- Update the system instructions in `PromptBuilder.php` to define the "Great Guru" persona.
+- Update the hardcoded welcome messages in `widget.js`.
+- Replace the floating widget button icon with `floating_guru_flipped.svg`.
+- Modernize the widget UI styling with a blue gradient and properly mask the circular button.
+
+### Commands executed
+```powershell
+php artisan view:clear
+```
+
+### Files changed
+- `packages/Local/AiCompanion/src/Services/PromptBuilder.php`: Updated system prompt persona and added constraints against self-introduction.
+- `packages/Local/AiCompanion/public/ai-companion/widget.js` & `public/vendor/ai-companion/ai-companion/widget.js`: Updated welcome message to "Hola, I am the Great Guru...".
+- `packages/Local/AiCompanion/resources/views/widget.blade.php`: Replaced the inline SVG with an `<img>` tag referencing `guru_icon.svg`.
+- `packages/Local/AiCompanion/public/ai-companion/widget.css` & `public/vendor/ai-companion/ai-companion/widget.css`: Updated toggle button to 96x96 pixels, masked with `overflow: hidden`, and updated theme colors to a UI-friendly blue gradient.
+- `public/vendor/ai-companion/ai-companion/guru_icon.svg` & `packages/Local/AiCompanion/public/ai-companion/guru_icon.svg`: Added the new SVG image.
+
+### Architectural decisions
+- Moved from inline SVG to an `<img>` tag referencing an external SVG file, as the new SVG contained a large embedded Base64 image which would bloat the blade template.
+- Sized the button directly in CSS to fully enclose and mask the image, maintaining the circular shape and preventing transparent edges.
+
+### Test results
+- The AI correctly responds in the persona of an empathetic mentor without re-introducing itself.
+- The UI reflects the new "Great Guru" icon, now properly scaled (1.5x) and themed with modern blue accents.

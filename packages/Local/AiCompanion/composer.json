@@ -1,0 +1,19 @@
+{
+    "name": "local/ai-companion",
+    "description": "Standalone AI companion package for Laravel 12 using Gemini API.",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Local\\AiCompanion\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Local\\AiCompanion\\AiCompanionServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable"
+}

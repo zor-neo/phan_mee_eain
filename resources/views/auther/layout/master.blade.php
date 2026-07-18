@@ -150,6 +150,10 @@
     </script>
     @stack('jq-section')
 
+    {{-- Summie AI chat widget. Routes are guarded by auth middleware. --}}
+    @include('ai-companion::widget')
+
 </body>
+
 
 </html>

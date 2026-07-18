@@ -46,7 +46,10 @@ class ReadOnlyViewMiddleware
             || str_contains($path, 'switchRole')
             || str_contains($path, 'category/delete/');
 
-        if (! $blocksUnsafeMethod && ! $blocksUnsafeGet) {
+        // AI companion chat is not a content mutation — allow it even in read-only admin view.
+        $isAiRoute = str_starts_with($path, config('ai-companion.routes.prefix', 'ai') . '/');
+
+        if ($isAiRoute || (! $blocksUnsafeMethod && ! $blocksUnsafeGet)) {
             return $next($request);
         }
 

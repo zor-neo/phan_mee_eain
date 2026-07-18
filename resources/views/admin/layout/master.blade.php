@@ -192,6 +192,10 @@
     </script>
     <script src="{{ asset('user/js/main.js') }}"></script>
     <script src="{{ asset('user/js/static-router.js') }}"></script>
+
+    {{-- Summie AI chat widget. Routes are guarded by auth middleware. --}}
+    @include('ai-companion::widget')
 </body>
+
 
 </html>
