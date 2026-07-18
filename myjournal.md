@@ -72,8 +72,78 @@ AI_SHARED_SECRET
 |   024 | 2026-07-19 | Fix Render HTTPS, CSS, footer, and auth form deployment issues | `not committed yet` | Completed |
 |   025 | 2026-07-19 | Restore Aiven demo user login accounts | `not committed yet` | Completed |
 |   026 | 2026-07-19 | Restore Aiven superadmin account | `not committed yet` | Completed |
+|   027 | 2026-07-19 | Restore Aiven starter categories | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 027 - Restore Aiven starter categories
+
+### Date and time
+
+```text
+2026-07-19 01:17 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment tester and coding assistant
+```
+
+### Objective
+
+Restore category data after the user reported that categories had disappeared from the deployed application.
+
+### Starting state
+
+The active Laravel database connection was Aiven MySQL. Checks showed:
+
+```text
+categories: 0
+contents: 0
+```
+
+The project routes show category management is under the admin route group:
+
+```text
+GET    category/page
+POST   category/Process
+DELETE category/delete/{id}
+```
+
+This means category management is available to admin-role users, including superadmin, but it is not superadmin-only.
+
+### What was done
+
+Because the repo did not contain an authoritative category seed list and there were no content rows to preserve, a neutral starter set was restored:
+
+```text
+General Knowledge
+Science
+Technology
+Language
+Study Skills
+```
+
+### Verification
+
+After restoration, Aiven returned five category rows.
+
+Laravel cache was cleared after the data repair.
+
+### Security impact
+
+No secrets were changed. This was a demo/application data repair only.
+
+### Result
+
+```text
+Completed
+```
 
 ---
 
