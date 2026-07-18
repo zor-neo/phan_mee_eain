@@ -143,9 +143,14 @@ AI chat POST: HTTP 200
 AI session after message: HTTP 200, 2 messages
 latest saved AI message role: assistant
 /admins/access-control as normal demo author: redirected to /user/home
+temporary content upload with PNG image: created and visible in author content page
+uploaded content image through authenticated media route: HTTP 200, image/png, 68 bytes
+temporary smoke-test content cleanup: title no longer present after delete
 ```
 
 The `/admin/access-control` path returned 404 because the actual Laravel route is `/admins/access-control`.
+
+The delete cleanup command reported a final `405` after following redirects, but the content item was removed. The verification condition was the absence of the temporary title from `/auther/content`.
 
 ### Selected solution
 
@@ -177,6 +182,9 @@ Invoke-WebRequest https://gurus.onrender.com/ai/session
 Invoke-WebRequest https://gurus.onrender.com/ai/chat
 Invoke-WebRequest https://gurus.onrender.com/auther/content
 Invoke-WebRequest https://gurus.onrender.com/admins/access-control
+curl.exe https://gurus.onrender.com/auther/create
+curl.exe https://gurus.onrender.com/media/content/[generated-file-name]
+curl.exe https://gurus.onrender.com/auther/deleteContent/Process/[generated-id]/[generated-file-name]
 ```
 
 ### Files changed
