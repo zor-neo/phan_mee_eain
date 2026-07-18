@@ -33,7 +33,7 @@ class AdminMiddleware
             return redirect()->route('login');
         }
 
-        if (Auth::user()->role === 'admin') {
+        if (Auth::user()->isAdminRole()) {
             return $next($request);
         }
 

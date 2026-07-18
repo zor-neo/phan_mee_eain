@@ -38,7 +38,7 @@ class AiChatController extends Controller
         }
 
         try {
-            $messages = $memory->getMessages();
+            $messages = $memory->getContextMessages();
 
             // Load webapp help knowledge document for RAG injection.
             // This lets Guru answer website usage questions in addition to learning guidance.

@@ -21,13 +21,13 @@ class UserMiddleware
         }
 
         $user = Auth::user();
-        $viewMode = session('acting_view_mode', $user->role === 'admin' ? 'admin' : $user->role);
+        $viewMode = session('acting_view_mode', $user->isAdminRole() ? 'admin' : $user->role);
 
         if (in_array($user->role, ['user', 'author'], true)) {
             return $next($request);
         }
 
-        if ($user->role === 'admin' && in_array($viewMode, ['user', 'author_readonly'], true)) {
+        if ($user->isAdminRole() && in_array($viewMode, ['user', 'author_readonly'], true)) {
             return $next($request);
         }
 

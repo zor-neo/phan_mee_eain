@@ -8,7 +8,7 @@ Guru is a standalone Laravel 12 AI learning companion package using Gemini API.
 - Gemini API integration
 - Multiple API key rotation
 - Fallback model support
-- Session-only memory
+- Database-backed temporary conversation memory
 - CSRF-protected chat request
 - Rate-limited chat endpoint
 - Configurable route prefix
@@ -206,7 +206,16 @@ This creates:
 config/ai-companion.php
 ```
 
-This file controls whether Guru is enabled, which Gemini keys/models are used, memory size, route prefix, route middleware, and rate limits.
+This file controls whether Guru is enabled, which Gemini keys/models are used, database memory limits, route prefix, route middleware, and rate limits.
+
+Guru stores authoritative temporary chat history in the main Laravel database using:
+
+```text
+ai_conversations
+ai_messages
+```
+
+The Laravel session stores only the active conversation ID.
 
 ### 6. Publish the frontend assets
 

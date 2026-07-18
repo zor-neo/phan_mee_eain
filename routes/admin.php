@@ -9,6 +9,8 @@ Route::group(['prefix'=>'admins','middleware'=>'admin'],function(){
     Route::get('page',[AdminController::class,'adminHome'])->name('adminHome');
     Route::get('all/user',[AdminController::class,'allUser'])->name('allUserPage');
     Route::get('all/author',[AdminController::class,'allAuthor'])->name('allAuthorPage');
+    Route::get('access-control',[AdminController::class,'accessControl'])->name('accessControlPage');
+    Route::post('access-control/{user}',[AdminController::class,'updateAccess'])->name('accessControl#Update');
     Route::get('user/report',[AdminController::class,'allReport'])->name('allReportPage');
     Route::get('user/suggest',[AdminController::class,'allSuggest'])->name('allSuggestPage');
     Route::get('requset/promo',[AdminController::class,'requestToPromo'])->name('requestToPromoPage');

@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'SuperAdmin',
             'email' => 'superadmin@gmail.com',
-            'role'=>'admin',
+            'role'=>'superadmin',
             'password'=>Hash::make('super1234'),
             'created_at'=>Carbon::now(),
             'updated_at'=>Carbon::now(),

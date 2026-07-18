@@ -20,8 +20,11 @@ return [
     ],
 
     'memory' => [
-        'driver' => 'session',
-        'max_messages' => 20,
+        'driver' => 'database',
+        'session_key' => 'active_ai_conversation_id',
+        'max_messages' => 100,
+        'context_messages' => 20,
+        'authenticated_retention_days' => 7,
     ],
 
     'routes' => [

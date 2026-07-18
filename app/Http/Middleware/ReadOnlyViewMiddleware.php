@@ -20,7 +20,7 @@ class ReadOnlyViewMiddleware
             return $next($request);
         }
 
-        if (Auth::user()->role !== 'admin' || session('acting_view_mode', 'admin') !== 'author_readonly') {
+        if (! Auth::user()->isAdminRole() || session('acting_view_mode', 'admin') !== 'author_readonly') {
             return $next($request);
         }
 

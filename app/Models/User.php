@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -12,6 +13,11 @@ class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
+
+    public const ROLE_USER = 'user';
+    public const ROLE_AUTHOR = 'author';
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_SUPERADMIN = 'superadmin';
 
     /**
      * The attributes that are mass assignable.
@@ -56,5 +62,20 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function aiConversations(): HasMany
+    {
+        return $this->hasMany(AiConversation::class);
+    }
+
+    public function isAdminRole(): bool
+    {
+        return in_array($this->role, [self::ROLE_ADMIN, self::ROLE_SUPERADMIN], true);
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->role === self::ROLE_SUPERADMIN;
     }
 }

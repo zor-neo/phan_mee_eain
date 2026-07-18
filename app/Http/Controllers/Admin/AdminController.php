@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 use SweetAlert2\Laravel\Swal;
 
 class AdminController extends Controller
@@ -44,6 +45,10 @@ class AdminController extends Controller
 
     //delete user process
     public function deleteUser($id, $image = null){
+        $user = User::findOrFail($id);
+
+        abort_if($user->isSuperAdmin(), 403);
+        abort_if(Auth::id() === $user->id, 403);
 
         //delete image file
         if($image != null){{
@@ -52,7 +57,8 @@ class AdminController extends Controller
                 unlink(public_path('profile/'.$image));
                 };
             }};
-        User::where('id',$id)->delete();
+
+        $user->delete();
         Swal::success([
             'title' => 'Success Message',
             'text'=>'Delete Success']);
@@ -68,6 +74,58 @@ class AdminController extends Controller
                             })
                     ->orderBy('created_at','desc')->get();
         return view('admin.home.showAlladmin',compact('data'));
+    }
+
+    public function accessControl()
+    {
+        abort_unless(Auth::user()?->isSuperAdmin(), 403);
+
+        $data = User::query()
+            ->where('role', '!=', User::ROLE_SUPERADMIN)
+            ->when(request('search'), function ($query) {
+                $search = request('search');
+                $query->where(function ($query) use ($search) {
+                    $query->where('id', 'like', '%' . $search . '%')
+                        ->orWhere('name', 'like', '%' . $search . '%')
+                        ->orWhere('email', 'like', '%' . $search . '%');
+                });
+            })
+            ->orderBy('role')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.home.accessControl', compact('data'));
+    }
+
+    public function updateAccess(Request $request, User $user)
+    {
+        abort_unless(Auth::user()?->isSuperAdmin(), 403);
+        abort_if($user->isSuperAdmin(), 403);
+
+        $validated = $request->validate([
+            'role' => ['required', Rule::in([
+                User::ROLE_USER,
+                User::ROLE_AUTHOR,
+                User::ROLE_ADMIN,
+            ])],
+        ]);
+
+        $user->update([
+            'role' => $validated['role'],
+        ]);
+
+        if ($validated['role'] !== User::ROLE_AUTHOR) {
+            promote::where('user_id', $user->id)->update([
+                'condition' => 0,
+            ]);
+        }
+
+        Swal::info([
+            'title' => 'Access Updated',
+            'text' => 'The account role has been updated.',
+        ]);
+
+        return back();
     }
 
     //demote process

@@ -28,7 +28,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        if ($request->user()->role === 'admin') {
+        if ($request->user()->isAdminRole()) {
             $request->session()->put('acting_view_mode', 'admin');
             return redirect('/admins/page');
         }

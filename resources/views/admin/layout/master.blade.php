@@ -120,6 +120,10 @@
                                 <i class="bi bi-people me-2"></i>Users Accounts </a>
                             <a class="nav-link " href="{{route('allAuthorPage')}}">
                                 <i class="bi bi-person-badge me-2"></i>Authors Accounts </a>
+                            @if (Auth::user()->isSuperAdmin())
+                                <a class="nav-link " href="{{route('accessControlPage')}}">
+                                    <i class="fa-solid fa-user-shield me-2"></i>Access Control </a>
+                            @endif
                             <a class="nav-link " href="{{route('category#Page')}}">
                                 <i class="fa-solid fa-table-list me-2"></i>Categories </a>
                             <a class="nav-link " href="{{route('allReportPage')}}">

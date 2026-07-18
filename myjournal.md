@@ -63,8 +63,505 @@ AI_SHARED_SECRET
 |   015 | 2026-07-18 | Phase 5 — AI service inspection (aibot / Summie) | `not committed yet` | Completed |
 |   016 | 2026-07-18 | Phase 6 — AI service integration (local package, auth-gated) | `not committed yet` | Completed |
 |   017 | 2026-07-18 | Add webapp help RAG + dual-role Summie (webhelper.md) | `not committed yet` | Completed |
+|   018 | 2026-07-18 | Phase 3 - Database-backed AI memory for Aiven MySQL | `not committed yet` | Completed |
+|   019 | 2026-07-18 | Add superadmin access-control role | `not committed yet` | Completed |
+|   020 | 2026-07-18 | Add Aiven demo user accounts | `not committed yet` | Completed |
+|   021 | 2026-07-18 | Manual Aiven AI flow verification | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 021 - Manual Aiven AI flow verification
+
+### Date and time
+
+```text
+2026-07-18 23:35 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Manual tester and coding assistant
+```
+
+### Objective
+
+Record the manual verification result after pointing the Laravel app to Aiven MySQL and testing the Guru AI flow.
+
+### Starting state
+
+Aiven MySQL was configured as the active Laravel database. The AI memory tables had been created, demo users existed, and the superadmin role/access-control work was available locally.
+
+### Manual verification performed
+
+The user reported:
+
+```text
+- User login works.
+- Promotion path works.
+- AI flow works.
+- AI chat latency is noticeably higher compared with local database usage.
+```
+
+### Performance observation
+
+The noticeable latency is expected because each AI chat now uses managed MySQL over the network instead of a local database/session-only path. The Gemini API call is still likely the largest part of total chat time, but cross-region database access can add visible delay.
+
+Exact timings were not measured in this pass.
+
+### Result
+
+```text
+Completed
+```
+
+### Remaining issues
+
+Measure actual response times before deciding whether to change database region or architecture.
+
+### Next recommended step
+
+Capture simple timings for:
+
+```text
+- Login response time
+- Dashboard response time
+- /ai/session response time
+- /ai/chat total duration
+- Aiven database query latency
+```
+
+Use the measurements in the project book to honestly explain the free-tier/cross-region tradeoff.
+
+---
+
+## Entry 020 - Add Aiven demo user accounts
+
+### Date and time
+
+```text
+2026-07-18 23:30 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Objective
+
+Create three basic demo user accounts in the current Aiven MySQL database for local testing and demonstration.
+
+### Why this work was required
+
+The Aiven database contained only the superadmin account. The user requested three normal demo users so the access-control and normal user login flows can be tested.
+
+### Commands executed
+
+```powershell
+$env:DEMO_USER_PASSWORD='[DEMO_PASSWORD_FROM_USER]'
+php artisan tinker --execute="[created user1@gmail.com through user3@gmail.com with role=user]"
+```
+
+The actual password is intentionally not recorded in the journal.
+
+### Result
+
+```text
+Completed
+```
+
+### Verification
+
+The current Aiven `users` table now contains:
+
+```text
+superadmin@gmail.com - superadmin
+user1@gmail.com - user
+user2@gmail.com - user
+user3@gmail.com - user
+```
+
+### Security impact
+
+These are demo accounts with a shared password. They should be changed, disabled, or deleted before any real public production use.
+
+### Next recommended step
+
+Log in as each demo user once, confirm the normal user dashboard works, then use the superadmin access-control page to promote one demo user to admin or author for testing.
+
+---
+
+## Entry 019 - Add superadmin access-control role
+
+### Date and time
+
+```text
+2026-07-18 23:22 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Branch and commit
+
+```text
+Branch: main
+Starting commit: ca99b29
+Ending commit: not committed yet
+Pull request: not created
+```
+
+### Objective
+
+Add a real `superadmin` role that can grant or revoke elevated access for other accounts.
+
+### Why this work was required
+
+The user wanted a superadmin account that can override normal access and grant other users higher access. Previously, the seeded account `superadmin@gmail.com` existed but used the normal `admin` role, and some older code protected it by checking email/name directly. A real role value is clearer, safer, and easier for the student team to explain.
+
+### Starting state
+
+The app had three practical roles:
+
+```text
+user
+author
+admin
+```
+
+Normal admins could moderate content and promote users to authors. There was no controlled UI for granting admin access, and the seeded "SuperAdmin" account was not a separate role.
+
+### Commands executed
+
+```powershell
+php -l app\Models\User.php
+php -l app\Http\Middleware\AdminMiddleware.php
+php -l app\Http\Controllers\Admin\AdminController.php
+php -l database\migrations\2026_07_18_231000_promote_seeded_superadmin_account.php
+php -l tests\Feature\SuperAdminAccessTest.php
+php artisan optimize:clear
+php artisan test --filter=SuperAdminAccessTest
+php artisan test
+php artisan about --only=environment,drivers
+php artisan migrate:status
+php artisan migrate --pretend
+php artisan route:list --path=admins/access-control --verbose
+```
+
+### Files changed
+
+| File | Change | Reason |
+| --- | --- | --- |
+| `app/Models/User.php` | Added role constants, `isAdminRole()`, and `isSuperAdmin()` | Centralize role checks |
+| `app/Http/Middleware/AdminMiddleware.php` | Allows `admin` and `superadmin` into admin routes | Superadmin must reach admin area |
+| `app/Http/Middleware/UserMiddleware.php` | Treats superadmin like admin for view mode | Preserve admin view-mode behavior |
+| `app/Http/Middleware/ReadOnlyViewMiddleware.php` | Applies read-only admin view rules to superadmin too | Keep safety behavior consistent |
+| `app/Http/Controllers/Auth/AuthenticatedSessionController.php` | Redirects superadmin to admin area after login | Expected superadmin workflow |
+| `app/Http/Controllers/Admin/AdminController.php` | Added access-control page and role update action | Let only superadmin grant/revoke access |
+| `routes/admin.php` | Added access-control routes | Expose the new superadmin workflow |
+| `resources/views/admin/layout/master.blade.php` | Adds sidebar link for superadmin only | Make workflow discoverable |
+| `resources/views/admin/home/accessControl.blade.php` | New role-management view | Allow role updates through UI |
+| `database/seeders/DatabaseSeeder.php` | Seeds SuperAdmin with `superadmin` role | New databases get the correct role |
+| `database/migrations/2026_07_18_231000_promote_seeded_superadmin_account.php` | Updates existing seeded account from `admin` to `superadmin` | Upgrade existing Aiven/local database safely |
+| `tests/Feature/SuperAdminAccessTest.php` | Added role-management tests | Prove superadmin-only access rules |
+
+### Decision made
+
+Use `superadmin` as a role value in the existing `users.role` column. Superadmin can assign only:
+
+```text
+user
+author
+admin
+```
+
+The UI cannot create another superadmin. The existing seeded superadmin account cannot be deleted.
+
+### Security impact
+
+Positive. Only `superadmin` can grant admin access. Normal admins cannot open or submit access-control changes. Superadmin cannot assign another superadmin through the UI, and the protected superadmin account cannot be deleted through the admin delete route. No passwords or secrets were added.
+
+### Tests performed
+
+| Test | Expected | Actual | Result |
+| --- | --- | --- | --- |
+| PHP lint checks | No syntax errors | No syntax errors | Pass |
+| `php artisan test --filter=SuperAdminAccessTest` | Superadmin tests pass | 6 passed, 10 assertions | Pass |
+| `php artisan test` | Full suite passes | 53 passed, 130 assertions | Pass |
+| `php artisan migrate:status` | New superadmin migration pending | Pending | Pass |
+| `php artisan migrate --pretend` | Non-destructive role update only | Updates `superadmin@gmail.com` from `admin` to `superadmin` | Pass |
+| `php artisan route:list --path=admins/access-control --verbose` | Routes are admin-middleware protected | Confirmed `web`, `admin` | Pass |
+
+### Result
+
+```text
+Completed
+```
+
+### Remaining issues
+
+The new migration has not been applied to Aiven yet. It is pending and should be run only after the team confirms `superadmin@gmail.com` is the intended account to upgrade.
+
+### Next recommended step
+
+Run `php artisan migrate` against the intended Aiven database to promote the existing seeded superadmin account, then log in as `superadmin@gmail.com` and open:
+
+```text
+/admins/access-control
+```
+
+### Project-book material
+
+The project added a dedicated `superadmin` role for controlled access management. This avoids hard-coded email checks and separates normal admin moderation from higher-risk permission changes. The access-control feature allows superadmin to grant user, author, or admin roles while preventing normal admins from escalating privileges.
+
+### Presentation-slide material
+
+```text
+- Added real superadmin role
+- Normal admins keep moderation access
+- Only superadmin can grant/revoke admin access
+- Superadmin account protected from deletion
+- 53 tests pass after RBAC change
+```
+
+### References
+
+```text
+app/Models/User.php
+app/Http/Controllers/Admin/AdminController.php
+routes/admin.php
+resources/views/admin/home/accessControl.blade.php
+tests/Feature/SuperAdminAccessTest.php
+```
+
+---
+
+## Entry 018 - Phase 3: Database-backed AI memory for Aiven MySQL
+
+### Date and time
+
+```text
+2026-07-18 22:53 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Branch and commit
+
+```text
+Branch: main
+Starting commit: ca99b29
+Ending commit: not committed yet
+Pull request: not created
+```
+
+### Objective
+
+Replace Guru's session-only AI memory with temporary MySQL-backed conversation memory that can run on the project's Aiven managed MySQL database.
+
+### Why this work was required
+
+PROJECT_SPEC.md Phase 3 requires `ai_conversations` and `ai_messages` tables, models, relationships, authorization checks, validation, tests, and expiry behavior. The user confirmed that Aiven will be used, so the main application now needs database-backed AI memory instead of storing the transcript in Laravel's session payload.
+
+### Starting state
+
+Guru was already integrated into the main Laravel app and protected by `auth` middleware. The user reported that the widget had already been manually tested on the local server with the Gemini API key. Memory was still stored under the `ai_companion.messages` session key, so the authoritative chat transcript was not in MySQL.
+
+### Commands executed
+
+```powershell
+git status --short --branch
+php -l app\Models\AiConversation.php
+php -l app\Models\AiMessage.php
+php -l packages\Local\AiCompanion\src\Services\SessionMemoryManager.php
+php -l packages\Local\AiCompanion\src\Http\Controllers\AiChatController.php
+php -l tests\Feature\AiDatabaseMemoryTest.php
+php -l database\migrations\2026_07_18_181000_create_ai_conversations_table.php
+php -l database\migrations\2026_07_18_181001_create_ai_messages_table.php
+php artisan optimize:clear
+php artisan test
+php artisan route:list --path=ai --verbose
+php artisan migrate:status
+php artisan migrate --pretend
+```
+
+### Files changed
+
+| File | Change | Reason |
+| --- | --- | --- |
+| `database/migrations/2026_07_18_181000_create_ai_conversations_table.php` | Added `ai_conversations` table | Store temporary conversation ownership, status, timestamps, and expiry |
+| `database/migrations/2026_07_18_181001_create_ai_messages_table.php` | Added `ai_messages` table | Store user and assistant messages in MySQL |
+| `app/Models/AiConversation.php` | Added model and relationships | Represent AI conversations in Eloquent |
+| `app/Models/AiMessage.php` | Added model and relationship | Represent AI messages in Eloquent |
+| `app/Models/User.php` | Added `aiConversations()` relationship | Connect users to their AI conversations |
+| `config/ai-companion.php` | Changed memory driver and limits | Use database memory with session pointer only |
+| `packages/Local/AiCompanion/config/ai-companion.php` | Mirrored package default config | Keep package defaults aligned with app config |
+| `packages/Local/AiCompanion/src/Services/SessionMemoryManager.php` | Reworked storage from session array to MySQL | Preserve existing service API while changing storage backend |
+| `packages/Local/AiCompanion/src/Http/Controllers/AiChatController.php` | Uses bounded context messages for prompt | Send only latest configured context to Gemini |
+| `tests/Feature/AiDatabaseMemoryTest.php` | Added persistence, ownership, and clear tests | Prove Phase 3 behavior and security boundary |
+| `packages/Local/AiCompanion/README.md` | Updated memory documentation | Remove stale session-only documentation |
+
+### Existing code preserved
+
+The existing AI routes, controller response shape, widget JavaScript, widget Blade include, Gemini client, prompt builder persona, and auth middleware configuration were preserved. The route `/ai/session` still exists because the browser already uses it, but it now returns messages from the active database conversation.
+
+### Decision made
+
+Use Aiven MySQL as the authoritative temporary AI memory store. Laravel's HTTP session stores only:
+
+```text
+active_ai_conversation_id
+```
+
+Every read/write verifies that the active conversation belongs to the authenticated user.
+
+### Alternatives considered
+
+#### Alternative A
+
+Description:
+Keep session-only memory.
+
+Advantages:
+Smallest code change and no migration required.
+
+Disadvantages:
+Contradicts PROJECT_SPEC.md, stores transcript in the session payload, and does not demonstrate managed database persistence.
+
+Reason not selected:
+The project plan requires MySQL-backed temporary AI memory.
+
+#### Alternative B
+
+Description:
+Store long-term AI memories or summaries now.
+
+Advantages:
+Could support richer personalization later.
+
+Disadvantages:
+Adds privacy, consent, deletion, retention, and design complexity beyond the MVP.
+
+Reason not selected:
+Long-term AI memory is explicitly a future feature in PROJECT_SPEC.md.
+
+### Architectural impact
+
+```text
+Moderate
+```
+
+The main Laravel app now owns temporary AI conversation history in MySQL as required by the approved architecture. PROJECT_SPEC.md did not need an update because this work implements the existing Phase 3 plan.
+
+### Security impact
+
+Conversation ownership is server-verified using the authenticated user ID. A forged `active_ai_conversation_id` in the browser session cannot expose or continue another user's conversation. Gemini keys remain server-side. No secrets were added.
+
+### Performance impact
+
+Each AI request now performs small database reads/writes for the active conversation and messages. Messages are bounded to 100 retained rows per conversation and 20 context messages sent to Gemini. Indexes were added for user/status/activity and conversation message lookup.
+
+### Cost impact
+
+No new direct service cost beyond the selected Aiven MySQL usage. The feature uses normal managed database storage and a small number of rows per conversation.
+
+### Learning outcome
+
+The team can explain the difference between HTTP session state and authoritative application data. The session can remember which conversation is active, but the database owns the actual temporary AI transcript.
+
+### Implementation summary
+
+1. Added `ai_conversations` and `ai_messages` migrations.
+2. Added Eloquent models and relationships.
+3. Reworked the memory manager to create or reuse an active conversation for the logged-in user.
+4. Preserved bounded prompt context by sending only the latest configured messages to Gemini.
+5. Added pruning so temporary conversations retain at most 100 messages.
+6. Added tests for persistence, ownership protection, and clearing memory.
+
+### Tests performed
+
+| Test | Expected | Actual | Result |
+| --- | --- | --- | --- |
+| PHP lint checks | No syntax errors | No syntax errors | Pass |
+| `php artisan optimize:clear` | Laravel caches cleared | Completed | Pass |
+| `php artisan test` | Full test suite passes | 47 passed, 120 assertions | Pass |
+| `php artisan route:list --path=ai --verbose` | AI routes remain `web` + `auth` protected | Confirmed | Pass |
+| `php artisan migrate:status` | New AI migrations pending before deployment | Both AI migrations pending | Pass |
+| `php artisan migrate --pretend` | Shows non-destructive create-table SQL | Only creates `ai_conversations` and `ai_messages` | Pass |
+
+### Manual verification
+
+The user reported that the Guru widget had already been tested on the local server before this database-memory change. After applying this change, the recommended browser check is to run the app, send two Guru messages while logged in, refresh the page, and confirm the conversation still appears from MySQL.
+
+### Result
+
+```text
+Completed
+```
+
+### Rollback procedure
+
+Revert this change set before running the new migrations. If the migrations have already been applied on a development database, run:
+
+```powershell
+php artisan migrate:rollback --step=2
+```
+
+Do not run rollback against production without team approval.
+
+### Remaining issues
+
+- The new migrations are pending and must be applied deliberately to Aiven after reviewing the active `.env` database connection.
+- The service is still integrated as a local package, not yet as the separate HMAC-signed service described for the later deployment phase.
+- Long-term AI memory is not implemented, by design.
+
+### Next recommended step
+
+Review the active Aiven database connection, run `php artisan migrate --pretend` again, then apply the two pending AI migrations to the intended development Aiven database and manually verify conversation persistence after browser refresh.
+
+### Project-book material
+
+During Phase 3, the project moved Guru's temporary AI memory from Laravel session storage to managed MySQL storage. The main application now stores conversations and messages in dedicated `ai_conversations` and `ai_messages` tables while the session stores only the active conversation ID. This keeps the main Laravel app as the security boundary and prepares the project for Aiven-backed deployment.
+
+### Presentation-slide material
+
+```text
+- AI memory moved from session payload to MySQL
+- Tables added: ai_conversations, ai_messages
+- Session stores only active_ai_conversation_id
+- Ownership checked on every conversation read/write
+- 47 tests pass, including AI persistence and security tests
+```
+
+### References
+
+```text
+PROJECT_SPEC.md Section 9 and Phase 3
+AGENTS.md Database rules and AI memory policy
+app/Models/AiConversation.php
+app/Models/AiMessage.php
+packages/Local/AiCompanion/src/Services/SessionMemoryManager.php
+tests/Feature/AiDatabaseMemoryTest.php
+```
 
 ---
 
@@ -3024,4 +3521,3 @@ git commit -m "refactor: rename Summie to Guru across widget UI and code"
 
 ### Architectural decisions
 - Renamed internal DOM IDs and CSS classes (e.g., `#summie-widget` to `#guru-widget`) to ensure the codebase remains consistent with the new product direction, avoiding technical debt where the code domain language lags behind the UI domain language.
-
