@@ -27,7 +27,7 @@
 
         let hasLoadedSession = false;
 
-        const welcomeMessage = "Hola, I am the Great Guru, I can show you the righteous way, all you need to do is Ask.";
+        const welcomeMessage = "I am the Great Guru, I can show you the righteous way, all you need to do is ask.";
 
         function escapeHtml(value) {
             return String(value)
