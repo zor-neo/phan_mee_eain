@@ -1,3 +1,57 @@
+# PhanMeeEin
+
+PhanMeeEin is a Laravel 12 student learning platform. This repository includes a Docker setup for deploying the main Laravel application to Render.
+
+## Docker and Render
+
+The Docker image:
+
+- Builds Vite assets with Node.
+- Installs production Composer dependencies.
+- Serves only Laravel's `public` directory through Apache.
+- Uses Render's `PORT` environment variable.
+- Keeps `.env`, `vendor`, `node_modules`, logs, and local caches out of the image context.
+- Does not run database migrations automatically on container startup.
+
+Local build check:
+
+```bash
+docker build -t phanmeeein:test .
+```
+
+Render environment variables must be configured in the Render dashboard, not committed to Git:
+
+```text
+APP_ENV=production
+APP_DEBUG=false
+APP_KEY=[REDACTED]
+APP_URL=[RENDER_APP_URL]
+DB_CONNECTION=mysql
+DB_HOST=[AIVEN_HOST]
+DB_PORT=[AIVEN_PORT]
+DB_DATABASE=[AIVEN_DATABASE]
+DB_USERNAME=[AIVEN_USER]
+DB_PASSWORD=[REDACTED]
+SESSION_DRIVER=database
+CACHE_STORE=database
+QUEUE_CONNECTION=database
+LOG_CHANNEL=stderr
+LOG_STACK=stderr
+AI_COMPANION_ENABLED=true
+GEMINI_API_KEY_1=[REDACTED]
+```
+
+Run migrations as a controlled release step:
+
+```bash
+php artisan migrate --pretend
+php artisan migrate
+```
+
+The current app still stores some uploaded profile/content files on the application filesystem. On Render this storage is temporary. Cloudflare R2 or another S3-compatible object store should be added before claiming persistent production uploads.
+
+---
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">

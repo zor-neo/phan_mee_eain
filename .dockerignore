@@ -1,0 +1,39 @@
+.git
+.github
+.idea
+.nova
+.phpunit.cache
+.vscode
+.zed
+
+.env
+.env.*
+!.env.example
+auth.json
+
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+node_modules
+vendor
+
+storage/logs/*
+storage/framework/cache/*
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/pail
+storage/*.key
+
+public/build
+public/hot
+public/storage
+
+tests
+ui admin (2)
+ui login (3)
+ui SW frontend user (1)
+
+*.log
+.DS_Store
+Thumbs.db

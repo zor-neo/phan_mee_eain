@@ -67,8 +67,139 @@ AI_SHARED_SECRET
 |   019 | 2026-07-18 | Add superadmin access-control role | `not committed yet` | Completed |
 |   020 | 2026-07-18 | Add Aiven demo user accounts | `not committed yet` | Completed |
 |   021 | 2026-07-18 | Manual Aiven AI flow verification | `not committed yet` | Completed |
+|   022 | 2026-07-19 | Add Docker setup for Render deployment | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 022 - Add Docker setup for Render deployment
+
+### Date and time
+
+```text
+2026-07-19 00:03 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Objective
+
+Prepare the main Laravel application for Render deployment by adding a production Docker image, Apache public-directory configuration, startup script, Docker ignore rules, and README deployment notes.
+
+### Starting state
+
+The repository did not yet contain a Dockerfile. The Laravel app had already been pointed at Aiven MySQL locally, migrations had been applied, demo accounts existed, and the user had manually confirmed login, promotion, and AI chat flow.
+
+### What changed
+
+```text
+Dockerfile
+.dockerignore
+docker/apache/000-default.conf
+docker/render-start.sh
+README.md
+.env.example
+myjournal.md
+```
+
+The Dockerfile now:
+
+```text
+- Builds Vite assets in a Node stage.
+- Installs production Composer dependencies in a Composer stage.
+- Runs the application on php:8.4-apache.
+- Enables required PHP extensions for the current Laravel app.
+- Serves only the public directory.
+- Uses the PORT environment variable expected by Render.
+- Creates writable Laravel storage and cache directories.
+- Does not run database migrations automatically during container startup.
+```
+
+The Docker ignore file excludes local environment files, local dependencies, logs, generated caches, and other development-only files from the Docker build context.
+
+The Render startup script clears runtime Laravel caches and starts Apache in the foreground. It also unsets `MYSQL_ATTR_SSL_CA` when the configured certificate path does not exist inside the container. This prevents a local Windows-only CA path from breaking Linux container smoke tests. Production should either omit that variable or provide a real in-container certificate path.
+
+### Issue found during smoke testing
+
+The first production-style container failed because Laravel tried to load `Laravel\Pail\PailServiceProvider`, which is a development dependency excluded by `composer install --no-dev`.
+
+Root cause:
+
+```text
+Local generated files in bootstrap/cache were copied into the image and still referenced dev-only packages.
+```
+
+Fix:
+
+```text
+bootstrap/cache/* is now excluded from the Docker build context except .gitignore.
+The Dockerfile copies the production-generated bootstrap cache from the Composer build stage.
+```
+
+### Commands executed
+
+```powershell
+php artisan test
+npm run build
+php artisan config:cache
+php artisan route:cache
+php artisan optimize:clear
+docker build -q -t phanmeeein:test .
+docker run -d --name phanmeeein-smoke -p 8081:8080 --env-file .env -e PORT=8080 phanmeeein:test
+Invoke-WebRequest -Uri http://127.0.0.1:8081 -UseBasicParsing -MaximumRedirection 5
+docker logs --tail 80 phanmeeein-smoke
+docker stop phanmeeein-smoke
+docker rm phanmeeein-smoke
+```
+
+### Test results
+
+```text
+php artisan test: 53 passed, 130 assertions
+npm run build: passed
+php artisan config:cache: passed
+php artisan route:cache: passed
+php artisan optimize:clear: passed
+docker build -q -t phanmeeein:test .: passed
+Docker smoke test: HTTP 200 after redirect to /guest
+```
+
+### Security impact
+
+No secrets were added to source control. `.env`, `.env.*`, local Composer authentication files, logs, and local dependency directories are excluded from the Docker image context.
+
+Render environment variables must be configured in the Render dashboard, not committed to the repository.
+
+### Deployment impact
+
+The main Laravel app is now ready to create a Render Web Service using Docker. Database migrations remain a controlled release step and are not executed automatically at container startup.
+
+The current app still uses local filesystem paths for some uploaded profile/content files. On Render, that storage is temporary until Cloudflare R2 or another S3-compatible object store is configured.
+
+### Performance impact
+
+No runtime optimization was added. The deployment image installs production dependencies and builds frontend assets ahead of runtime, which avoids development server overhead in Render.
+
+### Cost impact
+
+No new paid service was added by this repository change. Render and Aiven usage remain subject to their configured plan limits.
+
+### Result
+
+```text
+Completed
+```
+
+### Next recommended step
+
+Commit the Docker deployment files, push the branch, create a Render Web Service from the repository, set the required environment variables, and run Laravel migrations as a controlled release step.
 
 ---
 
