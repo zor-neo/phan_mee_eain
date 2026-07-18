@@ -69,8 +69,148 @@ AI_SHARED_SECRET
 |   021 | 2026-07-18 | Manual Aiven AI flow verification | `not committed yet` | Completed |
 |   022 | 2026-07-19 | Add Docker setup for Render deployment | `not committed yet` | Completed |
 |   023 | 2026-07-19 | Open Guru chat from footer Help Center links | `not committed yet` | Completed |
+|   024 | 2026-07-19 | Fix Render HTTPS, CSS, footer, and auth form deployment issues | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 024 - Fix Render HTTPS, CSS, footer, and auth form deployment issues
+
+### Date and time
+
+```text
+2026-07-19 00:36 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment tester and coding assistant
+```
+
+### Objective
+
+Respond to Render deployment issues reported by the user:
+
+```text
+- UI appeared abnormally large and overflowed.
+- CSS appeared broken.
+- Recent footer text did not appear on the deployed visible page.
+- Authentication fields were rejected by the platform/browser as insecure.
+```
+
+### Root causes identified
+
+Render terminates HTTPS before traffic reaches the Docker container. Without trusted proxy headers and HTTPS-aware URL generation, Laravel can generate insecure URLs behind the proxy.
+
+Several layouts also depended on external Bootstrap CDN links. If those external CSS or integrity checks fail, pages can render without Bootstrap and appear very large or broken.
+
+The deployed first page normally uses the guest footer, while the previous footer contact change had only been applied to the authenticated user layout.
+
+The custom login/register views used `type="text"` for email fields and did not include complete browser-friendly authentication field attributes.
+
+### What changed
+
+```text
+bootstrap/app.php
+app/Providers/AppServiceProvider.php
+.env.example
+README.md
+resources/views/Login/login.blade.php
+resources/views/Login/register.blade.php
+resources/views/admin/layout/master.blade.php
+resources/views/auther/layout/master.blade.php
+resources/views/static/layout.blade.php
+resources/views/user/guest/guestUser.blade.php
+resources/views/user/layout/master.blade.php
+myjournal.md
+```
+
+The app now trusts forwarded proxy headers using Laravel middleware configuration.
+
+In production, when `APP_URL` starts with `https://`, Laravel forces HTTPS URL generation.
+
+Main layouts now use the local Bootstrap assets already stored under `public/user/vendor1/...` instead of external Bootstrap CDN URLs.
+
+A typo in one admin Bootstrap script path was fixed from `verdor1` to `vendor1`.
+
+The guest and admin footer contact/legal text now matches the updated user footer.
+
+Custom login/register forms now use:
+
+```text
+type="email"
+autocomplete="username"
+autocomplete="current-password"
+autocomplete="new-password"
+required
+```
+
+Small responsive guards were added to the custom login/register card layout so it cannot exceed the viewport width.
+
+### Deployment configuration reminder
+
+Render must use:
+
+```text
+APP_URL=https://[RENDER_APP_HOST]
+TRUSTED_PROXIES=*
+SESSION_SECURE_COOKIE=true
+```
+
+### Commands executed
+
+```powershell
+php -l bootstrap\app.php
+php -l app\Providers\AppServiceProvider.php
+php artisan view:clear
+php artisan optimize:clear
+php artisan test
+docker build -q -t phanmeeein:test .
+docker run -d --name phanmeeein-smoke -p 8081:8080 --env-file .env -e PORT=8080 -e APP_ENV=production -e APP_URL=https://phanmee-test.onrender.com -e TRUSTED_PROXIES=* -e SESSION_SECURE_COOKIE=true phanmeeein:test
+Invoke-WebRequest http://127.0.0.1:8081/guest
+Invoke-WebRequest http://127.0.0.1:8081/login
+docker rm -f phanmeeein-smoke
+php artisan config:cache
+php artisan route:cache
+php artisan optimize:clear
+```
+
+### Test results
+
+```text
+PHP syntax checks: passed
+php artisan test: 53 passed, 130 assertions
+docker build: passed
+Docker HTTPS proxy smoke test /guest: HTTP 200
+Docker HTTPS proxy smoke test /login: HTTP 200
+Rendered /guest CSS and JS URLs: https://...
+Rendered /login form action: https://...
+Rendered /login email field: type="email", autocomplete="username"
+Rendered /guest footer: www.gurus.com and support@gurus.com visible
+config:cache, route:cache, optimize:clear: passed
+```
+
+One test run failed during verification because cache commands were accidentally run in parallel with the test suite. After clearing caches and rerunning the tests sequentially, the full test suite passed.
+
+### Security impact
+
+This change reduces mixed-content and insecure-form risk on Render by trusting forwarded HTTPS headers and requiring HTTPS URL generation in production when `APP_URL` is HTTPS.
+
+No secrets were added.
+
+### Performance impact
+
+Serving Bootstrap from local app assets avoids relying on external Bootstrap CDN availability during production rendering. No database or AI performance behavior changed.
+
+### Result
+
+```text
+Completed
+```
 
 ---
 

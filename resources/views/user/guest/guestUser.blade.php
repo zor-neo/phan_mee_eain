@@ -7,9 +7,9 @@
     <title>Phan Mee Ein</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link href="{{ asset('user/vendor1/fonts/spring-wisdom-fonts.css') }}" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link href="{{ asset('user/vendor1/cdn/cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css') }}.."
+    <link href="{{ asset('user/vendor1/cdn/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css') }}"
+        rel="stylesheet">
+    <link href="{{ asset('user/vendor1/cdn/cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css') }}"
         rel="stylesheet">
     <link href="{{ asset('user/css/style.css') }}" rel="stylesheet">
 </head>
@@ -118,23 +118,22 @@
                     <h2 class="footer-heading">Contact</h2>
                     <address class="small sw-muted mb-0" id="contact">
                         Phan Mee Eain Learning Hub<br>
-                        Demo contact placeholder<br>
-                        Email: will be updated when Render provides a custom address
+                        www.gurus.com<br>
+                        Email: support@gurus.com
                     </address>
                 </div>
             </div>
             <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between gap-2 mt-4 pt-4">
                 <p class="small sw-muted mb-0">&copy; Phan Mee Eain 2026</p>
                 <div class="d-flex flex-wrap gap-3 small">
-                    <span>Privacy Policy: demo text only.</span>
-                    <span>Terms of Use: demo text only.</span>
-                    <span>Accessibility: demo text only.</span>
+                    <span>Privacy Policy</span>
+                    <span>Terms of Use</span>
+                    <span>Accessibility</span>
                 </div>
             </div>
         </div>
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous">
+    <script src="{{ asset('user/vendor1/cdn/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js') }}">
     </script>
     <script src="{{ asset('user/js/main.js') }}"></script>
     <script src="{{ asset('user/js/static-router.js') }}"></script>

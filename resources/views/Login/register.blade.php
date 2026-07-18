@@ -9,7 +9,8 @@
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
     <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="{{ asset('user/vendor1/cdn/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css') }}"
+        rel="stylesheet" />
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -36,7 +37,7 @@
 
         .main-container {
             width: 100%;
-            max-width: 1150px;
+            max-width: min(1150px, calc(100vw - 40px));
             background: #1e293b;
             border-radius: 24px;
             overflow: hidden;
@@ -48,6 +49,7 @@
 
         .left-side {
             width: 50%;
+            min-width: 0;
             background:
                 linear-gradient(rgba(118, 185, 216, 0.5), rgba(15, 23, 42, 0.78)),
                 url("https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1200&auto=format&fit=crop");
@@ -136,6 +138,7 @@
 
         .right-side {
             width: 50%;
+            min-width: 0;
             background: #1f2937;
             padding: 60px;
             color: white;
@@ -160,6 +163,7 @@
 
         .form-control {
             height: 58px;
+            max-width: 100%;
             background: #334155;
             border: 1px solid #475569;
             border-radius: 12px;
@@ -278,6 +282,29 @@
                 flex-direction: column;
             }
         }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+
+            .main-container {
+                max-width: calc(100vw - 24px);
+                border-radius: 16px;
+            }
+
+            .left-side {
+                padding: 28px 22px;
+            }
+
+            .right-side {
+                padding: 32px 22px;
+            }
+
+            .right-side h2 {
+                font-size: 34px;
+            }
+        }
     </style>
 </head>
 
@@ -329,26 +356,28 @@
                 <a href="{{ route('login') }}">Log in</a>
             </p>
 
-            <form method="POST" action="{{ route('register') }}">
+            <form method="POST" action="{{ route('register') }}" autocomplete="on">
                 @csrf
-                <input type="text" name="name" class="form-control" value="{{ old('name') }}"
-                    placeholder="Name">
+                <input id="name" type="text" name="name" class="form-control" value="{{ old('name') }}"
+                    placeholder="Name" autocomplete="name" required>
                 @error('name')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
 
-                <input type="text" name="email" class="form-control mt-3" placeholder="Email"
-                    value="{{ old('email') }}">
+                <input id="email" type="email" name="email" class="form-control mt-3" placeholder="Email"
+                    value="{{ old('email') }}" autocomplete="username" required>
                 @error('email')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
 
-                <input type="password" name="password" class="form-control" placeholder="Password" autocomplete="new-password">
+                <input id="password" type="password" name="password" class="form-control" placeholder="Password"
+                    autocomplete="new-password" required>
                 @error('password')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
 
-                <input type="password" name="password_confirmation" class="form-control" placeholder="Confirm Password" autocomplete="new-password">
+                <input id="password_confirmation" type="password" name="password_confirmation" class="form-control"
+                    placeholder="Confirm Password" autocomplete="new-password" required>
                 @error('password')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
