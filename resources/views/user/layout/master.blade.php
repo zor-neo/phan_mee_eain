@@ -147,7 +147,7 @@
                     <div class="d-flex flex-wrap gap-2">
                         <a class="footer-icon-link" href="{{ route('adminHome') }}" aria-label="Open admin alerts"><i
                                 class="bi bi-envelope"></i></a>
-                        <a class="footer-icon-link" href="javascript:void(0)" aria-label="Help Center coming soon"><i
+                        <a class="footer-icon-link" href="#guru-widget" data-guru-open aria-label="Open AI help center"><i
                                 class="bi bi-chat-left-text"></i></a>
                     </div>
                 </div>
@@ -163,7 +163,7 @@
                     <ul class="footer-links">
                         <li><a href="{{ route('reportPolicy') }}">Report Policy</a></li>
                         <li><a href="{{ route('authorGuidelines') }}">Author Guidelines</a></li>
-                        <li><span>Help Center: AI chat will be integrated later.</span></li>
+                        <li><a href="#guru-widget" data-guru-open>Help Center</a></li>
                     </ul>
                 </div>
                 <div class="col-lg-3">

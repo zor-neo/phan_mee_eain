@@ -191,6 +191,25 @@
         toggleButton.addEventListener('click', togglePanel);
         closeButton.addEventListener('click', closePanel);
 
+        document.addEventListener('click', function (event) {
+            const trigger = event.target.closest('[data-guru-open]');
+
+            if (!trigger) {
+                return;
+            }
+
+            event.preventDefault();
+            openPanel();
+        });
+
+        document.addEventListener('guru:open', openPanel);
+
+        window.GuruChat = Object.assign(window.GuruChat || {}, {
+            open: openPanel,
+            close: closePanel,
+            toggle: togglePanel
+        });
+
         form.addEventListener('submit', async function (event) {
             event.preventDefault();
 

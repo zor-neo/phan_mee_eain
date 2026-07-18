@@ -68,8 +68,84 @@ AI_SHARED_SECRET
 |   020 | 2026-07-18 | Add Aiven demo user accounts | `not committed yet` | Completed |
 |   021 | 2026-07-18 | Manual Aiven AI flow verification | `not committed yet` | Completed |
 |   022 | 2026-07-19 | Add Docker setup for Render deployment | `not committed yet` | Completed |
+|   023 | 2026-07-19 | Open Guru chat from footer Help Center links | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 023 - Open Guru chat from footer Help Center links
+
+### Date and time
+
+```text
+2026-07-19 00:07 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Objective
+
+Change the authenticated footer Help Center links so they open the existing Guru AI chat pane instead of showing placeholder text.
+
+### Starting state
+
+The user and admin footers showed Help Center placeholder text. The Guru widget could be opened by its floating button, but its open function was private inside the widget JavaScript.
+
+### What changed
+
+```text
+resources/views/user/layout/master.blade.php
+resources/views/admin/layout/master.blade.php
+packages/Local/AiCompanion/public/ai-companion/widget.js
+public/vendor/ai-companion/ai-companion/widget.js
+myjournal.md
+```
+
+The footer chat icon and Help Center text now use:
+
+```text
+data-guru-open
+```
+
+The widget JavaScript now listens for clicks on that attribute, opens the chat pane, loads the session if needed, and focuses the input.
+
+It also exposes a small browser API:
+
+```text
+window.GuruChat.open()
+window.GuruChat.close()
+window.GuruChat.toggle()
+```
+
+### Alternative considered
+
+A direct inline `onclick` handler could have opened the widget, but that would mix behavior into Blade markup and make future reuse harder. A data attribute keeps the footer simple and lets the widget own its own behavior.
+
+### Security impact
+
+No new endpoint or permission path was added. The existing AI routes remain protected by the current Laravel middleware.
+
+### Test plan
+
+```text
+- Clear views.
+- Confirm Blade templates compile.
+- Run the Laravel test suite.
+- Manually click Help Center after starting the local app.
+```
+
+### Result
+
+```text
+Completed
+```
 
 ---
 
