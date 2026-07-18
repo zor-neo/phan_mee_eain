@@ -2996,3 +2996,32 @@ php artisan view:clear
 ### Test results
 - The AI correctly responds in the persona of an empathetic mentor without re-introducing itself.
 - The UI reflects the new "Great Guru" icon, now properly scaled (1.5x) and themed with modern blue accents.
+
+## Rename Summie to Guru in UI and Code
+
+**Date**: 2026-07-18
+**Context**: Following the persona change to "The Great Guru", the user requested that all remaining instances of the old name "Summie" be replaced with "Guru" across the application, including the loading text and underlying CSS classes/HTML IDs.
+
+### What was attempted
+- Replace the loading text "Summie is thinking..." with "Guru will enlighten you soon...".
+- Globally replace all occurrences of `summie` (case-insensitive where applicable, preserving camelCase/kebab-case) with `guru` in the widget's JS, CSS, Blade files, and documentation.
+
+### Commands executed
+```powershell
+php artisan view:clear
+git add .
+git commit -m "refactor: rename Summie to Guru across widget UI and code"
+```
+
+### Files changed
+- `packages/Local/AiCompanion/resources/views/widget.blade.php`
+- `packages/Local/AiCompanion/public/ai-companion/widget.js` & `public/vendor/ai-companion/ai-companion/widget.js`
+- `packages/Local/AiCompanion/public/ai-companion/widget.css` & `public/vendor/ai-companion/ai-companion/widget.css`
+- `packages/Local/AiCompanion/README.md`
+- `webhelper.md`
+- `packages/Local/AiCompanion/src/Http/Controllers/AiChatController.php` (comments)
+- `packages/Local/AiCompanion/src/Services/PromptBuilder.php` (comments)
+
+### Architectural decisions
+- Renamed internal DOM IDs and CSS classes (e.g., `#summie-widget` to `#guru-widget`) to ensure the codebase remains consistent with the new product direction, avoiding technical debt where the code domain language lags behind the UI domain language.
+

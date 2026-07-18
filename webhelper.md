@@ -1,4 +1,4 @@
-# Phan Mee Eain Learning Hub — Webapp Help Reference
+# Phan Mee Eain Learning Hub â€” Webapp Help Reference
 
 This document is a structured knowledge source used by the the Great Guru AI assistant to answer user questions about how to use the Phan Mee Eain Learning Hub web application.
 
@@ -32,7 +32,7 @@ After logging in, you are redirected to the user home dashboard.
 
 ---
 
-## User Role — What Users Can Do
+## User Role â€” What Users Can Do
 
 ### Browsing Content
 
@@ -86,7 +86,7 @@ Click the reaction button below the content. Your current reaction is highlighte
 ### Profile Management
 
 Go to Layout > Edit Profile to:
-- Change your name (6–30 characters)
+- Change your name (6â€“30 characters)
 - Change your email
 - Add or update phone number
 - Add or update address
@@ -95,7 +95,7 @@ Go to Layout > Edit Profile to:
 
 Go to Layout > Change Password to:
 - Enter your current password
-- Enter a new password (6–12 characters)
+- Enter a new password (6â€“12 characters)
 - Confirm the new password
 
 ### Requesting Author Promotion
@@ -111,7 +111,7 @@ If approved, your role changes to Author and you gain access to the Author Room.
 
 ---
 
-## Author Role — What Authors Can Do
+## Author Role â€” What Authors Can Do
 
 Authors access their tools via the Author Room shortcut in the navigation (Layout > Auther Room).
 
@@ -166,7 +166,7 @@ Authors must follow these rules (from the Author Status Rules and Regulations):
 
 ---
 
-## Admin Role — What Admins Can Do
+## Admin Role â€” What Admins Can Do
 
 Admins access the admin panel at /admins/page.
 

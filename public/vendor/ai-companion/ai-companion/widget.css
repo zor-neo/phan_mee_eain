@@ -1,4 +1,4 @@
-#summie-widget {
+#guru-widget {
     position: fixed;
     right: 24px;
     bottom: 24px;
@@ -6,12 +6,12 @@
     font-family: Arial, sans-serif;
 }
 
-#summie-panel[hidden] {
+#guru-panel[hidden] {
     display: none !important;
 }
 
 /* Floating button */
-#summie-toggle {
+#guru-toggle {
     border: none;
     border-radius: 999px;
     padding: 0;
@@ -25,13 +25,13 @@
     overflow: hidden;
 }
 
-#summie-toggle:hover {
+#guru-toggle:hover {
     transform: translateY(-2px) scale(1.05);
     box-shadow: 0 6px 20px rgba(245, 158, 11, 0.6), 0 12px 40px rgba(0, 0, 0, 0.2);
 }
 
 /* Main chat panel */
-#summie-panel {
+#guru-panel {
     position: absolute;
     right: 0;
     bottom: 60px;
@@ -49,7 +49,7 @@
 }
 
 /* Header */
-#summie-header {
+#guru-header {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -59,12 +59,12 @@
     flex-shrink: 0;
 }
 
-#summie-header span {
+#guru-header span {
     font-size: 12px;
     opacity: 0.8;
 }
 
-#summie-close {
+#guru-close {
     margin-left: auto;
     border: none;
     background: transparent;
@@ -74,7 +74,7 @@
 }
 
 /* Messages area gets all extra height */
-#summie-messages {
+#guru-messages {
     flex: 1;
     overflow-y: auto;
     padding: 14px;
@@ -84,7 +84,7 @@
 }
 
 /* Message bubbles */
-.summie-message {
+.guru-message {
     width: fit-content;
     max-width: 88%;
     margin-bottom: 10px;
@@ -97,7 +97,7 @@
 }
 
 /* User message: right side, responsive width */
-.summie-user {
+.guru-user {
     align-self: flex-end;
     margin-left: auto;
     margin-right: 0;
@@ -107,7 +107,7 @@
 }
 
 /* Assistant message: left side */
-.summie-assistant {
+.guru-assistant {
     align-self: flex-start;
     margin-right: auto;
     background: white;
@@ -116,7 +116,7 @@
 }
 
 /* Input area stays compact */
-#summie-form {
+#guru-form {
     display: flex;
     gap: 8px;
     padding: 10px;
@@ -125,7 +125,7 @@
     flex-shrink: 0;
 }
 
-#summie-input {
+#guru-input {
     flex: 1;
     min-width: 0;
     padding: 9px 10px;
@@ -134,7 +134,7 @@
     font-size: 14px;
 }
 
-#summie-form button {
+#guru-form button {
     border: none;
     border-radius: 10px;
     padding: 9px 12px;
@@ -144,57 +144,57 @@
     flex-shrink: 0;
 }
 
-#summie-form button:disabled,
-#summie-input:disabled {
+#guru-form button:disabled,
+#guru-input:disabled {
     opacity: 0.65;
     cursor: not-allowed;
 }
 
 /* Real rendered tables */
-.summie-table-wrap {
+.guru-table-wrap {
     max-width: 100%;
     overflow-x: auto;
     margin: 8px 0;
 }
 
-.summie-table {
+.guru-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
     background: white;
 }
 
-.summie-table th,
-.summie-table td {
+.guru-table th,
+.guru-table td {
     border: 1px solid #d1d5db;
     padding: 6px 8px;
     text-align: left;
     vertical-align: top;
 }
 
-.summie-table th {
+.guru-table th {
     background: #f3f4f6;
     font-weight: 700;
 }
 
-.summie-table td {
+.guru-table td {
     background: #ffffff;
 }
 
 /* Mobile */
 @media (max-width: 520px) {
-    #summie-widget {
+    #guru-widget {
         right: 12px;
         bottom: 12px;
     }
 
-    #summie-panel {
+    #guru-panel {
         width: calc(100vw - 24px);
         height: calc(100vh - 100px);
         bottom: 58px;
     }
 
-    .summie-message {
+    .guru-message {
         max-width: 90%;
     }
 }

@@ -41,8 +41,8 @@ class AiChatController extends Controller
             $messages = $memory->getMessages();
 
             // Load webapp help knowledge document for RAG injection.
-            // This lets Summie answer website usage questions in addition to learning guidance.
-            // If webhelper.md is missing, Summie falls back to learning-companion-only mode.
+            // This lets Guru answer website usage questions in addition to learning guidance.
+            // If webhelper.md is missing, Guru falls back to learning-companion-only mode.
             $webContext = '';
             $webhelperPath = base_path('webhelper.md');
             if (file_exists($webhelperPath)) {

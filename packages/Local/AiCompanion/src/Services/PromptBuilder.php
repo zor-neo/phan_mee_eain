@@ -10,7 +10,7 @@ class PromptBuilder
      * @param  array   $messages         Prior conversation messages in this session.
      * @param  string  $latestUserMessage The new user message.
      * @param  string  $webContext        Optional webapp knowledge document (webhelper.md).
-     *                                   When provided, Summie can answer usage questions.
+     *                                   When provided, Guru can answer usage questions.
      */
     public function build(array $messages, string $latestUserMessage, string $webContext = ''): string
     {

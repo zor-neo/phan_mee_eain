@@ -8,20 +8,20 @@
     }
 
     onReady(function () {
-        const toggleButton = document.getElementById('summie-toggle');
-        const closeButton = document.getElementById('summie-close');
-        const panel = document.getElementById('summie-panel');
-        const form = document.getElementById('summie-form');
-        const input = document.getElementById('summie-input');
-        const messagesBox = document.getElementById('summie-messages');
+        const toggleButton = document.getElementById('guru-toggle');
+        const closeButton = document.getElementById('guru-close');
+        const panel = document.getElementById('guru-panel');
+        const form = document.getElementById('guru-form');
+        const input = document.getElementById('guru-input');
+        const messagesBox = document.getElementById('guru-messages');
 
-        const widget = document.getElementById('summie-widget');
+        const widget = document.getElementById('guru-widget');
         const csrfToken = widget ? widget.getAttribute('data-csrf-token') : '';
         const sessionUrl = widget ? widget.getAttribute('data-session-url') : '/ai/session';
         const chatUrl = widget ? widget.getAttribute('data-chat-url') : '/ai/chat';
 
-        if (!toggleButton || !closeButton || !panel || !form || !input || !messagesBox) {
-            console.error('Summie widget elements not found.');
+        if (!toggleButton || !closeButton || !panel || !form || !input || !messagesBox || !widget) {
+            console.error('Guru widget elements not found.');
             return;
         }
 
@@ -73,8 +73,8 @@
                         i++;
                     }
 
-                    html += '<div class="summie-table-wrap">';
-                    html += '<table class="summie-table"><thead><tr>';
+                    html += '<div class="guru-table-wrap">';
+                    html += '<table class="guru-table"><thead><tr>';
 
                     headers.forEach(function (header) {
                         html += '<th>' + escapeHtml(header) + '</th>';
@@ -111,8 +111,8 @@
         function createMessage(role) {
             const bubble = document.createElement('div');
 
-            bubble.className = 'summie-message ' + (
-                role === 'user' ? 'summie-user' : 'summie-assistant'
+            bubble.className = 'guru-message ' + (
+                role === 'user' ? 'guru-user' : 'guru-assistant'
             );
 
             messagesBox.appendChild(bubble);
@@ -205,8 +205,11 @@
             input.value = '';
             setSending(true);
 
-            const loadingBubble = createMessage('assistant');
-            loadingBubble.textContent = 'Summie is thinking...';
+            const loadingBubble = document.createElement('div');
+            loadingBubble.className = 'guru-message guru-assistant';
+            loadingBubble.textContent = 'Guru will enlighten you soon...';
+            messagesBox.appendChild(loadingBubble);
+            messagesBox.scrollTop = messagesBox.scrollHeight;
 
             try {
                 const response = await fetch(chatUrl, {

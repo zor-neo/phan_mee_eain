@@ -1,6 +1,6 @@
-# Summie AI Companion
+# Guru AI Companion
 
-Summie is a standalone Laravel 12 AI learning companion package using Gemini API.
+Guru is a standalone Laravel 12 AI learning companion package using Gemini API.
 
 ## Features
 
@@ -67,9 +67,9 @@ config/ai-companion.php
 
 ## Beginner integration guide for an existing Laravel project
 
-This guide assumes you already have an existing Laravel project and you want to add Summie as a local package.
+This guide assumes you already have an existing Laravel project and you want to add Guru as a local package.
 
-If your project is plain PHP and not Laravel, this package cannot be installed directly as-is. Summie depends on Laravel features such as service providers, Blade views, routes, config publishing, sessions, CSRF protection, and the HTTP client.
+If your project is plain PHP and not Laravel, this package cannot be installed directly as-is. Guru depends on Laravel features such as service providers, Blade views, routes, config publishing, sessions, CSRF protection, and the HTTP client.
 
 ### 1. Check your existing project
 
@@ -112,22 +112,22 @@ After copying, your project should look like this:
 
 ```text
 your-laravel-project/
-├── app/
-├── config/
-├── packages/
-│   └── Local/
-│       └── AiCompanion/
-│           ├── composer.json
-│           ├── config/
-│           ├── public/
-│           ├── resources/
-│           ├── routes/
-│           └── src/
-├── public/
-├── resources/
-├── routes/
-├── artisan
-└── composer.json
+â”œâ”€â”€ app/
+â”œâ”€â”€ config/
+â”œâ”€â”€ packages/
+â”‚   â””â”€â”€ Local/
+â”‚       â””â”€â”€ AiCompanion/
+â”‚           â”œâ”€â”€ composer.json
+â”‚           â”œâ”€â”€ config/
+â”‚           â”œâ”€â”€ public/
+â”‚           â”œâ”€â”€ resources/
+â”‚           â”œâ”€â”€ routes/
+â”‚           â””â”€â”€ src/
+â”œâ”€â”€ public/
+â”œâ”€â”€ resources/
+â”œâ”€â”€ routes/
+â”œâ”€â”€ artisan
+â””â”€â”€ composer.json
 ```
 
 ### 3. Add the local package repository
@@ -206,7 +206,7 @@ This creates:
 config/ai-companion.php
 ```
 
-This file controls whether Summie is enabled, which Gemini keys/models are used, memory size, route prefix, route middleware, and rate limits.
+This file controls whether Guru is enabled, which Gemini keys/models are used, memory size, route prefix, route middleware, and rate limits.
 
 ### 6. Publish the frontend assets
 
@@ -256,7 +256,7 @@ php artisan optimize:clear
 
 ### 8. Add the widget to a Blade page
 
-Open any Blade file where you want Summie to appear.
+Open any Blade file where you want Guru to appear.
 
 For example:
 
@@ -289,9 +289,9 @@ Example:
 </html>
 ```
 
-If your app has a shared layout, adding the include there makes Summie appear on every page that uses that layout.
+If your app has a shared layout, adding the include there makes Guru appear on every page that uses that layout.
 
-If you only want Summie on one page, add the include only to that page.
+If you only want Guru on one page, add the include only to that page.
 
 ### 9. Confirm routes are registered
 
@@ -312,7 +312,7 @@ POST       ai/clear
 If you changed the route prefix in `config/ai-companion.php`, replace `ai` with your custom prefix:
 
 ```bash
-php artisan route:list --path=summie
+php artisan route:list --path=guru
 ```
 
 ### 10. Test in the browser
@@ -331,11 +331,11 @@ http://127.0.0.1:8000
 
 Expected result:
 
-1. A `Summie` button appears near the bottom-right of the page.
+1. A `Guru` button appears near the bottom-right of the page.
 2. Clicking the button opens the chat pane.
 3. A welcome message appears.
 4. Sending a message shows a loading bubble.
-5. Summie replies using the Gemini API.
+5. Guru replies using the Gemini API.
 6. Refreshing the page keeps the current session messages.
 
 Good beginner test prompts:
@@ -352,7 +352,7 @@ The response should feel like a helpful mentor: clear recommendation, simple rea
 
 ### 11. Test enable and disable
 
-To temporarily disable Summie, change `.env`:
+To temporarily disable Guru, change `.env`:
 
 ```env
 AI_COMPANION_ENABLED=false
@@ -385,7 +385,7 @@ php artisan optimize:clear
 
 ### 12. Change the route prefix if needed
 
-By default, Summie uses:
+By default, Guru uses:
 
 ```text
 /ai/session
@@ -408,14 +408,14 @@ Change:
 to:
 
 ```php
-'prefix' => 'summie',
+'prefix' => 'guru',
 ```
 
 Then run:
 
 ```bash
 php artisan optimize:clear
-php artisan route:list --path=summie
+php artisan route:list --path=guru
 ```
 
 The widget uses Laravel named routes, so it should keep working after the prefix changes.
@@ -427,7 +427,7 @@ If the widget does not appear:
 - Make sure `AI_COMPANION_ENABLED=true`.
 - Make sure you added `@include('ai-companion::widget')` to a Blade page that is actually being rendered.
 - Run `php artisan optimize:clear`.
-- Check that the page source contains `id="summie-widget"`.
+- Check that the page source contains `id="guru-widget"`.
 
 If CSS or JavaScript is missing:
 
