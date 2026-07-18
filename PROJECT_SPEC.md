@@ -780,6 +780,8 @@ For:
 * Add `.dockerignore`
 * Test local Docker builds
 * Confirm health endpoints
+* Use `/up` for lightweight platform uptime checks
+* Use `/health` for operator checks of database, cache, and upload-storage configuration
 * Confirm production caching
 * Confirm no secrets are copied
 
@@ -790,6 +792,7 @@ For:
 * Configure secrets
 * Configure database TLS
 * Configure health checks
+* Keep storage write health checks disabled for normal probes unless actively validating R2
 * Validate public behavior
 * Measure cold start and database latency
 

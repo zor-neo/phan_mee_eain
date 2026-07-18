@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HealthCheckController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::redirect('/', 'guest');
 
 Route::view('/report-policy', 'static.report-policy')->name('reportPolicy');
+Route::get('/health', HealthCheckController::class)->name('health');
 
 Route::get('/author-guidelines', function () {
     $guidelines = file_get_contents(base_path('Author Status Rules & Regulations.md'));

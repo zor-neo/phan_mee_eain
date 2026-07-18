@@ -7,7 +7,7 @@
                     <div class="col-5">
                         <div class="card">
                             <div class="card-header">
-                                <h5 class="text-primary">Suggestion (Respect your opinions)</h5>
+                                <h5 class="text-primary">Suggestion (We highly respect your opinions)</h5>
                             </div>
                             <div class="card-body">
                                 <form action={{route('suggestion#Process')}} method="post">

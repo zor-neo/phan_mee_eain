@@ -39,6 +39,7 @@ CACHE_STORE=database
 QUEUE_CONNECTION=database
 LOG_CHANNEL=stderr
 LOG_STACK=stderr
+HEALTH_CHECK_STORAGE_WRITE=false
 FILESYSTEM_DISK=s3
 UPLOADS_DISK=s3
 AWS_ACCESS_KEY_ID=[R2_ACCESS_KEY_ID]
@@ -62,6 +63,12 @@ php artisan migrate
 Uploaded profile images, content images, and content resources use Laravel storage. In production set `UPLOADS_DISK=s3` with Cloudflare R2 credentials. The R2 bucket can stay private because the app serves uploaded images through an authenticated Laravel route and downloads resources after Laravel checks the request.
 
 Leave `AWS_URL` empty unless a public R2/custom domain is intentionally configured. The app does not need a public bucket for the current MVP.
+
+Health checks:
+
+- `/up` is Laravel's lightweight process health endpoint and is suitable for Render's normal health check path.
+- `/health` returns JSON for operator checks. It verifies application boot, database, cache, and upload-storage configuration.
+- Keep `HEALTH_CHECK_STORAGE_WRITE=false` for normal probes. Set it to `true` only when intentionally testing whether the configured upload disk can write/delete a tiny file.
 
 ---
 

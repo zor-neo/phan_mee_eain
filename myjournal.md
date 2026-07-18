@@ -78,8 +78,103 @@ AI_SHARED_SECRET
 |   030 | 2026-07-19 | Configure persistent R2-backed upload storage | `not committed yet` | Completed |
 |   031 | 2026-07-19 | Fix account dropdown avatar and email overflow | `not committed yet` | Completed |
 |   032 | 2026-07-19 | Resolve Composer and npm security advisories | `not committed yet` | Completed |
+|   033 | 2026-07-19 | Add production health check endpoint | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 033 - Add production health check endpoint
+
+### Date and time
+
+```text
+2026-07-19 03:40 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment operator and coding assistant
+```
+
+### Objective
+
+Improve production monitoring and error visibility with a small zero-budget health endpoint suitable for Render and manual operator checks.
+
+### Existing behavior
+
+Laravel already exposed the built-in `/up` endpoint through `bootstrap/app.php`. That endpoint is useful for checking whether the application process can boot, but it does not show whether the database, cache, or upload-storage configuration is healthy.
+
+### Selected solution
+
+Keep `/up` as the lightweight platform health check and add `/health` as a JSON operator endpoint. The new endpoint checks:
+
+* Application boot
+* Database response
+* Cache write/read/delete
+* Upload disk configuration
+* Optional upload disk write/delete when `HEALTH_CHECK_STORAGE_WRITE=true`
+
+The storage write check is disabled by default to avoid adding R2 traffic on every uptime probe.
+
+### Alternative considered
+
+A third-party monitoring tool such as Sentry or a paid uptime monitor could provide richer alerts, but it would add another service and setup burden. The Laravel-native endpoint is easier for the student team to explain and works with Render logs today.
+
+### Commands executed
+
+```powershell
+php -l app\Http\Controllers\HealthCheckController.php
+php -l config\health.php
+php artisan route:list --path=health
+php artisan config:cache
+php artisan route:cache
+php artisan test tests\Feature\HealthCheckTest.php
+php artisan test
+php artisan optimize:clear
+git diff --check
+docker build -t phanmeeein:test .
+```
+
+### Test results
+
+```text
+HealthCheckController syntax: passed
+health.php syntax: passed
+HealthCheckTest: passed, 3 tests, 13 assertions
+route:list --path=health: passed, /health route registered
+config:cache: passed
+route:cache: passed
+optimize:clear: passed
+git diff --check: passed, only line-ending warnings for existing Markdown files
+docker build -t phanmeeein:test .: passed
+php artisan test: timed out after 124 seconds before returning a final result
+```
+
+### Files changed
+
+```text
+app/Http/Controllers/HealthCheckController.php
+config/health.php
+routes/web.php
+.env.example
+README.md
+PROJECT_SPEC.md
+tests/Feature/HealthCheckTest.php
+resources/views/user/home/suggestion.blade.php
+myjournal.md
+```
+
+### Security impact
+
+The endpoint returns high-level statuses only. It does not expose secrets, database hostnames, credentials, full exception messages, stack traces, or filesystem paths. `/health` is public so Render or an uptime checker can call it, but storage write checks stay disabled unless explicitly enabled.
+
+### Deployment impact
+
+No migration is required. Render can continue using `/up` for its health check. Operators can open `/health` after deployment to verify database/cache/upload configuration.
 
 ---
 
