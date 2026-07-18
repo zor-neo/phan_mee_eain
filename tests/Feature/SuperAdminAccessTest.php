@@ -26,6 +26,20 @@ class SuperAdminAccessTest extends TestCase
         $this->assertSame('admin.home.accessControl', $response->name());
     }
 
+    public function test_superadmin_admin_page_contains_logout_csrf_markup(): void
+    {
+        $superadmin = User::factory()->create([
+            'role' => User::ROLE_SUPERADMIN,
+        ]);
+
+        $response = $this->actingAs($superadmin)->get('/admins/page');
+
+        $response->assertOk();
+        $response->assertSee('name="csrf-token"', false);
+        $response->assertSee('action="'.route('logout').'"', false);
+        $response->assertSee('name="_token"', false);
+    }
+
     public function test_superadmin_can_grant_admin_access_to_user(): void
     {
         $superadmin = User::factory()->create([

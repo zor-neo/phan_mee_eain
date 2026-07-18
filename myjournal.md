@@ -87,8 +87,95 @@ AI_SHARED_SECRET
 |   039 | 2026-07-19 | Disable Vite manifest dependency during tests | `not committed yet` | Completed |
 |   040 | 2026-07-19 | Use test-safe drivers in GitHub Actions | `not committed yet` | Completed |
 |   041 | 2026-07-19 | Verify production smoke test and document operations checklist | `not committed yet` | Completed |
+|   042 | 2026-07-19 | Fix admin layout CSRF metadata for superadmin logout | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 042 - Fix admin layout CSRF metadata for superadmin logout
+
+### Date and time
+
+```text
+2026-07-19 11:55 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment operator and coding assistant
+```
+
+### Objective
+
+Investigate the reported `419` page when logging out from the superadmin/admin interface.
+
+### Existing behavior
+
+The user and Breeze layouts included:
+
+```text
+<meta name="csrf-token" content="...">
+```
+
+The admin layout had normal `@csrf` hidden fields on forms, including logout, but did not include the shared CSRF meta tag. That made the admin shell inconsistent with the rest of the application and harder to support for JavaScript or token refresh behavior.
+
+### Selected solution
+
+Add the CSRF meta tag to `resources/views/admin/layout/master.blade.php` and add a focused regression test confirming the superadmin admin page renders:
+
+```text
+csrf meta tag
+logout form action
+logout hidden _token input
+```
+
+### Note about stale pages
+
+If a browser is still on an admin page loaded before a deploy or before a session refresh, the already-rendered hidden logout token can still be stale. Refresh the admin page once after the new deployment, then use Logout again.
+
+### Commands executed
+
+```powershell
+php artisan test tests\Feature\SuperAdminAccessTest.php
+php -l resources\views\admin\layout\master.blade.php
+php -l tests\Feature\SuperAdminAccessTest.php
+composer test
+npm run build
+php artisan config:cache
+php artisan route:cache
+php artisan optimize:clear
+docker build -t phanmeeein:test .
+```
+
+### Test results
+
+```text
+SuperAdminAccessTest: passed, 7 tests, 14 assertions
+Full test suite: passed, 66 tests, 177 assertions
+npm run build: passed
+config:cache, route:cache, optimize:clear: passed
+docker build -t phanmeeein:test .: passed
+```
+
+### Files changed
+
+```text
+resources/views/admin/layout/master.blade.php
+tests/Feature/SuperAdminAccessTest.php
+myjournal.md
+```
+
+### Security impact
+
+No CSRF protection was weakened. Logout remains a POST route with a CSRF token.
+
+### Deployment impact
+
+No migration or environment change is required. Render only needs to deploy the new commit.
 
 ---
 
