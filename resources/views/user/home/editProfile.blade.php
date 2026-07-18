@@ -19,7 +19,7 @@
                             @enderror
                         </div>
                         <div class="col">
-                            @if(Auth::user()->email != 'superadmin@gmail.com' && Auth::user()->name != 'SuperAdmin' )
+                            @if(! Auth::user()->isSuperAdmin())
                                 <div class="row">
                                     <div class="col">
                                         <div class="mb-3">

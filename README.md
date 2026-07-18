@@ -27,6 +27,8 @@ APP_DEBUG=false
 APP_KEY=[REDACTED]
 APP_URL=https://[RENDER_APP_HOST]
 TRUSTED_PROXIES=*
+SUPERADMIN_PASSWORD=[REDACTED]
+DEMO_AUTHOR_PASSWORD=[REDACTED]
 DB_CONNECTION=mysql
 DB_HOST=[AIVEN_HOST]
 DB_PORT=[AIVEN_PORT]
@@ -59,6 +61,14 @@ Run migrations as a controlled release step:
 php artisan migrate --pretend
 php artisan migrate
 ```
+
+Seed or repair demo data as a controlled setup step after migrations:
+
+```bash
+php artisan db:seed --force
+```
+
+The main seeder is idempotent. It creates or repairs the superadmin account, demo author accounts, categories, and demo learning contents without truncating tables.
 
 Uploaded profile images, content images, and content resources use Laravel storage. In production set `UPLOADS_DISK=s3` with Cloudflare R2 credentials. The R2 bucket can stay private because the app serves uploaded images through an authenticated Laravel route and downloads resources after Laravel checks the request.
 

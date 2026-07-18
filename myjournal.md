@@ -79,8 +79,105 @@ AI_SHARED_SECRET
 |   031 | 2026-07-19 | Fix account dropdown avatar and email overflow | `not committed yet` | Completed |
 |   032 | 2026-07-19 | Resolve Composer and npm security advisories | `not committed yet` | Completed |
 |   033 | 2026-07-19 | Add production health check endpoint | `not committed yet` | Completed |
+|   034 | 2026-07-19 | Repair Aiven user and demo data consistency | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 034 - Repair Aiven user and demo data consistency
+
+### Date and time
+
+```text
+2026-07-19 04:25 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment operator and coding assistant
+```
+
+### Objective
+
+Fix the Aiven database inconsistency where demo users, superadmin, categories, and content were missing or could become inconsistent after profile edits.
+
+### Existing behavior
+
+The active MySQL database connection pointed to Aiven `defaultdb`. A read-only audit found:
+
+```text
+users: 0
+categories: 0
+contents: 0
+```
+
+The legacy user profile update controller also forced non-superadmin accounts back to `role=user`, which meant an author or admin could lose access after saving profile information.
+
+### Selected solution
+
+Apply two small fixes:
+
+* Preserve the current role during user profile updates.
+* Detect superadmin by the `superadmin` role helper instead of exact email/name text.
+* Make `DatabaseSeeder` idempotent and call `DemoLearningContentSeeder`.
+
+This allows `php artisan db:seed --force` to repair the production demo data without wiping tables.
+
+### Commands executed
+
+```powershell
+php artisan migrate:status
+php artisan test tests\Feature\DatabaseSeederTest.php
+php artisan test tests\Feature\UserProfileRoleTest.php tests\Feature\SuperAdminAccessTest.php
+php artisan config:cache
+php artisan route:cache
+php artisan optimize:clear
+git diff --check
+docker build -t phanmeeein:test .
+php artisan db:seed --force
+php artisan tinker --execute="[read-only database audit]"
+```
+
+### Test and audit results
+
+```text
+migrate:status: all migrations ran on Aiven
+DatabaseSeederTest: passed, 2 tests, 10 assertions
+UserProfileRoleTest: passed, 2 tests, 8 assertions
+SuperAdminAccessTest: passed, 6 tests, 10 assertions
+config:cache: passed
+route:cache: passed
+optimize:clear: passed
+git diff --check: passed, only line-ending warning for existing journal Markdown
+docker build -t phanmeeein:test .: passed
+Aiven after repair: 1 superadmin, 3 authors, 10 categories, 30 contents
+Content split: 10 education records and 20 article records
+```
+
+### Files changed
+
+```text
+app/Http/Controllers/UserProfileController.php
+resources/views/user/home/editProfile.blade.php
+database/seeders/DatabaseSeeder.php
+tests/Feature/UserProfileRoleTest.php
+tests/Feature/DatabaseSeederTest.php
+.env.example
+README.md
+myjournal.md
+```
+
+### Security impact
+
+No secrets or password values were committed. Environment variables are documented as placeholders only. Superadmin behavior now depends on the stored role value rather than a hard-coded email/name match.
+
+### Deployment impact
+
+No migration is required. Render should redeploy the code fix. Demo data can be repaired with a controlled `php artisan db:seed --force` command after migrations.
 
 ---
 

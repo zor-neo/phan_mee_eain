@@ -19,13 +19,22 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
+        $superadmin = User::firstOrNew(['email' => 'superadmin@gmail.com']);
+        $superadminPassword = env('SUPERADMIN_PASSWORD');
+
+        $superadmin->forceFill([
             'name' => 'SuperAdmin',
-            'email' => 'superadmin@gmail.com',
-            'role'=>'superadmin',
-            'password'=>Hash::make('super1234'),
-            'created_at'=>Carbon::now(),
-            'updated_at'=>Carbon::now(),
+            'role' => User::ROLE_SUPERADMIN,
+            'email_verified_at' => $superadmin->email_verified_at ?: Carbon::now(),
+            'updated_at' => Carbon::now(),
         ]);
+
+        if (! $superadmin->exists || filled($superadminPassword)) {
+            $superadmin->password = Hash::make($superadminPassword ?: 'super1234');
+        }
+
+        $superadmin->save();
+
+        $this->call(DemoLearningContentSeeder::class);
     }
 }

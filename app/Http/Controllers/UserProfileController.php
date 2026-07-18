@@ -156,7 +156,7 @@ class UserProfileController extends Controller
 
     //validate profile
     private function editValidateProcess($request){
-        if(Auth::user()->email == 'superadmin@gmail.com' && Auth::user()->name == 'SuperAdmin'){
+        if(Auth::user()->isSuperAdmin()){
             $request->validate([
             'phone'=>'required|string|max:30',
             'address'=>'required',
@@ -175,7 +175,7 @@ class UserProfileController extends Controller
         }
     }
     private function insertProcess($request){
-         if(Auth::user()->email == 'superadmin@gmail.com' && Auth::user()->name == 'SuperAdmin'){
+         if(Auth::user()->isSuperAdmin()){
             return[
                 'address'=>$request->address,
                 'phone'=>$request->phone,
@@ -188,7 +188,6 @@ class UserProfileController extends Controller
                 'phone'=>$request->phone,
                 'email'=>$request->email,
                 'bio'=>$request->status,
-                'role'=>'user',
             ];
          }
     }
