@@ -83,8 +83,101 @@ AI_SHARED_SECRET
 |   035 | 2026-07-19 | Add expandable long-content previews | `not committed yet` | Completed |
 |   036 | 2026-07-19 | Add production operations and recovery guide | `not committed yet` | Completed |
 |   037 | 2026-07-19 | Add GitHub Actions CI workflow | `not committed yet` | Completed |
+|   038 | 2026-07-19 | Fix CI demo seeder environment handling | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 038 - Fix CI demo seeder environment handling
+
+### Date and time
+
+```text
+2026-07-19 06:20 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment operator and coding assistant
+```
+
+### Objective
+
+Repair the first GitHub Actions run after CI was added.
+
+### Existing behavior
+
+GitHub Actions run `29660300222` failed in the `Laravel tests and frontend build` job at the `Run Laravel tests` step. Public job metadata was visible through the GitHub API, but raw logs required authenticated access.
+
+The same failure was reproduced in a clean Linux container. The failing assertion was in `DatabaseSeederTest`, where the demo author password expected by the test did not match the seeded password.
+
+### Root cause
+
+The seeders read demo passwords directly with `env()`, while the feature test changed values with `putenv()`. That was fragile across environments. Laravel's normal practice is to read environment variables through configuration files and let application code read `config()`.
+
+### Selected solution
+
+Add `config/demo.php` for controlled demo seed passwords and update seeders to read:
+
+```text
+config('demo.superadmin_password')
+config('demo.author_password')
+```
+
+The tests now set those config keys directly, which makes the behavior consistent on local Windows, Linux containers, and GitHub Actions.
+
+### Alternative considered
+
+The workflow could have been changed to export `DEMO_AUTHOR_PASSWORD` before running tests. That would only fix this one CI run and leave the seeders using direct `env()` calls. Moving the values into configuration better matches Laravel conventions and is easier for the student team to explain.
+
+### Commands executed
+
+```powershell
+php artisan test tests\Feature\DatabaseSeederTest.php
+docker run --rm -v C:\Users\kaung\AppData\Local\Temp\phan-ci-a04de8e4bd48410daf0971625570b96a:/app -w /app composer:2 sh -lc "php artisan key:generate --ansi && php artisan config:clear --ansi && php artisan test --stop-on-failure"
+composer test
+npm run build
+php -l config\demo.php
+php -l database\seeders\DatabaseSeeder.php
+php -l database\seeders\DemoLearningContentSeeder.php
+php -l tests\Feature\DatabaseSeederTest.php
+```
+
+### Test results
+
+```text
+DatabaseSeederTest: passed, 2 tests, 10 assertions
+Clean Linux container test run: passed, 65 tests, 173 assertions
+composer test: passed, 65 tests, 173 assertions
+npm run build: passed
+PHP syntax checks: passed
+```
+
+### Files changed
+
+```text
+config/demo.php
+database/seeders/DatabaseSeeder.php
+database/seeders/DemoLearningContentSeeder.php
+tests/Feature/DatabaseSeederTest.php
+myjournal.md
+```
+
+### Security impact
+
+No secrets were added. The config file defines environment variable names only. Real passwords must remain in `.env`, Render environment variables, or a secure operator-managed place.
+
+### Deployment impact
+
+No migration is required. The fix affects demo seeding and automated tests only. The next push should trigger GitHub Actions again and allow Render to use a commit with a passing CI baseline.
+
+### Learning outcome
+
+The team learned why Laravel application code should normally read configuration through `config()` instead of calling `env()` directly. Configuration keeps behavior stable after caching and makes tests easier to control.
 
 ---
 

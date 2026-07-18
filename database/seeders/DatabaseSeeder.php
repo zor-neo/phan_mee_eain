@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         $superadmin = User::firstOrNew(['email' => 'superadmin@gmail.com']);
-        $superadminPassword = env('SUPERADMIN_PASSWORD');
+        $superadminPassword = config('demo.superadmin_password');
 
         $superadmin->forceFill([
             'name' => 'SuperAdmin',

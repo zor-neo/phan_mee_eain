@@ -46,7 +46,7 @@ class DemoLearningContentSeeder extends Seeder
 
     private function authors()
     {
-        $fallbackPassword = env('DEMO_AUTHOR_PASSWORD');
+        $fallbackPassword = config('demo.author_password');
 
         return collect([
             ['name' => 'Demo Author 1', 'email' => 'user1@gmail.com'],

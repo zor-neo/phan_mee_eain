@@ -7,8 +7,10 @@ use Database\Seeders\DatabaseSeeder;
 use Illuminate\Support\Facades\Hash;
 
 test('database seeder restores core demo accounts and content idempotently', function () {
-    config(['app.env' => 'testing']);
-    putenv('DEMO_AUTHOR_PASSWORD=guru2026');
+    config([
+        'app.env' => 'testing',
+        'demo.author_password' => 'guru2026',
+    ]);
 
     $this->seed(DatabaseSeeder::class);
     $this->seed(DatabaseSeeder::class);
@@ -23,12 +25,10 @@ test('database seeder restores core demo accounts and content idempotently', fun
         ->and(Content::count())->toBe(30);
 
     expect(Hash::check('guru2026', User::where('email', 'user1@gmail.com')->first()->password))->toBeTrue();
-
-    putenv('DEMO_AUTHOR_PASSWORD');
 });
 
 test('database seeder does not reset an existing superadmin password without an env value', function () {
-    putenv('SUPERADMIN_PASSWORD');
+    config(['demo.superadmin_password' => null]);
     $originalHash = Hash::make('already-set-password');
 
     User::factory()->create([
