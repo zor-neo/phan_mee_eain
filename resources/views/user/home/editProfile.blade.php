@@ -9,7 +9,7 @@
                         <div class="col-3">
 
                             <img class="img-profile img-thumbnail" id="output"
-                                src="{{ asset(Auth::user()->image == null? 'image/user-male-circle.jpg': 'profile/'.Auth::user()->image) }}">
+                                src="{{ \App\Support\UploadedMedia::url('profile', Auth::user()->image, 'image/user-male-circle.jpg') }}">
 
 
                             <input type="file" name="image" id=""

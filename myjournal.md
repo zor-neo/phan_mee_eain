@@ -75,8 +75,95 @@ AI_SHARED_SECRET
 |   027 | 2026-07-19 | Restore Aiven starter categories | `not committed yet` | Completed |
 |   028 | 2026-07-19 | Seed Aiven demo authors, categories, and learning content | `not committed yet` | Completed |
 |   029 | 2026-07-19 | Display content images proportionately | `not committed yet` | Completed |
+|   030 | 2026-07-19 | Configure persistent R2-backed upload storage | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 030 - Configure persistent R2-backed upload storage
+
+### Date and time
+
+```text
+2026-07-19 02:30 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment operator and coding assistant
+```
+
+### Objective
+
+Move user-uploaded profile images, content images, and content resources away from Render's temporary container filesystem and onto Cloudflare R2 using Laravel's filesystem abstraction.
+
+### Existing behavior
+
+Profile images were stored in `public/profile`, content images were stored in `public/content`, and uploaded resources were stored through the local Laravel disk. This works on a laptop but is not reliable on Render because container files are not persistent across deploys or restarts.
+
+### Selected solution
+
+Add the Laravel S3 filesystem adapter and introduce a small `UploadedMedia` helper. Controllers now store new uploads through the configured uploads disk. In production, Render should set `UPLOADS_DISK=s3` and provide Cloudflare R2 variables. Uploaded images are served through an authenticated Laravel media route, so the R2 bucket can remain private for the MVP.
+
+During verification, the test suite exposed an existing route-loading problem: `routes/web.php` used `require_once` for `user.php` and `admin.php`, so repeated Laravel application rebuilds in one PHP process skipped those route files. The route imports now use normal `require`. The author comment page route was also tightened from `comment/{para?}` to `comment` so `GET /auther/comment/mark-seen` cannot accidentally render the comments page.
+
+### Alternative considered
+
+A public R2 bucket or custom R2 domain could serve images directly from Cloudflare. That can reduce app bandwidth later, but it requires additional public-access configuration. The private-bucket Laravel streaming approach is simpler and safer for the current student deployment.
+
+### Commands executed
+
+```powershell
+composer require league/flysystem-aws-s3-v3:^3.0 --no-interaction
+rg -n "public_path\(|asset\('(profile|content)/|Storage::disk\('local'|move\(public_path" app resources routes config composer.json README.md myjournal.md
+php artisan test tests\Feature\UploadedMediaTest.php
+php artisan test
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan optimize:clear
+docker build -t phanmeeein:test .
+```
+
+### Files changed
+
+```text
+composer.json
+composer.lock
+.env.example
+README.md
+PROJECT_SPEC.md
+config/filesystems.php
+routes/user.php
+routes/web.php
+app/Support/UploadedMedia.php
+app/Http/Controllers/MediaController.php
+app/Http/Controllers/UserProfileController.php
+app/Http/Controllers/Admin/AdminController.php
+app/Http/Controllers/Auther/AutherProfileController.php
+app/Http/Controllers/ContentController.php
+resources/views/... profile and content image references
+tests/Feature/UploadedMediaTest.php
+tests/Feature/StateChangingRouteVerbTest.php
+```
+
+### Security impact
+
+No secrets were committed. The R2 bucket can stay private. Image delivery goes through the authenticated Laravel app route, and uploaded resource downloads continue to require an authenticated request.
+
+### Deployment impact
+
+Render must include `FILESYSTEM_DISK=s3`, `UPLOADS_DISK=s3`, the R2 access key ID, secret access key, bucket name, endpoint, `AWS_DEFAULT_REGION=auto`, and `AWS_USE_PATH_STYLE_ENDPOINT=true`. `AWS_URL` should remain empty unless a public R2 custom domain is added later.
+
+### Remaining work
+
+Existing local-only uploads already stored under `public/profile`, `public/content`, or `storage/app/private/content-resources` are not automatically copied to R2. Users can re-upload those files, or a future migration script can copy known local files into the bucket.
+
+Composer validation is clean in normal mode but strict mode still warns about the existing local `local/ai-companion` `@dev` path package. Docker build also reported existing Composer and npm dependency advisories. Those should be reviewed in a separate dependency-security task instead of being mixed into this storage change.
 
 ---
 

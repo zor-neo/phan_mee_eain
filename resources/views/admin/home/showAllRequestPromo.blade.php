@@ -26,7 +26,7 @@
                                         <tr>
                                             <td class="fw-bold">{{$item->userId}} .</td>
                                             <td style="width: 100px; height: 75px;">
-                                                <img src="{{$item->image != null ? asset('/profile/'. $item->image) : asset('image/user-male-circle.jpg')}}" alt="" class="w-75 h-100" >
+                                                <img src="{{ \App\Support\UploadedMedia::url('profile', $item->image, 'image/user-male-circle.jpg') }}" alt="" class="w-75 h-100" >
                                             </td>
                                             <td class="fw-bold"> {{ $item->name }}</td>
                                             <td class=""> {{ $item->email }}</td>

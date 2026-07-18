@@ -456,7 +456,7 @@ Private files should use:
 
 * Private bucket access
 * Server-side authorization
-* Temporary signed URLs
+* Temporary signed URLs or Laravel streaming responses
 * Bucket-scoped credentials
 * Randomized object keys
 

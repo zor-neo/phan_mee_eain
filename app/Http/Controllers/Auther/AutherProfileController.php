@@ -7,10 +7,10 @@ use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Content;
 use App\Models\ContentResource;
+use App\Support\UploadedMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 use SweetAlert2\Laravel\Swal;
@@ -80,9 +80,7 @@ class AutherProfileController extends Controller
         $data = $this->createProcess($request);
 
         if($request->hasfile('image')){
-            $image = uniqid().$request->file('image')->getClientOriginalName();
-            $request->file('image')->move(public_path().'/content/',$image);
-            $data['image'] = $image;
+            $data['image'] = UploadedMedia::store($request->file('image'), 'content');
         } else {
             $data['image'] = null;
         }
@@ -126,12 +124,8 @@ class AutherProfileController extends Controller
         $data = $this->editProcess($request);
 
         if($request->hasfile('image')){
-            if(file_exists(public_path('content/'.$request->oldImage))){
-                unlink(public_path('content/'.$request->oldImage));}
-
-            $image = uniqid().$request->file('image')->getClientOriginalName();
-            $request->file('image')->move(public_path().'/content/',$image);
-            $data['image'] = $image;
+            UploadedMedia::delete('content', $request->oldImage);
+            $data['image'] = UploadedMedia::store($request->file('image'), 'content');
 
         }else{
             $data['image'] = $request->oldImage ?: null;
@@ -157,13 +151,11 @@ class AutherProfileController extends Controller
         }
 
         foreach ($content->resources as $resource) {
-            Storage::disk('local')->delete($resource->storage_path);
+            UploadedMedia::disk()->delete($resource->storage_path);
         }
 
         $content->delete();
-        if ($image && file_exists(public_path('content/'.$image))) {
-            unlink(public_path('content/'.$image));
-        }
+        UploadedMedia::delete('content', $image);
         Swal::success([
                 'title' => 'Success delete Content']);
         return to_route('autherContent#Page');
@@ -274,13 +266,12 @@ class AutherProfileController extends Controller
                 continue;
             }
 
-            $storedName = Str::uuid()->toString().'_'.$file->getClientOriginalName();
-            Storage::disk('local')->putFileAs('content-resources', $file, $storedName);
+            $storagePath = UploadedMedia::storeResource($file);
 
             ContentResource::create([
                 'content_id' => $content->id,
                 'original_name' => $file->getClientOriginalName(),
-                'storage_path' => 'content-resources/'.$storedName,
+                'storage_path' => $storagePath,
                 'mime_type' => $file->getMimeType() ?: 'application/octet-stream',
                 'extension' => strtolower($file->getClientOriginalExtension() ?: ''),
                 'size_bytes' => $file->getSize(),

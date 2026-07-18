@@ -63,7 +63,7 @@
                     <span class="badge rounded-pill text-bg-light border text-secondary"> View - {{ $actingViewMode }}</span>
                     <div class="dropdown">
                         <button class="btn btn-icon" data-bs-toggle="dropdown" aria-label="Account menu" style="width: 60px; height:60px; ">
-                            <img class="sw-avatar" src="{{asset(Auth::user()->image == null ? 'image/user-male-circle.jpg' : '/profile/'.Auth::user()->image)}}"
+                            <img class="sw-avatar" src="{{ \App\Support\UploadedMedia::url('profile', Auth::user()->image, 'image/user-male-circle.jpg') }}"
                                 alt="Admin Scholar profile picture">
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end shadow-sm">

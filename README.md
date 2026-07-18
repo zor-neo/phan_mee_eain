@@ -39,6 +39,15 @@ CACHE_STORE=database
 QUEUE_CONNECTION=database
 LOG_CHANNEL=stderr
 LOG_STACK=stderr
+FILESYSTEM_DISK=s3
+UPLOADS_DISK=s3
+AWS_ACCESS_KEY_ID=[R2_ACCESS_KEY_ID]
+AWS_SECRET_ACCESS_KEY=[REDACTED]
+AWS_DEFAULT_REGION=auto
+AWS_BUCKET=[R2_BUCKET_NAME]
+AWS_ENDPOINT=https://[CLOUDFLARE_ACCOUNT_ID].r2.cloudflarestorage.com
+AWS_URL=
+AWS_USE_PATH_STYLE_ENDPOINT=true
 AI_COMPANION_ENABLED=true
 GEMINI_API_KEY_1=[REDACTED]
 ```
@@ -50,7 +59,9 @@ php artisan migrate --pretend
 php artisan migrate
 ```
 
-The current app still stores some uploaded profile/content files on the application filesystem. On Render this storage is temporary. Cloudflare R2 or another S3-compatible object store should be added before claiming persistent production uploads.
+Uploaded profile images, content images, and content resources use Laravel storage. In production set `UPLOADS_DISK=s3` with Cloudflare R2 credentials. The R2 bucket can stay private because the app serves uploaded images through an authenticated Laravel route and downloads resources after Laravel checks the request.
+
+Leave `AWS_URL` empty unless a public R2/custom domain is intentionally configured. The app does not need a public bucket for the current MVP.
 
 ---
 

@@ -8,9 +8,9 @@ use App\Models\ContentResource;
 use App\Models\React;
 use App\Models\report;
 use App\Models\Saved;
+use App\Support\UploadedMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class ContentController extends Controller
 {
@@ -70,7 +70,7 @@ class ContentController extends Controller
     {
         abort_unless(Auth::check(), 401);
 
-        $disk = Storage::disk('local');
+        $disk = UploadedMedia::disk();
         abort_unless($disk->exists($resource->storage_path), 404);
 
         return $disk->download($resource->storage_path, $resource->original_name);

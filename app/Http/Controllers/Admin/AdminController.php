@@ -8,6 +8,7 @@ use App\Models\Content;
 use App\Models\promote;
 use App\Models\report;
 use App\Models\User;
+use App\Support\UploadedMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -51,12 +52,7 @@ class AdminController extends Controller
         abort_if(Auth::id() === $user->id, 403);
 
         //delete image file
-        if($image != null){{
-            if(file_exists(public_path('profile/'.$image))){
-                // dd(public_path('profile/'.Auth::user()->image));
-                unlink(public_path('profile/'.$image));
-                };
-            }};
+        UploadedMedia::delete('profile', $image);
 
         $user->delete();
         Swal::success([

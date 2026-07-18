@@ -24,7 +24,7 @@
                                 <!-- User Info -->
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div class="d-flex align-items-center gap-3">
-                                        <img src="{{asset($item->image != null ? '/profile/' . $item->image : 'image/user-male-circle.jpg')}}" class="rounded-circle bg-light border me-3" width="50" height="50" alt="Student">
+                                        <img src="{{ \App\Support\UploadedMedia::url('profile', $item->image, 'image/user-male-circle.jpg') }}" class="rounded-circle bg-light border me-3" width="50" height="50" alt="Student">
                                         <div>
                                             <h5 class="mb-0 fw-bold text-dark fs-5">{{$item->name}}</h5>
                                             <span class="text-muted small"><i class="fas fa-clock me-1"></i>{{$item->created_at->diffForHumans()}}</span>

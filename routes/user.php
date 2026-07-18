@@ -4,6 +4,7 @@ use App\Http\Controllers\Auther\AutherProfileController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ContentController;
 use App\Http\Controllers\guestController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ReactController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SavedController;
@@ -31,6 +32,10 @@ Route::group(['prefix'=>'layout','middleware'=>'readonly.view'],function(){
 
 });
 
+Route::middleware('auth')->get('media/{directory}/{path}', [MediaController::class, 'show'])
+    ->where('path', '.*')
+    ->name('media.show');
+
 //contents
 Route::group(['prefix'=>'content'],function(){
     Route::get('show/contentPage/{find?}',[ContentController::class,'contentPage'])->name('content#Page');
@@ -39,7 +44,7 @@ Route::group(['prefix'=>'content'],function(){
 Route::group(['prefix'=>'auther','middleware'=>'readonly.view'],function(){
     Route::get('playlist',[AutherProfileController::class,'playlistPage'])->name('playlist#Page');
     Route::get('content',[AutherProfileController::class,'contentPage'])->name('autherContent#Page');
-    Route::get('comment/{para?}',[AutherProfileController::class,'commentPage'])->name('comment#Page');
+    Route::get('comment',[AutherProfileController::class,'commentPage'])->name('comment#Page');
     Route::post('comment/mark-seen',[AutherProfileController::class,'markCommentsSeen'])->name('comment.markSeen');
     Route::get('createContent',[AutherProfileController::class,'createContentPage'])->name('createContent#Page');
     Route::post('create',[AutherProfileController::class,'createContentProcess'])->name('createContent#Process');

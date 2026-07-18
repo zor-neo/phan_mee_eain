@@ -56,7 +56,7 @@
                             <!-- show comment -->
                             @foreach ($comments as $item)
                                 <div class="d-flex align-items-center p-3 border-bottom">
-                                    <img src="{{asset($item->image != null ? '/profile/' . $item->image : 'image/user-male-circle.jpg')}}" class="rounded-circle bg-light border me-3" width="40" height="40" alt="Student">
+                                    <img src="{{ \App\Support\UploadedMedia::url('profile', $item->image, 'image/user-male-circle.jpg') }}" class="rounded-circle bg-light border me-3" width="40" height="40" alt="Student">
                                     <div class="flex-grow-1">
                                         <p class="mb-0 small"><span class="fw-bold text-dark">{{$item->name}}</span> commented on <span class="fw-bold text-primary">{{$item->title}}</span></p>
                                     </div>

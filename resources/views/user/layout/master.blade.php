@@ -79,7 +79,7 @@
                         <li class="dropdown-header">
                             <div class="row">
                                 <img class="sw-avatar col-4"
-                                    src="{{ asset(Auth::user()->image == null ? 'image/user-male-circle.jpg' : '/profile/' . Auth::user()->image) }}"
+                                    src="{{ \App\Support\UploadedMedia::url('profile', Auth::user()->image, 'image/user-male-circle.jpg') }}"
                                     alt="Admin Scholar profile picture">
                                 <div class="col-7 offset-1">
                                     <strong> Role - {{ $roleLabel }}</strong>

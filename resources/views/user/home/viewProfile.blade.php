@@ -5,7 +5,7 @@
             <div class="container-lg">
                 <div class="row align-items-center g-5">
                     <div class="card" style="width: 40rem">
-                        <img src="{{asset(Auth::user()->image ==null? 'image/user-male-circle.jpg' : 'profile/'.Auth::user()->image)}}" class="card-img-top m-5 w-50 d-block items-center " alt="..." style="height: 300px" >
+                        <img src="{{ \App\Support\UploadedMedia::url('profile', Auth::user()->image, 'image/user-male-circle.jpg') }}" class="card-img-top m-5 w-50 d-block items-center " alt="..." style="height: 300px" >
                         <div class="card-body">
                             <h5 class="card-title">{{Auth::user()->name}}</h5>
                             <p class="card-text"><i class="fa-solid fa-quote-left"></i>  {{Auth::user()->bio}}<i class="fa-solid fa-quote-right"></i> </p>

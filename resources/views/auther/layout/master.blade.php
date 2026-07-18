@@ -109,7 +109,7 @@
         </div>
         <div class="offcanvas-body d-flex flex-column p-0 overflow-auto h-100">
             <div class="p-4 text-center border-bottom w-100">
-                <img src="{{ asset(Auth::user()->image == null ? 'image/user-male-circle.jpg' : '/profile/' . Auth::user()->image) }}"
+                <img src="{{ \App\Support\UploadedMedia::url('profile', Auth::user()->image, 'image/user-male-circle.jpg') }}"
                     alt="Profile" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
                 <h3 class="fs-5 fw-bold text-dark mb-1">{{ Auth::user()->name }}</h3>
                 <span class="text-muted small d-block mb-3">{{ Auth::user()->role }}</span>

@@ -14,7 +14,7 @@
                         <div class="sw-panel h-100">
                             <label class="form-label fw-bold">Featured Photo <span class="text-muted">(optional)</span></label>
                             <img class="img-fluid rounded border mb-3 w-100" id="output"
-                                src="{{ $content->image ? asset('content/'.$content->image) : asset('content/image/logo.jpg') }}"
+                                src="{{ \App\Support\UploadedMedia::url('content', $content->image, 'content/image/logo.jpg') }}"
                                 alt="Preview">
                             <input type="file" name="image" class="form-control @error('image') is-invalid @enderror"
                                 accept=".png,.jpg,.jpeg,.webp,.gif,image/png,image/jpeg,image/webp,image/gif"

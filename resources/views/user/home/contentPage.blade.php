@@ -66,6 +66,8 @@
                                     $myReact = $content->reacts->firstWhere('user_id', Auth::id());
                                     $myReactType = $myReact->react ?? null;
                                     $isReported = in_array($item->contentId, $activeReportContentIds ?? [], true);
+                                    $authorImageUrl = \App\Support\UploadedMedia::url('profile', $item->userImage, 'image/user-male-circle.jpg');
+                                    $contentImageUrl = \App\Support\UploadedMedia::url('content', $item->contentImage, 'content/image/logo.jpg');
                                 @endphp
 
                                 <article class="card text-center">
@@ -73,7 +75,7 @@
                                         <div class="row g-2 align-items-center">
                                             <div class="col-12 col-md-6 text-start">
                                                 <a href="#" class="text-decoration-none text-dark d-inline-flex align-items-center gap-2">
-                                                    <img src="{{ asset($item->userImage != null ? 'profile/' . $item->userImage : 'image/user-male-circle.jpg') }}"
+                                                    <img src="{{ $authorImageUrl }}"
                                                         alt="..." class="rounded-2"
                                                         style="width: 52px; height: 52px; object-fit: cover;">
                                                     <span>{{ $item->userName }}</span>
@@ -96,9 +98,9 @@
                                         <div class="row g-3 align-items-start">
                                             <div class="col-12 col-lg-5">
                                                 <img class="img-fluid rounded w-100 sw-content-image"
-                                                    src="{{ $item->contentImage ? asset('content/' . $item->contentImage) : asset('content/image/logo.jpg') }}"
+                                                    src="{{ $contentImageUrl }}"
                                                     alt="..." data-bs-toggle="modal" data-bs-target="#imageModal"
-                                                    data-full-src="{{ $item->contentImage ? asset('content/' . $item->contentImage) : asset('content/image/logo.jpg') }}">
+                                                    data-full-src="{{ $contentImageUrl }}">
                                             </div>
                                             <div class="col-12 col-lg-7 text-start" x-data="{ expanded: false }">
                                                 <p class="card-text mb-2">

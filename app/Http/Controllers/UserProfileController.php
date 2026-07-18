@@ -7,6 +7,7 @@ use App\Models\Content;
 use App\Models\promote;
 use App\Models\report;
 use App\Models\User;
+use App\Support\UploadedMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -28,16 +29,8 @@ class UserProfileController extends Controller
          //add image file
          if($request->hasfile('image')){
             //delete image file
-            if(Auth::user()->image != null){{
-                if(file_exists(public_path('profile/'.Auth::user()->image))){
-                    // dd(public_path('profile/'.Auth::user()->image));
-                    unlink(public_path('profile/'.Auth::user()->image));
-                };
-            }}
-
-            $image = uniqid().$request->file('image')->getClientOriginalName();
-            $request->file('image')->move(public_path().'/profile/',$image);
-            $data['image'] = $image;
+            UploadedMedia::delete('profile', Auth::user()->image);
+            $data['image'] = UploadedMedia::store($request->file('image'), 'profile');
 
 
          }else{
