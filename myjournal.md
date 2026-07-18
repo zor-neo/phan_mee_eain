@@ -82,8 +82,86 @@ AI_SHARED_SECRET
 |   034 | 2026-07-19 | Repair Aiven user and demo data consistency | `not committed yet` | Completed |
 |   035 | 2026-07-19 | Add expandable long-content previews | `not committed yet` | Completed |
 |   036 | 2026-07-19 | Add production operations and recovery guide | `not committed yet` | Completed |
+|   037 | 2026-07-19 | Add GitHub Actions CI workflow | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 037 - Add GitHub Actions CI workflow
+
+### Date and time
+
+```text
+2026-07-19 05:35 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment operator and coding assistant
+```
+
+### Objective
+
+Add a GitHub Actions workflow so pushes and pull requests to `main` are checked before they are treated as deploy-ready.
+
+### Existing behavior
+
+Render could deploy from GitHub, and local tests/builds were being run manually. The repository did not yet have a project-owned `.github/workflows` CI file.
+
+### Selected solution
+
+Add `.github/workflows/ci.yml` with two jobs:
+
+* Application job: PHP 8.4, Node 22, Composer install, Laravel tests, config cache, route cache, optimize clear, npm install, Vite build.
+* Docker job: build the production Docker image after the application job passes.
+
+The workflow uses the existing `phpunit.xml` testing configuration, which points tests at in-memory SQLite and avoids using Aiven credentials in CI.
+
+### Alternative considered
+
+A smaller CI workflow could run only `php artisan test`, but that would miss frontend build failures and Dockerfile regressions. A fuller workflow better supports the Render deployment path while still remaining understandable for the student team.
+
+### Commands executed
+
+```powershell
+composer test
+npm run build
+composer validate --no-check-publish
+git diff --check
+docker build -t phanmeeein:test .
+```
+
+### Test results
+
+```text
+composer test: passed, 65 tests, 173 assertions
+npm run build: passed
+composer validate --no-check-publish: valid with warning about local/ai-companion @dev path dependency
+git diff --check: passed, only line-ending warnings for existing Markdown files
+docker build -t phanmeeein:test .: first attempt failed because Docker could not resolve api.github.com; retry passed
+```
+
+### Files changed
+
+```text
+.github/workflows/ci.yml
+README.md
+docs/PRODUCTION_OPERATIONS.md
+PROJECT_SPEC.md
+myjournal.md
+```
+
+### Security impact
+
+The workflow does not use production secrets. Tests use SQLite memory through `phpunit.xml`, and the workflow copies `.env.example` only for local CI bootstrapping.
+
+### Deployment impact
+
+Future pushes and pull requests to `main` will run automated checks on GitHub. Render auto-deploy can still deploy from `main`, but CI now provides visible evidence for test and Docker build status.
 
 ---
 

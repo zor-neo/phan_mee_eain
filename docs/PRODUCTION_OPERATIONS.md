@@ -30,6 +30,15 @@ git diff --check
 docker build -t phanmeeein:test .
 ```
 
+GitHub Actions repeats the key checks after a push or pull request:
+
+```text
+Laravel tests
+Laravel config and route cache validation
+Vite production asset build
+Docker production image build
+```
+
 For a migration release:
 
 ```powershell
@@ -269,4 +278,3 @@ Before any risky production database operation:
 4. Do not commit database dumps to Git.
 
 Future work should add a documented backup and restore procedure before claiming production-grade recovery.
-

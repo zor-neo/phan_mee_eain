@@ -802,6 +802,7 @@ For:
 * Add GitHub Actions
 * Add automated tests
 * Add Docker build validation
+* Run Laravel cache validation in CI
 * Configure Render auto-deployment
 * Demonstrate visible production change
 * Record failed-CI evidence

@@ -82,6 +82,10 @@ Health checks:
 
 Production operations, smoke tests, and recovery notes are documented in [`docs/PRODUCTION_OPERATIONS.md`](docs/PRODUCTION_OPERATIONS.md).
 
+## CI
+
+GitHub Actions runs on pushes and pull requests to `main`. The workflow installs Composer and Node dependencies, runs the Laravel test suite, validates config and route caching, builds frontend assets, and builds the Docker image.
+
 ---
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
