@@ -4,6 +4,7 @@
     bottom: 24px;
     z-index: 9999;
     font-family: Arial, sans-serif;
+    max-width: 100vw;
 }
 
 #guru-panel[hidden] {
@@ -38,7 +39,7 @@
     width: 480px;
     height: 660px;
     max-width: calc(100vw - 32px);
-    max-height: calc(100vh - 110px);
+    max-height: calc(100dvh - 110px);
     background: white;
     border: 1px solid #ddd;
     border-radius: 16px;
@@ -76,11 +77,14 @@
 /* Messages area gets all extra height */
 #guru-messages {
     flex: 1;
+    min-height: 0;
     overflow-y: auto;
+    overscroll-behavior: contain;
     padding: 14px;
     background: #f9fafb;
     display: flex;
     flex-direction: column;
+    -webkit-overflow-scrolling: touch;
 }
 
 /* Message bubbles */
@@ -183,18 +187,51 @@
 
 /* Mobile */
 @media (max-width: 520px) {
+    body.guru-chat-open {
+        overflow: hidden;
+    }
+
     #guru-widget {
+        bottom: max(12px, env(safe-area-inset-bottom));
         right: 12px;
-        bottom: 12px;
+    }
+
+    #guru-toggle {
+        height: 72px;
+        width: 72px;
     }
 
     #guru-panel {
-        width: calc(100vw - 24px);
-        height: calc(100vh - 100px);
-        bottom: 58px;
+        border-radius: 14px;
+        bottom: calc(84px + env(safe-area-inset-bottom));
+        height: min(620px, calc(100dvh - 108px - env(safe-area-inset-bottom)));
+        left: 12px;
+        max-height: calc(100dvh - 108px - env(safe-area-inset-bottom));
+        max-width: none;
+        position: fixed;
+        right: 12px;
+        width: auto;
+    }
+
+    #guru-header {
+        padding: 12px;
+    }
+
+    #guru-messages {
+        padding: 12px;
+    }
+
+    #guru-form {
+        gap: 6px;
+        padding: 8px;
+    }
+
+    #guru-form button {
+        padding-left: 10px;
+        padding-right: 10px;
     }
 
     .guru-message {
-        max-width: 90%;
+        max-width: 92%;
     }
 }

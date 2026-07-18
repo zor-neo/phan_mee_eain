@@ -21,6 +21,8 @@ body {
   font-family: Inter, "Noto Sans Myanmar", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   font-size: 0.97rem;
   line-height: 1.58;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .mm-text {
@@ -57,7 +59,21 @@ h1, h2, h3, h4, h5, h6 {
   backdrop-filter: blur(12px);
 }
 
-.navbar-brand { color: var(--sw-primary); font-size: 1.38rem; letter-spacing: -0.02em; }
+.sw-navbar .container-lg {
+  min-width: 0;
+}
+
+.navbar-brand {
+  color: var(--sw-primary);
+  display: block;
+  font-size: 1.38rem;
+  letter-spacing: 0;
+  max-width: min(100%, 28rem);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .navbar-nav { gap: 0.25rem; }
 .navbar .nav-link {
   color: var(--sw-text);
@@ -68,6 +84,10 @@ h1, h2, h3, h4, h5, h6 {
 .navbar .nav-link.active, .navbar .nav-link:hover { color: var(--sw-primary); }
 
 @media (max-width: 991.98px) {
+  .sw-navbar .navbar-brand {
+    max-width: calc(100vw - 96px);
+  }
+
   .sw-navbar .navbar-collapse {
     text-align: right;
   }
@@ -674,6 +694,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @media (max-width: 767px) {
+  .navbar-brand {
+    font-size: 1.08rem;
+  }
+
   .sw-hero { padding: 1.85rem 0; }
   .sw-section { padding: 1.9rem 0; }
   .display-4 { font-size: 2.25rem; }

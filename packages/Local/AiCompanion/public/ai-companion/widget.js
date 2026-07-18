@@ -172,12 +172,17 @@
 
         function openPanel() {
             panel.hidden = false;
+            document.body.classList.add('guru-chat-open');
             loadSession();
-            input.focus();
+
+            if (!window.matchMedia('(max-width: 520px)').matches) {
+                input.focus();
+            }
         }
 
         function closePanel() {
             panel.hidden = true;
+            document.body.classList.remove('guru-chat-open');
         }
 
         function togglePanel() {
@@ -275,7 +280,10 @@
                 addMessage('assistant', 'The Great Guru is temporarily unavailable. Please try again later.');
             } finally {
                 setSending(false);
-                input.focus();
+
+                if (!window.matchMedia('(max-width: 520px)').matches) {
+                    input.focus();
+                }
             }
         });
     });

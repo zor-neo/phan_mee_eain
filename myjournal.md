@@ -88,8 +88,99 @@ AI_SHARED_SECRET
 |   040 | 2026-07-19 | Use test-safe drivers in GitHub Actions | `not committed yet` | Completed |
 |   041 | 2026-07-19 | Verify production smoke test and document operations checklist | `not committed yet` | Completed |
 |   042 | 2026-07-19 | Fix admin layout CSRF metadata for superadmin logout | `not committed yet` | Completed |
+|   043 | 2026-07-19 | Improve mobile navbar and Guru chat panel layout | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 043 - Improve mobile navbar and Guru chat panel layout
+
+### Date and time
+
+```text
+2026-07-19
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment tester and coding assistant
+```
+
+### Objective
+
+Fix the mobile layout problem where a long top title could stretch the page horizontally and where the Guru AI chat panel could open partly outside the viewport with mixed scrolling behind it.
+
+### Existing behavior
+
+On small screens, a long navbar brand/title could force the layout wider than the phone viewport, creating extra white space on the right. The Guru chat panel also used a desktop-style popup size, a large floating button, `100vh` sizing, and automatic input focus. On mobile this could make the panel feel out of screen, trigger the keyboard too early, and allow the page behind the chat to scroll at the same time as the chat messages.
+
+### Selected solution
+
+The page shell now prevents horizontal overflow and the navbar brand is constrained with ellipsis on small screens. The mobile Guru chat panel now behaves more like a viewport-bounded fixed panel: it uses left/right spacing, `100dvh`, safe-area-aware bottom spacing, a smaller mobile toggle button, and message-area-only scrolling. Opening the chat adds a temporary body class to stop background scrolling, and mobile open/send flows avoid automatic input focus so the keyboard does not immediately resize the panel.
+
+Package and published Guru widget assets were updated together so Render serves the same fixed code that exists in the local package source.
+
+### Alternative considered
+
+One alternative was to keep the existing desktop-like floating panel and only reduce its width. That would have been smaller, but it would not fully solve the mixed-scroll and mobile keyboard behavior. The selected change is still local to CSS/JS assets and is easier for the student team to explain than a larger widget rewrite.
+
+### Commands executed
+
+```powershell
+php artisan test tests\Feature\ResponsiveLayoutAssetsTest.php
+php -l tests\Feature\ResponsiveLayoutAssetsTest.php
+composer test
+npm run build
+php artisan config:cache
+php artisan route:cache
+php artisan optimize:clear
+docker build -t phanmeeein:test .
+php artisan serve --host=127.0.0.1 --port=8011
+Invoke-WebRequest http://127.0.0.1:8011
+```
+
+### Test results
+
+```text
+ResponsiveLayoutAssetsTest: passed, 2 tests, 12 assertions
+Full test suite: passed, 68 tests, 189 assertions
+npm run build: passed
+config:cache, route:cache, optimize:clear: passed
+docker build -t phanmeeein:test .: passed
+Local guest page request on port 8011: HTTP 200
+```
+
+### Browser check note
+
+A Playwright screenshot attempt was made for a narrow mobile viewport, but the temporary Playwright command was not available in the local npx environment during this session. The automated asset regression test was added to keep the important mobile CSS and JS safeguards from being accidentally removed.
+
+### Files changed
+
+```text
+public/user/css/style.css
+packages/Local/AiCompanion/public/ai-companion/widget.css
+packages/Local/AiCompanion/public/ai-companion/widget.js
+public/vendor/ai-companion/ai-companion/widget.css
+public/vendor/ai-companion/ai-companion/widget.js
+tests/Feature/ResponsiveLayoutAssetsTest.php
+myjournal.md
+```
+
+### Security impact
+
+No authentication, authorization, CSRF, database, or secret-handling behavior changed.
+
+### Performance impact
+
+No server-side performance impact is expected. The browser receives small CSS and JavaScript layout changes only.
+
+### Deployment impact
+
+No migration or environment variable change is required. Render only needs to deploy the new commit. After deployment, mobile testers should hard-refresh the page or open a new private browser tab to avoid stale CSS or JavaScript.
 
 ---
 
