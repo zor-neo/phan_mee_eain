@@ -1,0 +1,35 @@
+<?php
+
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\profileController;
+use App\Http\Controllers\CategoryController;
+use Illuminate\Support\Facades\Route;
+
+Route::group(['prefix'=>'admins','middleware'=>'admin'],function(){
+    Route::get('page',[AdminController::class,'adminHome'])->name('adminHome');
+    Route::get('all/user',[AdminController::class,'allUser'])->name('allUserPage');
+    Route::get('all/author',[AdminController::class,'allAuthor'])->name('allAuthorPage');
+    Route::get('user/report',[AdminController::class,'allReport'])->name('allReportPage');
+    Route::get('user/suggest',[AdminController::class,'allSuggest'])->name('allSuggestPage');
+    Route::get('requset/promo',[AdminController::class,'requestToPromo'])->name('requestToPromoPage');
+    Route::get('demote/{id?}',[AdminController::class,'demoteProcess'])->name('demote#Process');
+    Route::get('promotion/{id?}',[AdminController::class,'promotion'])->name('promote.process');
+    Route::get('delete/user/{id?}/{image:?}',[AdminController::class,'deleteUser'])->name('deleteUserProcess');
+    Route::get('reportedContent/{id?}',[AdminController::class,'reportedContent'])->name('reportedContentPage');
+
+
+
+});
+
+Route::group(['prefix'=>'profile'],function(){
+    Route::get('show',[profileController::class,'showProfile'])->name('adminProfile#Page');
+
+});
+
+//category
+Route::group(['prefix'=>'category'],function(){
+    Route::get('page',[CategoryController::class,'categoryPage'])->name('category#Page');
+    Route::post('Process',[CategoryController::class,'createProcess'])->name('create#Process');
+    Route::get('delete/{id}',[CategoryController::class,'deleteProcess'])->name('delete#Process');
+});
+

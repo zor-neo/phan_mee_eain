@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Dashboard</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        /* User Custom Colors */
+        .text-purple { color: #76b9d8 !important; }
+        .bg-purple { background-color: #76b9d8 !important; color: #fff; }
+        .bg-purple:hover { background-color: #4db4e3 !important; color: #fff; }
+        
+        .bg-orange { background-color: #1c8233 !important; color: #fff; }
+        .bg-orange:hover { background-color: #156627 !important; color: #fff; }
+
+        /* Sidebar Control */
+        .sidebar {
+            width: 250px;
+            z-index: 1045;
+        }
+        @media (min-width: 768px) {
+            .main-content {
+                margin-left: 250px;
+                width: calc(100% - 250px);
+            }
+        }
+
+        .nav-link-custom { transition: 0.3s; }
+        .nav-link-custom:hover, .nav-link-custom.active {
+            background-color: #f4f4f4;
+            color: #333 !important;
+        }
+
+        .icon-btn {
+            width: 40px; height: 40px;
+            background-color: #f4f4f4;
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 5px; color: #333; cursor: pointer; transition: 0.3s; border: none;
+        }
+        .icon-btn:hover { background-color: #e0e0e0; }
+
+        .dashboard-icon {
+            font-size: 3rem;
+            color: #76b9d8;
+            opacity: 0.2;
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+        }
+
+        /* Notification Dropdown Customizations */
+        .dropdown-menu-custom {
+            width: 320px;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="d-flex">
+
+    <!-- Sidebar -->
+    <aside class="sidebar offcanvas-md offcanvas-start bg-white border-end position-fixed h-100" tabindex="-1" id="sidebarMenu">
+        <div class="offcanvas-header d-md-none border-bottom">
+            <h5 class="offcanvas-title fw-bold text-dark">Menu</h5>
+            <button type="button" class="btn-close shadow-none" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column p-0 overflow-auto h-100">
+            <!-- Super Admin Profile -->
+            <div class="p-4 text-center border-bottom w-100">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=King&backgroundColor=76b9d8" alt="Profile" class="rounded-circle mb-3 border border-3 border-primary" style="width: 80px; height: 80px; object-fit: cover;">
+                <h3 class="fs-5 fw-bold text-dark mb-1">System Boss</h3>
+                <span class="text-danger fw-bold small d-block mb-3">Super Admin</span>
+            </div>
+            
+            <nav class="nav flex-column py-3 w-100">
+                <a href="#" class="nav-link text-dark fw-bold py-3 px-4 d-flex align-items-center nav-link-custom active"><i class="fas fa-home text-purple fs-5 me-3" style="width: 25px;"></i> dashboard</a>
+                <a href="#" class="nav-link text-secondary py-3 px-4 d-flex align-items-center nav-link-custom"><i class="fas fa-user-tie text-purple fs-5 me-3" style="width: 25px;"></i> manage admins</a>
+                <a href="#" class="nav-link text-secondary py-3 px-4 d-flex align-items-center nav-link-custom"><i class="fas fa-users text-purple fs-5 me-3" style="width: 25px;"></i> manage users</a>
+                <a href="#" class="nav-link text-secondary py-3 px-4 d-flex align-items-center nav-link-custom"><i class="fas fa-file-video text-purple fs-5 me-3" style="width: 25px;"></i> all contents</a>
+                <a href="#" class="nav-link text-secondary py-3 px-4 d-flex align-items-center nav-link-custom"><i class="fas fa-cogs text-purple fs-5 me-3" style="width: 25px;"></i> system settings</a>
+                <a href="#" class="nav-link text-secondary py-3 px-4 d-flex align-items-center nav-link-custom mt-auto"><i class="fas fa-right-from-bracket text-purple fs-5 me-3" style="width: 25px;"></i> logout</a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content d-flex flex-column min-vh-100 w-100">
+        
+        <!-- Header -->
+        <header class="bg-white border-bottom sticky-top py-3 px-3 px-md-4 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <button class="icon-btn d-md-none me-3" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu"><i class="fas fa-bars"></i></button>
+                <a href="#" class="text-dark fw-bold fs-4 text-decoration-none">Super Admin.</a>
+            </div>
+            
+            <div class="d-flex gap-2 align-items-center">
+                
+                <!-- Notification Bell with Dropdown -->
+                <div class="dropdown">
+                    <button class="icon-btn position-relative bg-transparent border-0" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="fas fa-bell fs-5"></i>
+                        <!-- Red Dot -->
+                        <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
+                    </button>
+                    
+                    <!-- Admin Requests Dropdown Menu -->
+                    <div class="dropdown-menu dropdown-menu-end shadow-sm dropdown-menu-custom p-0 rounded-3 mt-2">
+                        <!-- Dropdown Header -->
+                        <div class="bg-light p-3 border-bottom d-flex justify-content-between align-items-center rounded-top">
+                            <h6 class="mb-0 fw-bold text-dark"><i class="fas fa-user-plus text-purple me-2"></i>Admin Requests</h6>
+                            <span class="badge bg-danger rounded-pill">2 New</span>
+                        </div>
+                        
+                        <!-- Dropdown Body (Scrollable) -->
+                        <div class="overflow-auto" style="max-height: 300px;">
+                            
+                            <!-- Request 1 -->
+                            <div class="p-3 border-bottom bg-white">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Zaw" class="rounded-circle border me-2" width="40" height="40" alt="User">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark fs-6">Zaw Zaw</h6>
+                                        <small class="text-muted">zaw@example.com</small>
+                                    </div>
+                                </div>
+                                <p class="small text-muted mb-2">Requested to be a <span class="fw-bold text-dark">Teacher (Admin)</span>.</p>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm bg-orange text-white flex-grow-1 fw-bold">Approve</button>
+                                    <button class="btn btn-sm btn-outline-danger flex-grow-1 fw-bold">Reject</button>
+                                </div>
+                            </div>
+
+                            <!-- Request 2 -->
+                            <div class="p-3 border-bottom bg-white">
+                                <div class="d-flex align-items-center mb-2">
+                                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Mya" class="rounded-circle border me-2" width="40" height="40" alt="User">
+                                    <div>
+                                        <h6 class="mb-0 fw-bold text-dark fs-6">Mya Mya</h6>
+                                        <small class="text-muted">mya.teacher@example.com</small>
+                                    </div>
+                                </div>
+                                <p class="small text-muted mb-2">Requested to be a <span class="fw-bold text-dark">Teacher (Admin)</span>.</p>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm bg-orange text-white flex-grow-1 fw-bold">Approve</button>
+                                    <button class="btn btn-sm btn-outline-danger flex-grow-1 fw-bold">Reject</button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                        <!-- Dropdown Footer -->
+                        <div class="p-2 text-center bg-light rounded-bottom">
+                            <a href="#" class="text-decoration-none small fw-bold text-primary">View All Requests</a>
+                        </div>
+                    </div>
+                </div>
+                <!-- End of Notification Dropdown -->
+
+                <button class="icon-btn"><i class="fas fa-gear"></i></button>
+            </div>
+        </header>
+
+        <!-- Home Section -->
+        <section class="p-4 p-md-5 flex-grow-1">
+            
+            <h1 class="fs-3 fw-bold text-secondary mb-4"><i class="fas fa-globe text-purple me-2"></i> System Overview</h1>
+
+            <!-- Grid Boxes -->
+            <div class="row g-4 mb-5">
+                
+                <!-- Welcome Box -->
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card p-4 border shadow-sm h-100 rounded-3 bg-white position-relative overflow-hidden">
+                        <h4 class="fs-5 fw-bold text-dark mb-1">Hello, Boss!</h4>
+                        <p class="text-muted small mb-4">Super Admin</p>
+                        <a href="#" class="btn bg-purple w-100 mt-auto text-white">System Logs</a>
+                        <i class="fas fa-shield-alt dashboard-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Total Admins Stats -->
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card p-4 border shadow-sm h-100 rounded-3 bg-white position-relative overflow-hidden">
+                        <h2 class="fs-1 fw-bold text-dark mb-0">15</h2>
+                        <p class="text-muted small fw-bold mb-4">Active Admins (Teachers)</p>
+                        <a href="#" class="btn bg-orange w-100 mt-auto text-white">Manage Admins</a>
+                        <i class="fas fa-user-tie dashboard-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Total Students Stats -->
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card p-4 border shadow-sm h-100 rounded-3 bg-white position-relative overflow-hidden">
+                        <h2 class="fs-1 fw-bold text-dark mb-0">1.2k</h2>
+                        <p class="text-muted small fw-bold mb-4">Registered Students</p>
+                        <a href="#" class="btn bg-orange w-100 mt-auto text-white">Manage Users</a>
+                        <i class="fas fa-users dashboard-icon"></i>
+                    </div>
+                </div>
+
+                <!-- Platform Contents Stats -->
+                <div class="col-12 col-md-6 col-lg-3">
+                    <div class="card p-4 border shadow-sm h-100 rounded-3 bg-white position-relative overflow-hidden">
+                        <h2 class="fs-1 fw-bold text-dark mb-0">340</h2>
+                        <p class="text-muted small fw-bold mb-4">Total Videos & Quizzes</p>
+                        <a href="#" class="btn bg-orange w-100 mt-auto text-white">View Library</a>
+                        <i class="fas fa-photo-video dashboard-icon"></i>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Platform Recent Activity Section -->
+            <div class="row">
+                <div class="col-12 col-lg-8">
+                    <div class="card border shadow-sm rounded-3 bg-white">
+                        <div class="card-header bg-white border-bottom py-3 d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0 fw-bold text-dark fs-5"><i class="fas fa-chart-line text-purple me-2"></i> Platform Activity Logs</h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <!-- Log Item 1 -->
+                            <div class="d-flex align-items-center p-3 border-bottom">
+                                <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-video text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="mb-0 small"><span class="fw-bold text-dark">Tutor B</span> uploaded a new video to <span class="fw-bold text-primary">English Class</span>.</p>
+                                </div>
+                                <span class="text-muted small ms-2">10 mins ago</span>
+                            </div>
+
+                            <!-- Log Item 2 -->
+                            <div class="d-flex align-items-center p-3 border-bottom">
+                                <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-user-plus text-success"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="mb-0 small"><span class="fw-bold text-dark">Zaw Zaw</span> requested admin privileges.</p>
+                                </div>
+                                <span class="text-muted small ms-2">1 hour ago</span>
+                            </div>
+
+                            <!-- Log Item 3 -->
+                            <div class="d-flex align-items-center p-3">
+                                <div class="bg-light rounded-circle d-flex justify-content-center align-items-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-trash text-danger"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <p class="mb-0 small"><span class="fw-bold text-dark">Tutor A</span> deleted a comment in <span class="fw-bold text-primary">Japan Playlist</span>.</p>
+                                </div>
+                                <span class="text-muted small ms-2">3 hours ago</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- System Status -->
+                <div class="col-12 col-lg-4 mt-4 mt-lg-0">
+                    <div class="card border shadow-sm rounded-3 bg-white h-100">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h5 class="mb-0 fw-bold text-dark fs-5"><i class="fas fa-server text-secondary me-2"></i> System Status</h5>
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column justify-content-center">
+                            
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="small fw-bold text-secondary">Server Storage</span>
+                                    <span class="small fw-bold text-dark">65%</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-purple" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small class="text-muted mt-1 d-block">325 GB used of 500 GB</small>
+                            </div>
+
+                            <div>
+                                <div class="d-flex justify-content-between mb-1">
+                                    <span class="small fw-bold text-secondary">Database Load</span>
+                                    <span class="small fw-bold text-success">Low</span>
+                                </div>
+                                <div class="progress" style="height: 8px;">
+                                    <div class="progress-bar bg-success" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <!-- Bootstrap JS (Required for Dropdown to work) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

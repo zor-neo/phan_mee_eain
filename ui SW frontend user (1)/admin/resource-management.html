@@ -1,0 +1,408 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Resource Management - Spring Wisdom</title>
+    <link href="../vendor/fonts/spring-wisdom-fonts.css" rel="stylesheet">
+    <link href="../vendor/cdn/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../vendor/cdn/cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg sw-navbar sticky-top">
+    <div class="container-lg">
+        <a class="navbar-brand fw-bold" href="/home.php">Spring Wisdom</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item"><a class="nav-link " href="/home.php">Home</a></li>
+                                                                <li class="nav-item"><a class="nav-link active" href="/admin-dashboard.php">Dashboard</a></li>
+                                        <li class="nav-item"><a class="nav-link " href="/admin-feed.php">Updates</a></li>
+                                                                                                                            <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle " href="#" role="button" data-bs-toggle="dropdown">Role Switch</a>
+                            <ul class="dropdown-menu">
+                                                                    <li>
+                                        <form method="post" action="/role-switch.php">
+                                            <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                            <input type="hidden" name="role" value="admin">
+                                            <button class="dropdown-item" type="submit">Sign in as Admin</button>
+                                        </form>
+                                    </li>
+                                                                    <li>
+                                        <form method="post" action="/role-switch.php">
+                                            <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                            <input type="hidden" name="role" value="author">
+                                            <button class="dropdown-item" type="submit">Sign in as Author</button>
+                                        </form>
+                                    </li>
+                                                                    <li>
+                                        <form method="post" action="/role-switch.php">
+                                            <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                            <input type="hidden" name="role" value="user">
+                                            <button class="dropdown-item" type="submit">Sign in as User</button>
+                                        </form>
+                                    </li>
+                                                            </ul>
+                        </li>
+                                                </ul>
+            <div class="d-flex align-items-center gap-3">
+                                                            <span class="badge rounded-pill text-bg-light border text-secondary">Admin</span>
+                                        <div class="dropdown">
+                        <button class="btn btn-icon" data-bs-toggle="dropdown" aria-label="Account menu">
+                            <img class="sw-avatar" src="../assets/images/default-avatar.svg" alt="Admin Scholar profile picture">
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li class="dropdown-header">
+                                <strong>Admin Scholar</strong>
+                                <div class="small">admin@spring.test</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/account.php"><i class="bi bi-person me-2"></i>Account Information</a></li>
+                            <li><a class="dropdown-item" href="/change-password.php"><i class="bi bi-lock me-2"></i>Change Password</a></li>
+                                                                                    <li><a class="dropdown-item" href="/settings.php"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                            </div>
+        </div>
+    </div>
+</nav>
+<main>
+    <div class="admin-shell container-lg">
+    <button class="btn btn-outline-sw mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#adminSidebar" aria-expanded="true" aria-controls="adminSidebar">
+        <i class="bi bi-layout-sidebar me-2"></i>Admin Menu
+    </button>
+    <div class="row g-4 align-items-start">
+        <aside class="col-lg-3 collapse show" id="adminSidebar">
+            <div class="admin-sidebar-card">
+                <div class="mb-3 px-2">
+                    <strong class="d-block">Admin Portal</strong>
+                    <span class="small sw-muted">Spring Wisdom Management</span>
+                </div>
+                <nav class="nav flex-column gap-1">
+                                            <a class="nav-link " href="/admin-dashboard.php">
+                            <i class="bi bi-speedometer2 me-2"></i>Overview                        </a>
+                                            <a class="nav-link " href="/admin-users.php">
+                            <i class="bi bi-people me-2"></i>User Accounts                        </a>
+                                            <a class="nav-link " href="/admin-authors.php">
+                            <i class="bi bi-person-badge me-2"></i>Author Accounts                        </a>
+                                            <a class="nav-link active" href="/admin-resource-management.php">
+                            <i class="bi bi-collection me-2"></i>Resource Management                        </a>
+                                            <a class="nav-link " href="/admin-reports.php">
+                            <i class="bi bi-flag me-2"></i>Reports                        </a>
+                                            <a class="nav-link " href="/admin-messages.php">
+                            <i class="bi bi-envelope me-2"></i>Messages                        </a>
+                                            <a class="nav-link " href="/admin-author-requests.php">
+                            <i class="bi bi-person-plus me-2"></i>Author Requests                        </a>
+                                            <a class="nav-link " href="/admin-create-feed.php">
+                            <i class="bi bi-rss me-2"></i>Create Admin Feed                        </a>
+                                    </nav>
+            </div>
+        </aside>
+        <div class="col-lg-9 admin-content">
+<section class="container-lg py-5">
+    <div class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-end mb-4">
+        <div>
+            <h1 class="display-6 fw-bold mb-1">Resource Management</h1>
+            <p class="sw-muted mb-0">Manage content categories used by Browse, Archives, and author publishing workflows.</p>
+        </div>
+        <span class="badge sw-badge">8 categories</span>
+    </div>
+
+    <div class="sw-panel mb-4">
+        <h2 class="h4 fw-bold mb-3"><i class="bi bi-plus-circle text-primary"></i> Add Category</h2>
+        <form method="post" class="row g-3 align-items-end">
+            <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">            <input type="hidden" name="action" value="create_category">
+            <div class="col-md-4">
+                <label class="form-label">Category name</label>
+                <input class="form-control" name="name" maxlength="80" required placeholder="Example: Research Skills">
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Description</label>
+                <input class="form-control" name="description" maxlength="260" placeholder="Optional internal note for admins and authors">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-sw-primary w-100">Add</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="sw-panel">
+        <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+            <div>
+                <h2 class="h4 fw-bold mb-1"><i class="bi bi-collection text-primary"></i> Current Categories</h2>
+                <p class="small sw-muted mb-0">Renaming a category also updates existing content assigned to that category.</p>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Content</th>
+                        <th>Status</th>
+                        <th class="text-end">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                                                                    <tr>
+                            <td style="min-width: 220px;">
+                                <form id="categoryForm1" method="post">
+                                    <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                    <input type="hidden" name="action" value="update_category">
+                                    <input type="hidden" name="category_id" value="1">
+                                </form>
+                                <input class="form-control" form="categoryForm1" name="name" value="Historical Archives" maxlength="80" required>
+                            </td>
+                            <td style="min-width: 260px;">
+                                <input class="form-control" form="categoryForm1" name="description" value="" maxlength="260">
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill text-bg-light border text-secondary">3</span>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" form="categoryForm1" type="checkbox" name="is_active" id="categoryActive1" checked>
+                                    <label class="form-check-label small" for="categoryActive1">Active</label>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-sw" form="categoryForm1">Update</button>
+                            </td>
+                        </tr>
+                                                                    <tr>
+                            <td style="min-width: 220px;">
+                                <form id="categoryForm2" method="post">
+                                    <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                    <input type="hidden" name="action" value="update_category">
+                                    <input type="hidden" name="category_id" value="2">
+                                </form>
+                                <input class="form-control" form="categoryForm2" name="name" value="Philosophy" maxlength="80" required>
+                            </td>
+                            <td style="min-width: 260px;">
+                                <input class="form-control" form="categoryForm2" name="description" value="" maxlength="260">
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill text-bg-light border text-secondary">4</span>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" form="categoryForm2" type="checkbox" name="is_active" id="categoryActive2" checked>
+                                    <label class="form-check-label small" for="categoryActive2">Active</label>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-sw" form="categoryForm2">Update</button>
+                            </td>
+                        </tr>
+                                                                    <tr>
+                            <td style="min-width: 220px;">
+                                <form id="categoryForm3" method="post">
+                                    <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                    <input type="hidden" name="action" value="update_category">
+                                    <input type="hidden" name="category_id" value="3">
+                                </form>
+                                <input class="form-control" form="categoryForm3" name="name" value="Logic &amp; Reason" maxlength="80" required>
+                            </td>
+                            <td style="min-width: 260px;">
+                                <input class="form-control" form="categoryForm3" name="description" value="" maxlength="260">
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill text-bg-light border text-secondary">3</span>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" form="categoryForm3" type="checkbox" name="is_active" id="categoryActive3" checked>
+                                    <label class="form-check-label small" for="categoryActive3">Active</label>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-sw" form="categoryForm3">Update</button>
+                            </td>
+                        </tr>
+                                                                    <tr>
+                            <td style="min-width: 220px;">
+                                <form id="categoryForm4" method="post">
+                                    <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                    <input type="hidden" name="action" value="update_category">
+                                    <input type="hidden" name="category_id" value="4">
+                                </form>
+                                <input class="form-control" form="categoryForm4" name="name" value="Scientific Method" maxlength="80" required>
+                            </td>
+                            <td style="min-width: 260px;">
+                                <input class="form-control" form="categoryForm4" name="description" value="" maxlength="260">
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill text-bg-light border text-secondary">5</span>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" form="categoryForm4" type="checkbox" name="is_active" id="categoryActive4" checked>
+                                    <label class="form-check-label small" for="categoryActive4">Active</label>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-sw" form="categoryForm4">Update</button>
+                            </td>
+                        </tr>
+                                                                    <tr>
+                            <td style="min-width: 220px;">
+                                <form id="categoryForm5" method="post">
+                                    <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                    <input type="hidden" name="action" value="update_category">
+                                    <input type="hidden" name="category_id" value="5">
+                                </form>
+                                <input class="form-control" form="categoryForm5" name="name" value="Literature Collections" maxlength="80" required>
+                            </td>
+                            <td style="min-width: 260px;">
+                                <input class="form-control" form="categoryForm5" name="description" value="" maxlength="260">
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill text-bg-light border text-secondary">0</span>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" form="categoryForm5" type="checkbox" name="is_active" id="categoryActive5" checked>
+                                    <label class="form-check-label small" for="categoryActive5">Active</label>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-sw" form="categoryForm5">Update</button>
+                            </td>
+                        </tr>
+                                                                    <tr>
+                            <td style="min-width: 220px;">
+                                <form id="categoryForm6" method="post">
+                                    <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                    <input type="hidden" name="action" value="update_category">
+                                    <input type="hidden" name="category_id" value="6">
+                                </form>
+                                <input class="form-control" form="categoryForm6" name="name" value="Daily Challenges" maxlength="80" required>
+                            </td>
+                            <td style="min-width: 260px;">
+                                <input class="form-control" form="categoryForm6" name="description" value="" maxlength="260">
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill text-bg-light border text-secondary">3</span>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" form="categoryForm6" type="checkbox" name="is_active" id="categoryActive6" checked>
+                                    <label class="form-check-label small" for="categoryActive6">Active</label>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-sw" form="categoryForm6">Update</button>
+                            </td>
+                        </tr>
+                                                                    <tr>
+                            <td style="min-width: 220px;">
+                                <form id="categoryForm7" method="post">
+                                    <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                    <input type="hidden" name="action" value="update_category">
+                                    <input type="hidden" name="category_id" value="7">
+                                </form>
+                                <input class="form-control" form="categoryForm7" name="name" value="IT and Technology" maxlength="80" required>
+                            </td>
+                            <td style="min-width: 260px;">
+                                <input class="form-control" form="categoryForm7" name="description" value="" maxlength="260">
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill text-bg-light border text-secondary">0</span>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" form="categoryForm7" type="checkbox" name="is_active" id="categoryActive7" checked>
+                                    <label class="form-check-label small" for="categoryActive7">Active</label>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-sw" form="categoryForm7">Update</button>
+                            </td>
+                        </tr>
+                                                                    <tr>
+                            <td style="min-width: 220px;">
+                                <form id="categoryForm8" method="post">
+                                    <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                    <input type="hidden" name="action" value="update_category">
+                                    <input type="hidden" name="category_id" value="8">
+                                </form>
+                                <input class="form-control" form="categoryForm8" name="name" value="Languages" maxlength="80" required>
+                            </td>
+                            <td style="min-width: 260px;">
+                                <input class="form-control" form="categoryForm8" name="description" value="" maxlength="260">
+                            </td>
+                            <td>
+                                <span class="badge rounded-pill text-bg-light border text-secondary">0</span>
+                            </td>
+                            <td>
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" form="categoryForm8" type="checkbox" name="is_active" id="categoryActive8" checked>
+                                    <label class="form-check-label small" for="categoryActive8">Active</label>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <button class="btn btn-sm btn-outline-sw" form="categoryForm8">Update</button>
+                            </td>
+                        </tr>
+                                    </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+        </div>
+    </div>
+</div>
+</main>
+<footer class="sw-footer mt-5">
+    <div class="container-lg py-5">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <a class="footer-brand fw-bold" href="/home.php">Spring Wisdom</a>
+                <p class="small sw-muted mt-2 mb-3">Preserving knowledge for focused digital learning through curated readings, author contributions, and responsible moderation.</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="footer-icon-link" href="/contact.php" aria-label="Contact Spring Wisdom"><i class="bi bi-envelope"></i></a>
+                    <a class="footer-icon-link" href="/help-center.php" aria-label="Help Center"><i class="bi bi-chat-left-text"></i></a>
+                    <a class="footer-icon-link" href="/admin-feed.php" aria-label="Platform updates"><i class="bi bi-megaphone"></i></a>
+                </div>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h2 class="footer-heading">Explore</h2>
+                <ul class="footer-links">
+                    <li><a href="/home.php">Home</a></li>
+                    <li><a href="/browse.php">Browse</a></li>
+                    <li><a href="/archives.php">All Archives</a></li>
+                    <li><a href="/admin-feed.php">Updates</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h2 class="footer-heading">Support</h2>
+                <ul class="footer-links">
+                    <li><a href="/contact.php">Contact Us</a></li>
+                    <li><a href="/report-policy.php">Report Policy</a></li>
+                    <li><a href="/author-guidelines.php">Author Guidelines</a></li>
+                    <li><a href="/help-center.php">Help Center</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3">
+                <h2 class="footer-heading">Contact</h2>
+                <address class="small sw-muted mb-0" id="contact">
+                    Spring Wisdom Learning Portal<br>
+                    Student Final Project Demo<br>
+                    Email: <a href="mailto:contact@springwisdom.test">contact@springwisdom.test</a>
+                </address>
+            </div>
+        </div>
+        <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between gap-2 mt-4 pt-4">
+            <p class="small sw-muted mb-0">&copy; 2026 Spring Wisdom. All rights reserved.</p>
+            <div class="d-flex flex-wrap gap-3 small">
+                <a href="/privacy-policy.php">Privacy Policy</a>
+                <a href="/terms.php">Terms of Use</a>
+                <a href="/accessibility.php">Accessibility</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="../vendor/cdn/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/static-router.js"></script>
+</body>
+</html>
+
+
+
+

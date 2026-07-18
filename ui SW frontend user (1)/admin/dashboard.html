@@ -1,0 +1,316 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Dashboard - Spring Wisdom</title>
+    <link href="../vendor/fonts/spring-wisdom-fonts.css" rel="stylesheet">
+    <link href="../vendor/cdn/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../vendor/cdn/cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="../assets/css/style.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg sw-navbar sticky-top">
+    <div class="container-lg">
+        <a class="navbar-brand fw-bold" href="/home.php">Spring Wisdom</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                                    <li class="nav-item"><a class="nav-link " href="/home.php">Home</a></li>
+                                                                <li class="nav-item"><a class="nav-link active" href="/admin-dashboard.php">Dashboard</a></li>
+                                        <li class="nav-item"><a class="nav-link " href="/admin-feed.php">Updates</a></li>
+                                                                                                                            <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle " href="#" role="button" data-bs-toggle="dropdown">Role Switch</a>
+                            <ul class="dropdown-menu">
+                                                                    <li>
+                                        <form method="post" action="/role-switch.php">
+                                            <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                            <input type="hidden" name="role" value="admin">
+                                            <button class="dropdown-item" type="submit">Sign in as Admin</button>
+                                        </form>
+                                    </li>
+                                                                    <li>
+                                        <form method="post" action="/role-switch.php">
+                                            <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                            <input type="hidden" name="role" value="author">
+                                            <button class="dropdown-item" type="submit">Sign in as Author</button>
+                                        </form>
+                                    </li>
+                                                                    <li>
+                                        <form method="post" action="/role-switch.php">
+                                            <input type="hidden" name="csrf_token" value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96">                                            <input type="hidden" name="role" value="user">
+                                            <button class="dropdown-item" type="submit">Sign in as User</button>
+                                        </form>
+                                    </li>
+                                                            </ul>
+                        </li>
+                                                </ul>
+            <div class="d-flex align-items-center gap-3">
+                                                            <span class="badge rounded-pill text-bg-light border text-secondary">Admin</span>
+                                        <div class="dropdown">
+                        <button class="btn btn-icon" data-bs-toggle="dropdown" aria-label="Account menu">
+                            <img class="sw-avatar" src="../assets/images/default-avatar.svg" alt="Admin Scholar profile picture">
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            <li class="dropdown-header">
+                                <strong>Admin Scholar</strong>
+                                <div class="small">admin@spring.test</div>
+                            </li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/account.php"><i class="bi bi-person me-2"></i>Account Information</a></li>
+                            <li><a class="dropdown-item" href="/change-password.php"><i class="bi bi-lock me-2"></i>Change Password</a></li>
+                                                                                    <li><a class="dropdown-item" href="/settings.php"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item text-danger" href="/logout.php"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+                        </ul>
+                    </div>
+                            </div>
+        </div>
+    </div>
+</nav>
+<main>
+    <div class="admin-shell container-lg">
+    <button class="btn btn-outline-sw mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#adminSidebar" aria-expanded="true" aria-controls="adminSidebar">
+        <i class="bi bi-layout-sidebar me-2"></i>Admin Menu
+    </button>
+    <div class="row g-4 align-items-start">
+        <aside class="col-lg-3 collapse show" id="adminSidebar">
+            <div class="admin-sidebar-card">
+                <div class="mb-3 px-2">
+                    <strong class="d-block">Admin Portal</strong>
+                    <span class="small sw-muted">Spring Wisdom Management</span>
+                </div>
+                <nav class="nav flex-column gap-1">
+                                            <a class="nav-link active" href="/admin-dashboard.php">
+                            <i class="bi bi-speedometer2 me-2"></i>Overview                        </a>
+                                            <a class="nav-link " href="/admin-users.php">
+                            <i class="bi bi-people me-2"></i>User Accounts                        </a>
+                                            <a class="nav-link " href="/admin-authors.php">
+                            <i class="bi bi-person-badge me-2"></i>Author Accounts                        </a>
+                                            <a class="nav-link " href="/admin-resource-management.php">
+                            <i class="bi bi-collection me-2"></i>Resource Management                        </a>
+                                            <a class="nav-link " href="/admin-reports.php">
+                            <i class="bi bi-flag me-2"></i>Reports                        </a>
+                                            <a class="nav-link " href="/admin-messages.php">
+                            <i class="bi bi-envelope me-2"></i>Messages                        </a>
+                                            <a class="nav-link " href="/admin-author-requests.php">
+                            <i class="bi bi-person-plus me-2"></i>Author Requests                        </a>
+                                            <a class="nav-link " href="/admin-create-feed.php">
+                            <i class="bi bi-rss me-2"></i>Create Admin Feed                        </a>
+                                    </nav>
+            </div>
+        </aside>
+        <div class="col-lg-9 admin-content">
+<section class="container-lg py-5">
+    <div class="mb-4">
+        <h1 class="display-6 fw-bold">Admin Landing Overview</h1>
+        <p class="sw-muted">System health, moderation, author requests, messages, and analytics.</p>
+    </div>
+    <div class="row g-3 mb-5">
+                    <div class="col-md-6 col-xl">
+                <div class="sw-panel metric-card h-100">
+                    <span class="small text-uppercase sw-muted">users</span>
+                    <strong class="d-block">3</strong>
+                </div>
+            </div>
+                    <div class="col-md-6 col-xl">
+                <div class="sw-panel metric-card h-100">
+                    <span class="small text-uppercase sw-muted">authors</span>
+                    <strong class="d-block">4</strong>
+                </div>
+            </div>
+                    <div class="col-md-6 col-xl">
+                <div class="sw-panel metric-card h-100">
+                    <span class="small text-uppercase sw-muted">contents</span>
+                    <strong class="d-block">18</strong>
+                </div>
+            </div>
+                    <div class="col-md-6 col-xl">
+                <div class="sw-panel metric-card h-100">
+                    <span class="small text-uppercase sw-muted">reports</span>
+                    <strong class="d-block">1</strong>
+                </div>
+            </div>
+                    <div class="col-md-6 col-xl">
+                <div class="sw-panel metric-card h-100">
+                    <span class="small text-uppercase sw-muted">requests</span>
+                    <strong class="d-block">0</strong>
+                </div>
+            </div>
+            </div>
+    <div class="row g-4">
+        <div class="col-xl-8">
+            <div class="sw-panel mb-4">
+                <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
+                    <div>
+                        <h2 class="h4 fw-bold mb-1"><i class="bi bi-graph-up text-primary"></i> Whole Web Content Overview</h2>
+                        <p class="small sw-muted mb-0">Site-wide publishing volume, categories, author coverage, and latest activity.</p>
+                    </div>
+                    <span class="badge sw-badge">Admin-wide</span>
+                </div>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4"><div class="border rounded p-3 h-100"><span class="small text-uppercase sw-muted">Total contents</span><strong class="d-block fs-4">18</strong></div></div>
+                    <div class="col-md-4"><div class="border rounded p-3 h-100"><span class="small text-uppercase sw-muted">Published</span><strong class="d-block fs-4">18</strong></div></div>
+                    <div class="col-md-4"><div class="border rounded p-3 h-100"><span class="small text-uppercase sw-muted">Hidden</span><strong class="d-block fs-4">0</strong></div></div>
+                    <div class="col-md-4"><div class="border rounded p-3 h-100"><span class="small text-uppercase sw-muted">Categories</span><strong class="d-block fs-4">5</strong></div></div>
+                    <div class="col-md-4"><div class="border rounded p-3 h-100"><span class="small text-uppercase sw-muted">Authors with content</span><strong class="d-block fs-4">4</strong></div></div>
+                    <div class="col-md-4"><div class="border rounded p-3 h-100"><span class="small text-uppercase sw-muted">Latest content</span><strong class="d-block fs-5">2026-05-15</strong></div></div>
+                </div>
+                                    <div class="row g-4">
+                        <div class="col-lg-5">
+                            <h3 class="h6 fw-bold">Categories Pie Chart</h3>
+                            <div id="siteCategoryLegend" class="sw-chart-legend"></div>
+                            <div class="sw-chart-box">
+                                <canvas id="siteCategoryChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="col-lg-7">
+                            <h3 class="h6 fw-bold">Posting Frequency</h3>
+                            <div class="sw-chart-box">
+                                <canvas id="siteFrequencyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                            </div>
+            <div class="sw-panel mb-4">
+                <h2 class="h4 fw-bold mb-3"><i class="bi bi-flag text-primary"></i> Reported Articles</h2>
+                                    <div class="border rounded p-3 mb-3">
+                        <strong>AWS learning</strong>
+                        <p class="small sw-muted mb-2">Reported by Maya Reader for Misleading information</p>
+                        <a class="btn btn-sm btn-outline-sw" href="/admin-reports.php">Review Report</a>
+                    </div>
+                            </div>
+            <div class="sw-panel">
+                <h2 class="h4 fw-bold mb-3"><i class="bi bi-bar-chart text-primary"></i> Analytics</h2>
+                <p class="small sw-muted mb-2">Content coverage</p>
+                <div class="progress mb-3"><div class="progress-bar" style="width: 72%"></div></div>
+                <p class="small sw-muted mb-2">Author request resolution</p>
+                <div class="progress"><div class="progress-bar" style="width: 48%"></div></div>
+            </div>
+        </div>
+        <div class="col-xl-4">
+            <div class="sw-panel mb-4">
+                <h2 class="h4 fw-bold mb-3"><i class="bi bi-person-plus text-primary"></i> Author Requests</h2>
+                                <a href="/admin-author-requests.php" class="fw-semibold">View all requests</a>
+            </div>
+            <div class="sw-panel">
+                <h2 class="h4 fw-bold mb-3"><i class="bi bi-envelope text-primary"></i> Messages</h2>
+                                    <div class="border-bottom pb-3 mb-3">
+                        <strong>View my verified achievement from Amazon Web Services Training and Certification!</strong>
+                        <p class="small sw-muted mb-0">From Maya Reader</p>
+                    </div>
+                            </div>
+        </div>
+    </div>
+</section>
+<script src="../assets/vendor/chart.umd.min.js"></script>
+<script>
+const siteChartColors = ['#465f8a', '#b1cafb', '#665881', '#565f71', '#a3bcec', '#d0bfee'];
+const siteCategoryLegendPlugin = {
+  id: 'siteCategoryLegend',
+  afterUpdate(chart) {
+    const legend = document.getElementById('siteCategoryLegend');
+    if (!legend) return;
+
+    const items = chart.options.plugins.legend.labels.generateLabels(chart);
+    legend.innerHTML = items.map(item => `
+      <span class="sw-chart-legend-item">
+        <span class="sw-chart-legend-swatch" style="background:${item.fillStyle}"></span>
+        <span>${item.text}</span>
+      </span>
+    `).join('');
+  }
+};
+new Chart(document.getElementById('siteCategoryChart'), {
+  type: 'pie',
+  data: {
+    labels: ["Daily Challenges","Historical Archives","Logic & Reason","Philosophy","Scientific Method"],
+    datasets: [{ data: [3,3,3,4,5], backgroundColor: siteChartColors }]
+  },
+  plugins: [siteCategoryLegendPlugin],
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: { padding: { top: 4 } },
+    plugins: {
+      legend: {
+        display: false
+      }
+    }
+  }
+});
+new Chart(document.getElementById('siteFrequencyChart'), {
+  type: 'line',
+  data: {
+    labels: ["2026-05-01","2026-05-02","2026-05-03","2026-05-04","2026-05-05","2026-05-06","2026-05-07","2026-05-08","2026-05-09","2026-05-10","2026-05-11","2026-05-12","2026-05-13","2026-05-14","2026-05-15"],
+    datasets: [{ label: 'Posts', data: [1,1,1,1,1,1,1,1,1,1,2,3,1,1,1], borderColor: '#465f8a', backgroundColor: 'rgba(70,95,138,.14)', tension: .35, fill: true }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+  }
+});
+</script>
+        </div>
+    </div>
+</div>
+</main>
+<footer class="sw-footer mt-5">
+    <div class="container-lg py-5">
+        <div class="row g-4">
+            <div class="col-lg-5">
+                <a class="footer-brand fw-bold" href="/home.php">Spring Wisdom</a>
+                <p class="small sw-muted mt-2 mb-3">Preserving knowledge for focused digital learning through curated readings, author contributions, and responsible moderation.</p>
+                <div class="d-flex flex-wrap gap-2">
+                    <a class="footer-icon-link" href="/contact.php" aria-label="Contact Spring Wisdom"><i class="bi bi-envelope"></i></a>
+                    <a class="footer-icon-link" href="/help-center.php" aria-label="Help Center"><i class="bi bi-chat-left-text"></i></a>
+                    <a class="footer-icon-link" href="/admin-feed.php" aria-label="Platform updates"><i class="bi bi-megaphone"></i></a>
+                </div>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h2 class="footer-heading">Explore</h2>
+                <ul class="footer-links">
+                    <li><a href="/home.php">Home</a></li>
+                    <li><a href="/browse.php">Browse</a></li>
+                    <li><a href="/archives.php">All Archives</a></li>
+                    <li><a href="/admin-feed.php">Updates</a></li>
+                </ul>
+            </div>
+            <div class="col-6 col-lg-2">
+                <h2 class="footer-heading">Support</h2>
+                <ul class="footer-links">
+                    <li><a href="/contact.php">Contact Us</a></li>
+                    <li><a href="/report-policy.php">Report Policy</a></li>
+                    <li><a href="/author-guidelines.php">Author Guidelines</a></li>
+                    <li><a href="/help-center.php">Help Center</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-3">
+                <h2 class="footer-heading">Contact</h2>
+                <address class="small sw-muted mb-0" id="contact">
+                    Spring Wisdom Learning Portal<br>
+                    Student Final Project Demo<br>
+                    Email: <a href="mailto:contact@springwisdom.test">contact@springwisdom.test</a>
+                </address>
+            </div>
+        </div>
+        <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between gap-2 mt-4 pt-4">
+            <p class="small sw-muted mb-0">&copy; 2026 Spring Wisdom. All rights reserved.</p>
+            <div class="d-flex flex-wrap gap-3 small">
+                <a href="/privacy-policy.php">Privacy Policy</a>
+                <a href="/terms.php">Terms of Use</a>
+                <a href="/accessibility.php">Accessibility</a>
+            </div>
+        </div>
+    </div>
+</footer>
+<script src="../vendor/cdn/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="../assets/js/main.js"></script>
+<script src="../assets/js/static-router.js"></script>
+</body>
+</html>
+
+
+
+
