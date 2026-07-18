@@ -1,5 +1,7 @@
 # PhanMeeEin
 
+[![CI](https://github.com/zor-neo/phan_mee_eain/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/zor-neo/phan_mee_eain/actions/workflows/ci.yml)
+
 PhanMeeEin is a Laravel 12 student learning platform. This repository includes a Docker setup for deploying the main Laravel application to Render.
 
 ## Docker and Render
@@ -82,9 +84,13 @@ Health checks:
 
 Production operations, smoke tests, and recovery notes are documented in [`docs/PRODUCTION_OPERATIONS.md`](docs/PRODUCTION_OPERATIONS.md).
 
+The live student MVP is expected to be checked after every deploy with the production smoke-test flow in [`docs/DEMO_CHECKLIST.md`](docs/DEMO_CHECKLIST.md).
+
 ## CI
 
 GitHub Actions runs on pushes and pull requests to `main`. The workflow installs Composer and Node dependencies, runs the Laravel test suite, validates config and route caching, builds frontend assets, and builds the Docker image.
+
+Latest CI status is visible from the badge above or the [GitHub Actions workflow page](https://github.com/zor-neo/phan_mee_eain/actions/workflows/ci.yml).
 
 ---
 

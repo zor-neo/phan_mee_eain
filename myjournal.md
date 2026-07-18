@@ -86,8 +86,128 @@ AI_SHARED_SECRET
 |   038 | 2026-07-19 | Fix CI demo seeder environment handling | `not committed yet` | Completed |
 |   039 | 2026-07-19 | Disable Vite manifest dependency during tests | `not committed yet` | Completed |
 |   040 | 2026-07-19 | Use test-safe drivers in GitHub Actions | `not committed yet` | Completed |
+|   041 | 2026-07-19 | Verify production smoke test and document operations checklist | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 041 - Verify production smoke test and document operations checklist
+
+### Date and time
+
+```text
+2026-07-19 07:10 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment operator and coding assistant
+```
+
+### Objective
+
+Carry the post-CI release checklist forward by checking production, documenting monitoring, documenting backups, and adding a presentation-day demo checklist.
+
+### Existing behavior
+
+The CI workflow was green for commit `ed8ff06`, but the production smoke-test evidence and monitoring/backup steps were not yet recorded in one current checklist.
+
+### Production checks performed
+
+```text
+Production URL: https://gurus.onrender.com
+Latest green CI commit checked locally: ed8ff06
+GitHub Actions run: 29661418179
+```
+
+Checks:
+
+```text
+/health: HTTP 200, status ok
+database health: ok, responded in 80 ms
+cache health: ok, responded in 266 ms
+uploads health: skipped write test, disk s3
+homepage: HTTP 200, title Phan Mee Ein
+user1@gmail.com login: HTTP 302 redirect to /user/home
+authenticated user home: HTTP 200
+footer Help Center hook: present with data-guru-open
+Guru widget: present
+first-party user CSS/JS/widget assets: HTTP 200
+author content page for user1@gmail.com: HTTP 200
+AI session before message: HTTP 200, 0 messages
+AI chat POST: HTTP 200
+AI session after message: HTTP 200, 2 messages
+latest saved AI message role: assistant
+/admins/access-control as normal demo author: redirected to /user/home
+```
+
+The `/admin/access-control` path returned 404 because the actual Laravel route is `/admins/access-control`.
+
+### Selected solution
+
+Add:
+
+```text
+README CI badge and workflow link
+docs/DEMO_CHECKLIST.md
+monitoring routine in docs/PRODUCTION_OPERATIONS.md
+manual backup and restore rehearsal notes in docs/PRODUCTION_OPERATIONS.md
+production smoke evidence notes in docs/PRODUCTION_OPERATIONS.md
+```
+
+### Remaining manual check
+
+Full superadmin login was not automated because the superadmin password is private and must not be guessed or recorded. The protected route was checked with a normal demo author account and correctly redirected away from access control.
+
+### Commands executed
+
+```powershell
+git status --short
+git rev-parse --short HEAD
+Invoke-RestMethod https://api.github.com/repos/zor-neo/phan_mee_eain/actions/runs?per_page=1
+Invoke-WebRequest https://gurus.onrender.com/health
+Invoke-WebRequest https://gurus.onrender.com/
+Invoke-WebRequest https://gurus.onrender.com/login
+Invoke-WebRequest https://gurus.onrender.com/user/home
+Invoke-WebRequest https://gurus.onrender.com/ai/session
+Invoke-WebRequest https://gurus.onrender.com/ai/chat
+Invoke-WebRequest https://gurus.onrender.com/auther/content
+Invoke-WebRequest https://gurus.onrender.com/admins/access-control
+```
+
+### Files changed
+
+```text
+README.md
+docs/DEMO_CHECKLIST.md
+docs/PRODUCTION_OPERATIONS.md
+myjournal.md
+```
+
+### Security impact
+
+No secrets were added. The demo checklist explicitly tells the team to keep superadmin credentials outside Git and documentation. The backup procedure uses placeholders only.
+
+### Deployment impact
+
+Documentation-only change. No migration or Render environment change is required.
+
+### Learning outcome
+
+The team now has a repeatable difference between:
+
+```text
+CI evidence
+Render production status
+application health checks
+authenticated smoke tests
+manual backup/recovery preparation
+presentation-day demo flow
+```
 
 ---
 

@@ -131,6 +131,48 @@ HEALTH_CHECK_STORAGE_WRITE=false
 
 Set it to `true` only when intentionally validating that the configured upload disk can write and delete a tiny file.
 
+## Monitoring Routine
+
+This project uses a zero-budget student deployment, so monitoring is intentionally simple.
+
+After every deploy:
+
+1. Confirm GitHub Actions is green for the deployed commit.
+2. Confirm Render shows the same commit as live.
+3. Open `/up`.
+4. Open `/health`.
+5. Check Render logs for new `ERROR`, `CRITICAL`, or repeated `500` entries.
+6. Send one authenticated AI smoke-test message.
+7. Upload or change one test image only when intentionally validating R2 writes.
+
+Daily during active demo preparation:
+
+1. Open the public homepage.
+2. Open `/health`.
+3. Login with a demo account.
+4. Confirm an image-backed content card renders.
+5. Confirm the AI chat pane opens.
+
+Weekly during active demo preparation:
+
+1. Review Render deploy history.
+2. Review GitHub Actions history.
+3. Review Aiven storage and connection usage.
+4. Review R2 object count and storage usage.
+5. Export a database backup if important demo data changed.
+
+Suggested log searches in Render:
+
+```text
+500
+ERROR
+CRITICAL
+SQLSTATE
+Vite manifest not found
+Gemini
+S3
+```
+
 ## Production Smoke Test
 
 After Render deploys a new commit:
@@ -278,3 +320,63 @@ Before any risky production database operation:
 4. Do not commit database dumps to Git.
 
 Future work should add a documented backup and restore procedure before claiming production-grade recovery.
+
+## Manual Backup Procedure
+
+Use this before migrations, demo-data repair, or major content changes.
+
+### Aiven console option
+
+1. Open Aiven Console.
+2. Select the MySQL service.
+3. Use the backup or export feature available on the active plan.
+4. Download the backup outside the repository.
+5. Name it with the date and purpose.
+
+Example filename:
+
+```text
+phanmeeein-aiven-before-demo-YYYY-MM-DD.sql
+```
+
+### MySQL client option
+
+Run from a trusted machine that has the production database credentials.
+
+Do not paste the real password into documentation or commit history.
+
+```powershell
+mysqldump --host=[AIVEN_HOST] --port=[AIVEN_PORT] --user=[AIVEN_USER] --password --single-transaction --set-gtid-purged=OFF [AIVEN_DATABASE] > phanmeeein-aiven-backup-YYYY-MM-DD.sql
+```
+
+Store the dump outside Git.
+
+### Restore rehearsal
+
+For learning and demo safety, rehearse restore only against a separate test database.
+
+Never restore over production unless the team has explicitly decided to replace production data.
+
+Safe restore rehearsal outline:
+
+```powershell
+mysql --host=[TEST_HOST] --port=[TEST_PORT] --user=[TEST_USER] --password [TEST_DATABASE] < phanmeeein-aiven-backup-YYYY-MM-DD.sql
+php artisan migrate:status
+php artisan db:seed --force
+```
+
+## Production Smoke Evidence
+
+When a deploy is verified, record:
+
+```text
+commit hash
+GitHub Actions run URL
+Render deploy status
+/health result summary
+demo account login result
+AI chat result
+known skipped checks
+```
+
+Use [`DEMO_CHECKLIST.md`](DEMO_CHECKLIST.md) for the presentation-day checklist.
