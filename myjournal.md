@@ -71,8 +71,71 @@ AI_SHARED_SECRET
 |   023 | 2026-07-19 | Open Guru chat from footer Help Center links | `not committed yet` | Completed |
 |   024 | 2026-07-19 | Fix Render HTTPS, CSS, footer, and auth form deployment issues | `not committed yet` | Completed |
 |   025 | 2026-07-19 | Restore Aiven demo user login accounts | `not committed yet` | Completed |
+|   026 | 2026-07-19 | Restore Aiven superadmin account | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 026 - Restore Aiven superadmin account
+
+### Date and time
+
+```text
+2026-07-19 01:14 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment tester and coding assistant
+```
+
+### Objective
+
+Restore the superadmin account after the user reported that it was missing from the deployed/Aiven database.
+
+### Starting state
+
+The configured Laravel database connection was MySQL. A check against the active database showed that `superadmin@gmail.com` did not exist.
+
+### What was done
+
+The superadmin account was recreated through Laravel using `User::updateOrCreate()` and `Hash::make()`.
+
+```text
+email: superadmin@gmail.com
+role: superadmin
+```
+
+The account password was not recorded in this journal.
+
+### Verification
+
+After restoration, the account was verified to:
+
+```text
+exist: true
+role: superadmin
+is_superadmin: true
+password_check: true
+```
+
+The Laravel cache table was cleared to remove possible login rate-limit entries from earlier failed attempts.
+
+### Security impact
+
+This was a demo/admin data repair. No password, password hash, database credential, or connection string was committed to source control.
+
+The superadmin password should be changed after successful login if this deployment will remain publicly reachable.
+
+### Result
+
+```text
+Completed
+```
 
 ---
 
