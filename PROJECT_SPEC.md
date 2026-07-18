@@ -793,6 +793,7 @@ For:
 * Configure database TLS
 * Configure health checks
 * Keep storage write health checks disabled for normal probes unless actively validating R2
+* Maintain a production operations and recovery checklist
 * Validate public behavior
 * Measure cold start and database latency
 

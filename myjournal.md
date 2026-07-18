@@ -81,8 +81,76 @@ AI_SHARED_SECRET
 |   033 | 2026-07-19 | Add production health check endpoint | `not committed yet` | Completed |
 |   034 | 2026-07-19 | Repair Aiven user and demo data consistency | `not committed yet` | Completed |
 |   035 | 2026-07-19 | Add expandable long-content previews | `not committed yet` | Completed |
+|   036 | 2026-07-19 | Add production operations and recovery guide | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 036 - Add production operations and recovery guide
+
+### Date and time
+
+```text
+2026-07-19 05:15 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Production smoke tester and coding assistant
+```
+
+### Objective
+
+Create a clear production operations guide for the Render, Aiven, R2, and AI-chat setup so the team has one safe checklist for deployment verification and recovery.
+
+### Existing behavior
+
+Operational notes were spread across chat, README snippets, and journal entries. The team had working production pieces, but no single checklist for:
+
+* Render environment expectations
+* Health checks
+* Smoke testing
+* Aiven user/content audits
+* Demo data repair
+* Dangerous database commands
+* R2 image troubleshooting
+* AI chat memory checks
+
+### Selected solution
+
+Add `docs/PRODUCTION_OPERATIONS.md` and link it from the README. The guide documents safe commands using placeholders only and avoids recording secrets. `PROJECT_SPEC.md` was updated so maintaining an operations and recovery checklist is explicitly part of the Render deployment phase.
+
+### Alternative considered
+
+Putting all operations notes directly into `README.md` would be simpler initially, but the README is already serving setup and overview purposes. A dedicated docs file keeps production procedures easier to find and less likely to be buried under general Laravel text.
+
+### Commands executed
+
+```powershell
+git diff --check
+rg -n "password=|DB_PASSWORD=|AWS_SECRET_ACCESS_KEY=|GEMINI_API_KEY|APP_KEY=|SECRET|TOKEN|REDACTED|AIVEN_HOST|R2" docs\PRODUCTION_OPERATIONS.md README.md PROJECT_SPEC.md myjournal.md
+```
+
+### Files changed
+
+```text
+docs/PRODUCTION_OPERATIONS.md
+README.md
+PROJECT_SPEC.md
+myjournal.md
+```
+
+### Security impact
+
+The guide uses placeholders such as `[REDACTED]`, `[AIVEN_HOST]`, and `[R2_BUCKET_NAME]`. No secrets, passwords, access tokens, private certificates, or complete connection strings were documented.
+
+### Deployment impact
+
+No runtime behavior changed. The new guide supports safer Render/Aiven/R2 operation and explains which commands are safe or dangerous during production repair.
 
 ---
 
