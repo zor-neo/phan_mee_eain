@@ -110,6 +110,17 @@ Fix long content previews that were visually cut off or hard-truncated inside co
 
 The reader content page used `Str::words()` and `str_word_count()` to decide whether to show the expansion button. That works for English text with spaces, but it is unreliable for Myanmar or other long text without normal word spacing. The author content list also showed only a hard 50-word preview and did not allow expanding the text.
 
+### Alpine.js note
+
+The old reader content page used Alpine-style attributes such as `x-data`, `x-show`, and `x-cloak`. Alpine itself was not the main data problem. The larger problem was consistency:
+
+* The reader layout loaded Alpine from a CDN.
+* The author layout did not load Alpine.
+* The local Vite `resources/js/app.js` also starts Alpine, but these legacy user/author layouts do not rely on the Vite bundle in the same way.
+* The old long-content decision used `str_word_count()`, so Myanmar or other long text without normal spaces could fail to show the expansion button even when the content was visually too long.
+
+Because the feature needed to work in both reader and author views, the final fix used small plain JavaScript attached to `data-*` attributes instead of adding another Alpine dependency to the author layout.
+
 ### Selected solution
 
 Use character-based preview limits and a small plain JavaScript toggle:
