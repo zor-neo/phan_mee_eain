@@ -111,7 +111,6 @@
                     <ul class="footer-links">
                         <li><a href="{{ route('reportPolicy') }}">Report Policy</a></li>
                         <li><a href="{{ route('authorGuidelines') }}">Author Guidelines</a></li>
-                        <li><span>Help Center: AI chat will be integrated later.</span></li>
                     </ul>
                 </div>
                 <div class="col-lg-3">
