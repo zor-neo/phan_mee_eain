@@ -85,8 +85,94 @@ AI_SHARED_SECRET
 |   037 | 2026-07-19 | Add GitHub Actions CI workflow | `not committed yet` | Completed |
 |   038 | 2026-07-19 | Fix CI demo seeder environment handling | `not committed yet` | Completed |
 |   039 | 2026-07-19 | Disable Vite manifest dependency during tests | `not committed yet` | Completed |
+|   040 | 2026-07-19 | Use test-safe drivers in GitHub Actions | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 040 - Use test-safe drivers in GitHub Actions
+
+### Date and time
+
+```text
+2026-07-19 06:55 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment operator and coding assistant
+```
+
+### Objective
+
+Fix the third GitHub Actions failure after the Laravel tests started passing.
+
+### Existing behavior
+
+GitHub Actions run `29661317180` passed the `Run Laravel tests` step, then failed at `Validate Laravel caches`.
+
+A clean Linux clone reproduced the failure during `php artisan optimize:clear`:
+
+```text
+Database file at path [/tmp/app/database/database.sqlite] does not exist
+SQL: delete from "cache"
+```
+
+### Root cause
+
+The workflow copied `.env.example`, which uses database-backed cache, queue, and session defaults. That is acceptable when the database exists and migrations have been run, but the CI cache-validation step is not meant to use application database tables.
+
+### Selected solution
+
+Set test-safe environment variables at the GitHub Actions application job level:
+
+```text
+APP_ENV=testing
+CACHE_STORE=array
+DB_CONNECTION=sqlite
+DB_DATABASE=:memory:
+QUEUE_CONNECTION=sync
+SESSION_DRIVER=array
+```
+
+This matches the test environment and allows config/route cache validation to run without Aiven credentials or local SQLite files.
+
+### Alternative considered
+
+The workflow could create `database/database.sqlite` and run migrations before cache validation. That would be heavier and would still make a cache-clear check depend on database state. Test-safe nonpersistent drivers are simpler and better aligned with CI.
+
+### Commands executed
+
+```powershell
+docker run --rm composer:2 sh -lc "git clone --depth=1 https://github.com/zor-neo/phan_mee_eain.git /tmp/app >/dev/null && cd /tmp/app && cp .env.example .env && composer install --no-interaction --prefer-dist --no-progress >/dev/null && APP_ENV=testing CACHE_STORE=array DB_CONNECTION=sqlite DB_DATABASE=':memory:' QUEUE_CONNECTION=sync SESSION_DRIVER=array php artisan key:generate --ansi && APP_ENV=testing CACHE_STORE=array DB_CONNECTION=sqlite DB_DATABASE=':memory:' QUEUE_CONNECTION=sync SESSION_DRIVER=array php artisan config:clear --ansi && APP_ENV=testing CACHE_STORE=array DB_CONNECTION=sqlite DB_DATABASE=':memory:' QUEUE_CONNECTION=sync SESSION_DRIVER=array php artisan test --stop-on-failure && APP_ENV=testing CACHE_STORE=array DB_CONNECTION=sqlite DB_DATABASE=':memory:' QUEUE_CONNECTION=sync SESSION_DRIVER=array php artisan config:cache && APP_ENV=testing CACHE_STORE=array DB_CONNECTION=sqlite DB_DATABASE=':memory:' QUEUE_CONNECTION=sync SESSION_DRIVER=array php artisan route:cache && APP_ENV=testing CACHE_STORE=array DB_CONNECTION=sqlite DB_DATABASE=':memory:' QUEUE_CONNECTION=sync SESSION_DRIVER=array php artisan optimize:clear"
+```
+
+### Test results
+
+```text
+Clean Linux clone with test-safe CI env: passed
+Laravel tests: passed, 65 tests, 173 assertions
+config:cache, route:cache, optimize:clear: passed
+```
+
+### Files changed
+
+```text
+.github/workflows/ci.yml
+myjournal.md
+```
+
+### Security impact
+
+The workflow still uses no production secrets. It explicitly avoids managed database credentials.
+
+### Deployment impact
+
+No Render environment change is required. The change only affects GitHub Actions.
 
 ---
 

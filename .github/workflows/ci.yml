@@ -16,6 +16,13 @@ jobs:
   application:
     name: Laravel tests and frontend build
     runs-on: ubuntu-latest
+    env:
+      APP_ENV: testing
+      CACHE_STORE: array
+      DB_CONNECTION: sqlite
+      DB_DATABASE: ':memory:'
+      QUEUE_CONNECTION: sync
+      SESSION_DRIVER: array
 
     steps:
       - name: Checkout
