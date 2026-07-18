@@ -77,8 +77,88 @@ AI_SHARED_SECRET
 |   029 | 2026-07-19 | Display content images proportionately | `not committed yet` | Completed |
 |   030 | 2026-07-19 | Configure persistent R2-backed upload storage | `not committed yet` | Completed |
 |   031 | 2026-07-19 | Fix account dropdown avatar and email overflow | `not committed yet` | Completed |
+|   032 | 2026-07-19 | Resolve Composer and npm security advisories | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 032 - Resolve Composer and npm security advisories
+
+### Date and time
+
+```text
+2026-07-19 03:20 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment operator and coding assistant
+```
+
+### Objective
+
+Review and resolve the Composer and npm security advisories reported during Docker builds.
+
+### Existing behavior
+
+Composer reported three medium advisories affecting `guzzlehttp/guzzle` and `guzzlehttp/psr7`. npm reported one low `esbuild` advisory and critical `shell-quote` exposure through development tooling.
+
+### Selected solution
+
+Apply focused dependency lockfile updates instead of a broad framework or frontend upgrade:
+
+* `guzzlehttp/guzzle` updated from `7.11.1` to `7.15.1`.
+* `guzzlehttp/psr7` updated from `2.11.0` to `2.13.0`.
+* Related Composer patch dependencies were refreshed.
+* npm development tooling was refreshed so `concurrently` uses a patched `shell-quote` and Vite uses patched `esbuild`.
+
+### Alternative considered
+
+A broad `composer update` or major npm upgrade could also remove advisories, but it would risk unrelated behavior changes. The focused update is safer for the student project and easier to explain.
+
+### Commands executed
+
+```powershell
+composer audit
+npm audit --json
+composer update guzzlehttp/guzzle guzzlehttp/psr7 --with-dependencies --no-interaction
+npm update concurrently vite --save-dev
+npm audit fix
+npm audit
+npm run build
+php artisan test
+docker build -t phanmeeein:test .
+```
+
+### Files changed
+
+```text
+composer.lock
+package-lock.json
+myjournal.md
+```
+
+### Test results
+
+```text
+composer audit: No security vulnerability advisories found.
+npm audit: found 0 vulnerabilities.
+npm run build: passed.
+php artisan test: 56 tests passed, 136 assertions.
+docker build -t phanmeeein:test .: passed.
+```
+
+### Security impact
+
+Known Composer and npm audit advisories are resolved in the lockfiles used by Render and Docker builds. No secrets or credentials were changed.
+
+### Deployment impact
+
+Render will install the patched dependency versions from the updated lockfiles on the next deployment. No database migration is required.
 
 ---
 
