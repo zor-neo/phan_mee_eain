@@ -73,8 +73,130 @@ AI_SHARED_SECRET
 |   025 | 2026-07-19 | Restore Aiven demo user login accounts | `not committed yet` | Completed |
 |   026 | 2026-07-19 | Restore Aiven superadmin account | `not committed yet` | Completed |
 |   027 | 2026-07-19 | Restore Aiven starter categories | `not committed yet` | Completed |
+|   028 | 2026-07-19 | Seed Aiven demo authors, categories, and learning content | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 028 - Seed Aiven demo authors, categories, and learning content
+
+### Date and time
+
+```text
+2026-07-19 01:30 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Product data requester and coding assistant
+```
+
+### Objective
+
+Create a repeatable database seeder and populate Aiven with richer demo learning content:
+
+```text
+- 3 dummy author accounts
+- 10 categories
+- 1 educational content item per category
+- 2 article content items per category
+```
+
+Requested topic coverage included languages, technology, Myanmar culture, economics in Southeast Asia, sport science, computer science, Myanmar food preparation, tourism guides, and related learning topics.
+
+### Starting state
+
+The active database was Aiven MySQL. Earlier emergency starter categories existed, but there was no formal seeder for the requested larger demo dataset.
+
+### What changed
+
+```text
+database/seeders/DemoLearningContentSeeder.php
+myjournal.md
+```
+
+The new seeder is idempotent:
+
+```text
+- Existing demo users are reused and promoted to author.
+- Missing demo users are created without recording a password in source control.
+- Existing "Language" category is renamed to "Languages".
+- Existing "Science" starter category is reused as "Sport Science".
+- Categories are created if missing.
+- Content rows are update-or-created by title and category.
+```
+
+### Categories seeded
+
+```text
+Languages
+Technology
+Myanmar Culture
+Southeast Asian Economics
+Sport Science
+Computer Science
+Myanmar Food Preparation
+Tourism Guides
+General Knowledge
+Study Skills
+```
+
+### Commands executed
+
+```powershell
+php -l database\seeders\DemoLearningContentSeeder.php
+php artisan about --only=drivers
+php artisan db:seed --class=DemoLearningContentSeeder
+php artisan tinker --execute="..."
+php artisan cache:clear
+php artisan test
+```
+
+The first seed command timed out after partially inserting two categories worth of content. Because the seeder is idempotent, it was safely rerun with a longer timeout and completed successfully.
+
+### Verification
+
+Aiven verification showed:
+
+```text
+authors: 3
+categories: 10
+contents: 30
+educational contents: 10
+articles: 20
+```
+
+Each category was verified to contain:
+
+```text
+1 educational content item
+2 article content items
+```
+
+The Laravel test suite passed:
+
+```text
+53 tests passed
+130 assertions
+```
+
+### Security impact
+
+No secrets or password hashes were committed. The seeder supports `DEMO_AUTHOR_PASSWORD` for environments that need to create missing demo authors with a known password, but existing Aiven demo accounts retained their current passwords.
+
+### Performance impact
+
+The seed operation is heavier over Aiven than local SQLite/MySQL because it performs multiple remote database writes. It should be run as a controlled setup/demo-data step, not during normal container startup.
+
+### Result
+
+```text
+Completed
+```
 
 ---
 
