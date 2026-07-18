@@ -80,8 +80,85 @@ AI_SHARED_SECRET
 |   032 | 2026-07-19 | Resolve Composer and npm security advisories | `not committed yet` | Completed |
 |   033 | 2026-07-19 | Add production health check endpoint | `not committed yet` | Completed |
 |   034 | 2026-07-19 | Repair Aiven user and demo data consistency | `not committed yet` | Completed |
+|   035 | 2026-07-19 | Add expandable long-content previews | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 035 - Add expandable long-content previews
+
+### Date and time
+
+```text
+2026-07-19 04:55 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: UI tester and coding assistant
+```
+
+### Objective
+
+Fix long content previews that were visually cut off or hard-truncated inside content cards by adding a clear See more / See less expansion control.
+
+### Existing behavior
+
+The reader content page used `Str::words()` and `str_word_count()` to decide whether to show the expansion button. That works for English text with spaces, but it is unreliable for Myanmar or other long text without normal word spacing. The author content list also showed only a hard 50-word preview and did not allow expanding the text.
+
+### Selected solution
+
+Use character-based preview limits and a small plain JavaScript toggle:
+
+* Reader cards show a preview first and can expand to full text.
+* Author content cards show a preview first and can expand to full text.
+* Expanded text preserves line breaks.
+* Long unspaced text wraps inside the card instead of overflowing horizontally.
+
+### Alternative considered
+
+Keeping the existing Alpine-based reader toggle would require only a small adjustment, but the author page does not load Alpine. A plain JavaScript toggle is easier for the student team to understand and works in both affected views.
+
+### Commands executed
+
+```powershell
+php artisan test tests\Feature\ExpandableContentTest.php
+php artisan config:cache
+php artisan route:cache
+php artisan optimize:clear
+git diff --check
+```
+
+### Test results
+
+```text
+ExpandableContentTest: passed, 2 tests, 6 assertions
+config:cache: passed
+route:cache: passed
+optimize:clear: passed
+git diff --check: passed
+```
+
+### Files changed
+
+```text
+resources/views/user/home/contentPage.blade.php
+resources/views/auther/home/contents.blade.php
+tests/Feature/ExpandableContentTest.php
+myjournal.md
+```
+
+### Security impact
+
+No database or authorization behavior changed. Content is still escaped by Blade before display.
+
+### Deployment impact
+
+No migration is required. Render only needs to redeploy the Blade and test changes.
 
 ---
 

@@ -26,6 +26,12 @@
 
             <div class="row g-4" id="content-container">
                 @foreach ($content as $item)
+                    @php
+                        $contentText = (string) $item->content;
+                        $contentPreviewLimit = 260;
+                        $hasLongContent = Str::length($contentText) > $contentPreviewLimit;
+                        $contentPreview = $hasLongContent ? Str::limit($contentText, $contentPreviewLimit, '...') : $contentText;
+                    @endphp
                     <div class="col-12 col-md-6 col-lg-4 content-box" data-playlist="english">
                         <div class="card border shadow-sm h-100 rounded-3 overflow-hidden bg-white">
                             <div class="position-relative">
@@ -34,7 +40,22 @@
                             <div class="card-body d-flex flex-column p-3">
                                 <span class="badge bg-secondary mb-2 align-self-start"><i class="fas fa-bars-staggered"></i> {{ $item->name }}</span>
                                 <h4 class="card-title fw-bold text-dark fs-5 mb-1">{{ $item->title }}</h4>
-                                <p class="card-text text-muted small mb-3 flex-grow-1">{{ Str::words($item->content, 50, '.....') }}</p>
+                                <div class="flex-grow-1 mb-3">
+                                    <p class="card-text text-muted small mb-2" data-expandable-content
+                                        style="white-space: pre-line; overflow-wrap: anywhere;">
+                                        <span data-content-preview>{{ $contentPreview }}</span>
+                                        @if ($hasLongContent)
+                                            <span class="d-none" data-content-full>{{ $contentText }}</span>
+                                        @endif
+                                    </p>
+
+                                    @if ($hasLongContent)
+                                        <button type="button" class="btn btn-outline-primary btn-sm"
+                                            data-content-toggle aria-expanded="false">
+                                            See more
+                                        </button>
+                                    @endif
+                                </div>
                                 <div class="d-flex flex-wrap gap-2 mt-auto">
                                     <a href="{{ route('editContent#Page', $item->contentId) }}" class="btn bg-purple text-white flex-grow-1 btn-sm"><i class="fas fa-edit"></i> Edit</a>
                                     <form action="{{ $item->image ? route('deleteContent#Process', [$item->contentId, $item->image]) : route('deleteContent#Process', [$item->contentId]) }}" method="post" class="d-inline">
@@ -55,3 +76,27 @@
         </section>
     </main>
 @endsection
+
+@push('jq-section')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('[data-content-toggle]').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const content = button.previousElementSibling;
+                    const preview = content?.querySelector('[data-content-preview]');
+                    const full = content?.querySelector('[data-content-full]');
+
+                    if (!preview || !full) {
+                        return;
+                    }
+
+                    const expanded = button.getAttribute('aria-expanded') === 'true';
+                    preview.classList.toggle('d-none', !expanded);
+                    full.classList.toggle('d-none', expanded);
+                    button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+                    button.textContent = expanded ? 'See more' : 'See less';
+                });
+            });
+        });
+    </script>
+@endpush

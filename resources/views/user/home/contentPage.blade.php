@@ -68,6 +68,10 @@
                                     $isReported = in_array($item->contentId, $activeReportContentIds ?? [], true);
                                     $authorImageUrl = \App\Support\UploadedMedia::url('profile', $item->userImage, 'image/user-male-circle.jpg');
                                     $contentImageUrl = \App\Support\UploadedMedia::url('content', $item->contentImage, 'content/image/logo.jpg');
+                                    $contentText = (string) $item->content;
+                                    $contentPreviewLimit = 360;
+                                    $hasLongContent = Str::length($contentText) > $contentPreviewLimit;
+                                    $contentPreview = $hasLongContent ? Str::limit($contentText, $contentPreviewLimit, '...') : $contentText;
                                 @endphp
 
                                 <article class="card text-center">
@@ -102,19 +106,19 @@
                                                     alt="..." data-bs-toggle="modal" data-bs-target="#imageModal"
                                                     data-full-src="{{ $contentImageUrl }}">
                                             </div>
-                                            <div class="col-12 col-lg-7 text-start" x-data="{ expanded: false }">
-                                                <p class="card-text mb-2">
-                                                    <span x-show="!expanded">{{ Str::words($item->content, 50, '.....') }}</span>
-                                                    <span x-show="expanded" x-cloak>{{ $item->content }}</span>
+                                            <div class="col-12 col-lg-7 text-start">
+                                                <p class="card-text mb-2 sw-content-copy" data-expandable-content
+                                                    style="white-space: pre-line; overflow-wrap: anywhere;">
+                                                    <span data-content-preview>{{ $contentPreview }}</span>
+                                                    @if ($hasLongContent)
+                                                        <span class="d-none" data-content-full>{{ $contentText }}</span>
+                                                    @endif
                                                 </p>
 
-                                                @if (str_word_count($item->content) > 50)
-                                                    <button type="button" class="btn btn-link p-0 mb-3"
-                                                        @click="expanded = !expanded">
-                                                        <span x-show="!expanded" class="btn btn-outline-primary btn-sm">See
-                                                            all</span>
-                                                        <span x-show="expanded" x-cloak
-                                                            class="btn btn-outline-primary btn-sm">See less</span>
+                                                @if ($hasLongContent)
+                                                    <button type="button" class="btn btn-outline-primary btn-sm mb-3"
+                                                        data-content-toggle aria-expanded="false">
+                                                        See more
                                                     </button>
                                                 @endif
 
@@ -344,6 +348,24 @@
             const reportReason = document.getElementById('reportReason');
             const reportHelpText = document.getElementById('reportHelpText');
             let activeReportButton = null;
+
+            document.querySelectorAll('[data-content-toggle]').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    const content = button.previousElementSibling;
+                    const preview = content?.querySelector('[data-content-preview]');
+                    const full = content?.querySelector('[data-content-full]');
+
+                    if (!preview || !full) {
+                        return;
+                    }
+
+                    const expanded = button.getAttribute('aria-expanded') === 'true';
+                    preview.classList.toggle('d-none', !expanded);
+                    full.classList.toggle('d-none', expanded);
+                    button.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+                    button.textContent = expanded ? 'See more' : 'See less';
+                });
+            });
 
             function reactLabel(reactType) {
                 if (reactType === 0) {
