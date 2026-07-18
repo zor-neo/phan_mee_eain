@@ -66,11 +66,17 @@
                             <img class="sw-avatar" src="{{ \App\Support\UploadedMedia::url('profile', Auth::user()->image, 'image/user-male-circle.jpg') }}"
                                 alt="Admin Scholar profile picture">
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm sw-account-menu">
                             <li class="dropdown-header">
-                                <strong>{{Auth::user()->role}}</strong>
-                                <div class="small">{{Auth::user()->email}}</div>
-                        </li>
+                                <div class="sw-account-summary">
+                                    <img class="sw-avatar" src="{{ \App\Support\UploadedMedia::url('profile', Auth::user()->image, 'image/user-male-circle.jpg') }}"
+                                        alt="Admin Scholar profile picture">
+                                    <div class="sw-account-copy">
+                                        <strong class="sw-account-role">{{Auth::user()->role}}</strong>
+                                        <div class="small sw-account-email" title="{{Auth::user()->email}}">{{Auth::user()->email}}</div>
+                                    </div>
+                                </div>
+                            </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>

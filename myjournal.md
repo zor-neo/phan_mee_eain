@@ -76,8 +76,59 @@ AI_SHARED_SECRET
 |   028 | 2026-07-19 | Seed Aiven demo authors, categories, and learning content | `not committed yet` | Completed |
 |   029 | 2026-07-19 | Display content images proportionately | `not committed yet` | Completed |
 |   030 | 2026-07-19 | Configure persistent R2-backed upload storage | `not committed yet` | Completed |
+|   031 | 2026-07-19 | Fix account dropdown avatar and email overflow | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 031 - Fix account dropdown avatar and email overflow
+
+### Date and time
+
+```text
+2026-07-19 03:05 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: UI reviewer and coding assistant
+```
+
+### Objective
+
+Fix the account dropdown/profile tab where uploaded thumbnails could appear disproportionate and long email addresses could overflow outside the dropdown.
+
+### Existing behavior
+
+The user dropdown used Bootstrap `row`, `col-4`, and `offset-1` classes inside a compact dropdown header. This gave the avatar and email text unstable space, especially when the email was long.
+
+### Selected solution
+
+Replace the dropdown header grid with a small flex layout and add shared account-menu CSS:
+
+* Avatar size is pinned to a 40px square/circle with `object-fit: cover`.
+* The account text column has `min-width: 0` and controlled overflow.
+* Long email addresses truncate inside the dropdown and keep the full value in the `title` attribute.
+
+### Files changed
+
+```text
+public/user/css/style.css
+resources/views/user/layout/master.blade.php
+resources/views/admin/layout/master.blade.php
+```
+
+### Security impact
+
+No security-sensitive behavior changed. No secrets or credentials were added.
+
+### Deployment impact
+
+The fix is a Blade/CSS-only change. A normal Render redeploy is enough.
 
 ---
 

@@ -75,15 +75,15 @@
                         data-bs-toggle="dropdown" aria-expanded="false"> <i class="fa-solid fa-pen me-3"></i>
                         Edit
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-dark">
+                    <ul class="dropdown-menu dropdown-menu-dark sw-account-menu">
                         <li class="dropdown-header">
-                            <div class="row">
-                                <img class="sw-avatar col-4"
+                            <div class="sw-account-summary">
+                                <img class="sw-avatar"
                                     src="{{ \App\Support\UploadedMedia::url('profile', Auth::user()->image, 'image/user-male-circle.jpg') }}"
                                     alt="Admin Scholar profile picture">
-                                <div class="col-7 offset-1">
-                                    <strong> Role - {{ $roleLabel }}</strong>
-                                    <div class="small">{{ Auth::user()->email }}</div>
+                                <div class="sw-account-copy">
+                                    <strong class="sw-account-role">Role - {{ $roleLabel }}</strong>
+                                    <div class="small sw-account-email" title="{{ Auth::user()->email }}">{{ Auth::user()->email }}</div>
                                 </div>
                             </div>
                         </li>
