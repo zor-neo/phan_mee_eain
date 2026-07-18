@@ -555,6 +555,17 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--sw-surface-muted);
 }
 
+.sw-content-image {
+  aspect-ratio: 16 / 9;
+  background: var(--sw-surface-muted);
+  cursor: pointer;
+  display: block;
+  height: auto;
+  max-height: 240px;
+  object-fit: contain;
+  padding: 0.35rem;
+}
+
 .border-dashed {
   border: 2px dashed var(--sw-border) !important;
 }

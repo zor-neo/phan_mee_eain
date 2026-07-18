@@ -95,8 +95,7 @@
                                         <h5 class="card-title fw-bold fs-5">{{ $item->title }}</h5>
                                         <div class="row g-3 align-items-start">
                                             <div class="col-12 col-lg-5">
-                                                <img class="img-fluid rounded w-100"
-                                                    style="height: 220px; object-fit: cover; cursor: pointer;"
+                                                <img class="img-fluid rounded w-100 sw-content-image"
                                                     src="{{ $item->contentImage ? asset('content/' . $item->contentImage) : asset('content/image/logo.jpg') }}"
                                                     alt="..." data-bs-toggle="modal" data-bs-target="#imageModal"
                                                     data-full-src="{{ $item->contentImage ? asset('content/' . $item->contentImage) : asset('content/image/logo.jpg') }}">

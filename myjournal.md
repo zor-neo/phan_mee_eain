@@ -74,8 +74,71 @@ AI_SHARED_SECRET
 |   026 | 2026-07-19 | Restore Aiven superadmin account | `not committed yet` | Completed |
 |   027 | 2026-07-19 | Restore Aiven starter categories | `not committed yet` | Completed |
 |   028 | 2026-07-19 | Seed Aiven demo authors, categories, and learning content | `not committed yet` | Completed |
+|   029 | 2026-07-19 | Display content images proportionately | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 029 - Display content images proportionately
+
+### Date and time
+
+```text
+2026-07-19 01:40 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: UI reviewer and coding assistant
+```
+
+### Objective
+
+Fix content/default images that appeared unnaturally cropped because long horizontal images were forced into fixed-height thumbnails with `object-fit: cover`.
+
+### What changed
+
+```text
+resources/views/user/home/contentPage.blade.php
+resources/views/auther/home/contents.blade.php
+public/user/css/style.css
+myjournal.md
+```
+
+A reusable `sw-content-image` class was added and applied to user-facing and author-facing content thumbnails.
+
+The class uses:
+
+```text
+aspect-ratio: 16 / 9
+object-fit: contain
+max-height: 240px
+neutral background
+small padding
+```
+
+This preserves image proportions while keeping card layout stable.
+
+### Alternative considered
+
+Leaving `object-fit: cover` keeps all thumbnails visually filled, but it crops default/logo-style images badly. `object-fit: contain` is a better fit for this project because seeded/default images need to remain recognizable.
+
+### Verification
+
+```text
+php artisan view:clear: passed
+php artisan test: 53 passed, 130 assertions
+```
+
+### Result
+
+```text
+Completed
+```
 
 ---
 
