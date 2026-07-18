@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Admin Dashboard - Spring Wisdom</title>
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link href="{{ asset('user/vendor1/fonts/spring-wisdom-fonts.css') }}" rel="stylesheet">
     <link href="{{ asset('user/vendor1/cdn/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css') }}"
         rel="stylesheet">
@@ -18,6 +19,7 @@
 </head>
 
 <body>
+    @php($actingViewMode = session('acting_view_mode', 'admin'))
     <nav class="navbar navbar-expand-lg sw-navbar sticky-top">
         <div class="container-lg">
             <a class="navbar-brand fw-bold" href="/home.php">Spring Wisdom</a>
@@ -32,25 +34,35 @@
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle " href="#" role="button"
-                            data-bs-toggle="dropdown">Role Switch</a>
+                            data-bs-toggle="dropdown">View Mode</a>
                         <ul class="dropdown-menu">
-
                             <li>
-                                {{-- <form method="post" action="#">
+                                <form method="post" action="{{ route('viewMode#Process') }}">
                                     @csrf
-                                    <input type="hidden" name="csrf_token"
-                                        value="1b5f0d486cf4f4d643150d9c2c3f4efb5b303920675ae33fd6b42e63bbe32a96"> <input
-                                        type="hidden" name="role" value="author">
-                                    <button class="dropdown-item" type="submit">Sign in as Author</button>
-                                </form> --}}
-                                <a class="droupdown-item ms-3" class="text-decoration-none" href="{{route('switch#Process')}}">Sign in as author</a>
+                                    <input type="hidden" name="mode" value="admin">
+                                    <button class="dropdown-item {{ $actingViewMode === 'admin' ? 'active' : '' }}" type="submit">View as Admin</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form method="post" action="{{ route('viewMode#Process') }}">
+                                    @csrf
+                                    <input type="hidden" name="mode" value="author_readonly">
+                                    <button class="dropdown-item {{ $actingViewMode === 'author_readonly' ? 'active' : '' }}" type="submit">View as Author (Read-Only)</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form method="post" action="{{ route('viewMode#Process') }}">
+                                    @csrf
+                                    <input type="hidden" name="mode" value="user">
+                                    <button class="dropdown-item {{ $actingViewMode === 'user' ? 'active' : '' }}" type="submit">View as User</button>
+                                </form>
                             </li>
 
                         </ul>
                     </li>
                 </ul>
                 <div class="d-flex align-items-center gap-3">
-                    <span class="badge rounded-pill text-bg-light border text-secondary"> Role - {{Auth::user()->role}}</span>
+                    <span class="badge rounded-pill text-bg-light border text-secondary"> View - {{ $actingViewMode }}</span>
                     <div class="dropdown">
                         <button class="btn btn-icon" data-bs-toggle="dropdown" aria-label="Account menu" style="width: 60px; height:60px; ">
                             <img class="sw-avatar" src="{{asset(Auth::user()->image == null ? 'image/user-male-circle.jpg' : '/profile/'.Auth::user()->image)}}"
@@ -69,6 +81,12 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
+                            @if ($actingViewMode !== 'admin')
+                                <form action="{{ route('viewMode#Reset') }}" method="post" class="px-3 pb-2">
+                                    @csrf
+                                    <button class="btn btn-outline-sw btn-sm w-100">Back to Admin</button>
+                                </form>
+                            @endif
                             <form action="{{ route('logout') }}" method="post"
                                 class="d-flex align-items-center gap-3 ms-2 ">
                                 @csrf
@@ -124,51 +142,45 @@
         <div class="container-lg py-5">
             <div class="row g-4">
                 <div class="col-lg-5">
-                    <a class="footer-brand fw-bold" href="/home.php">Spring Wisdom</a>
-                    <p class="small sw-muted mt-2 mb-3">Preserving knowledge for focused digital learning through
-                        curated readings, author contributions, and responsible moderation.</p>
+                    <a class="footer-brand fw-bold" href="{{ route('adminHome') }}">Phan Mee Eain Learning Hub</a>
+                    <p class="small sw-muted mt-2 mb-3">A focused learning space for reading, writing, sharing, and responsible moderation.</p>
                     <div class="d-flex flex-wrap gap-2">
-                        <a class="footer-icon-link" href="/contact.php" aria-label="Contact Spring Wisdom"><i
+                        <a class="footer-icon-link" href="{{ route('adminHome') }}" aria-label="Open admin alerts"><i
                                 class="bi bi-envelope"></i></a>
-                        <a class="footer-icon-link" href="/help-center.php" aria-label="Help Center"><i
+                        <a class="footer-icon-link" href="javascript:void(0)" aria-label="Help Center coming soon"><i
                                 class="bi bi-chat-left-text"></i></a>
-                        <a class="footer-icon-link" href="/admin-feed.php" aria-label="Platform updates"><i
-                                class="bi bi-megaphone"></i></a>
                     </div>
                 </div>
                 <div class="col-6 col-lg-2">
                     <h2 class="footer-heading">Explore</h2>
                     <ul class="footer-links">
-                        <li><a href="/home.php">Home</a></li>
-                        <li><a href="/browse.php">Browse</a></li>
-                        <li><a href="/archives.php">All Archives</a></li>
-                        <li><a href="/admin-feed.php">Updates</a></li>
+                        <li><a href="{{ route('userHome') }}">Home</a></li>
+                        <li><a href="{{ route('content#Page') }}">Browse Contents</a></li>
                     </ul>
                 </div>
                 <div class="col-6 col-lg-2">
                     <h2 class="footer-heading">Support</h2>
                     <ul class="footer-links">
-                        <li><a href="/contact.php">Contact Us</a></li>
-                        <li><a href="/report-policy.php">Report Policy</a></li>
-                        <li><a href="/author-guidelines.php">Author Guidelines</a></li>
-                        <li><a href="/help-center.php">Help Center</a></li>
+                        <li><a href="{{ route('reportPolicy') }}">Report Policy</a></li>
+                        <li><a href="{{ route('authorGuidelines') }}">Author Guidelines</a></li>
+                        <li><span>Help Center: AI chat will be integrated later.</span></li>
                     </ul>
                 </div>
                 <div class="col-lg-3">
                     <h2 class="footer-heading">Contact</h2>
                     <address class="small sw-muted mb-0" id="contact">
-                        Spring Wisdom Learning Portal<br>
-                        Student Final Project Demo<br>
-                        Email: <a href="mailto:contact@springwisdom.test">contact@springwisdom.test</a>
+                        Phan Mee Eain Learning Hub<br>
+                        Demo contact placeholder<br>
+                        Email: will be updated when Render provides a custom address
                     </address>
                 </div>
             </div>
             <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between gap-2 mt-4 pt-4">
-                <p class="small sw-muted mb-0">&copy; 2026 Spring Wisdom. All rights reserved.</p>
+                <p class="small sw-muted mb-0">&copy; Phan Mee Eain 2026</p>
                 <div class="d-flex flex-wrap gap-3 small">
-                    <a href="/privacy-policy.php">Privacy Policy</a>
-                    <a href="/terms.php">Terms of Use</a>
-                    <a href="/accessibility.php">Accessibility</a>
+                    <span>Privacy Policy: demo text only.</span>
+                    <span>Terms of Use: demo text only.</span>
+                    <span>Accessibility: demo text only.</span>
                 </div>
             </div>
         </div>

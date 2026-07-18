@@ -8,6 +8,14 @@ use Illuminate\Support\Facades\Route;
 // });
 Route::redirect('/', 'guest');
 
+Route::view('/report-policy', 'static.report-policy')->name('reportPolicy');
+
+Route::get('/author-guidelines', function () {
+    $guidelines = file_get_contents(base_path('Author Status Rules & Regulations.md'));
+
+    return view('static.author-guidelines', compact('guidelines'));
+})->name('authorGuidelines');
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');

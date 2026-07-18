@@ -108,29 +108,10 @@ class UserProfileController extends Controller
     //switch role
 
     public function switchProcess(){
-            if(Auth::user()->email == 'superadmin@gmail.com'){
-               if (Auth::user()->role == 'author'){
-                User::where('id',Auth::user()->id)
-                ->update(['role' => 'admin']);
-
-                Swal::success([
-                    'title' => 'Now, you are admin role!']);
-                return to_route('adminHome');
-            }
-            }else{
-                    Swal::warning([
-                    'title' => 'Warning Message',
-                    'text'=>'Opp! Sorry, You are not a admin']);
-                    return back();
-                }
-            if(Auth::user()->email == 'superadmin@gmail.com' && Auth::user()->role == 'admin'){
-                User::where('id',Auth::user()->id)
-                ->update(['role' => 'author']);
-
-                Swal::success([
-                    'title' => 'Now, you are auther role!']);
-                return to_route('userHome');
-                }
+            Swal::warning([
+                'title' => 'Warning Message',
+                'text'=>'Role switching is handled from the admin view mode menu now.']);
+            return back();
     }
 
     //auther room

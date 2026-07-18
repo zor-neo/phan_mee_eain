@@ -555,6 +555,33 @@ h1, h2, h3, h4, h5, h6 {
   background: var(--sw-surface-muted);
 }
 
+.border-dashed {
+  border: 2px dashed var(--sw-border) !important;
+}
+
+.sw-author-create-zone {
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.sw-author-create-zone:hover,
+.sw-author-create-zone:focus-within {
+  transform: translateY(-2px);
+}
+
+.sw-author-create-zone .sw-panel {
+  min-height: 260px;
+}
+
+.report-locked,
+.report-locked:hover,
+.report-locked:focus {
+  background: #d7dbe2;
+  border-color: #c3c8cf;
+  color: #5a6470;
+}
+
 .form-control:focus, .form-select:focus {
   border-color: var(--sw-primary);
   box-shadow: 0 0 0 0.2rem rgba(70, 95, 138, 0.14);
@@ -607,5 +634,23 @@ h1, h2, h3, h4, h5, h6 {
 
   .sw-hub-controls .input-group {
     min-width: 100%;
+  }
+
+  .card-footer .react-buttons,
+  .card-footer .comment-count-badge {
+    width: 100%;
+  }
+
+  .admin-shell {
+    padding-top: 0.75rem;
+  }
+
+  .admin-sidebar-card {
+    position: static;
+    top: auto;
+  }
+
+  .sw-author-create-zone .sw-panel {
+    min-height: 200px;
   }
 }

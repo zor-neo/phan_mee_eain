@@ -54,7 +54,7 @@ test('report ownership comes from the signed-in user', function () {
     $spoofed = User::factory()->create();
     $content = makeOwnershipContent($actor);
     $request = Request::create('/content/report/process', 'POST', [
-        'report' => 'issue',
+        'report' => 'Spam',
         'userId' => $spoofed->id,
         'contentId' => $content->id,
     ]);
@@ -64,6 +64,31 @@ test('report ownership comes from the signed-in user', function () {
 
     expect($response->getStatusCode())->toBe(200);
     expect(report::first()->user_id)->toBe($actor->id);
+});
+
+test('report cooldown blocks repeat reports for 24 hours', function () {
+    $actor = User::factory()->create(['role' => 'user']);
+    $content = makeOwnershipContent($actor);
+
+    $this->actingAs($actor);
+
+    $firstRequest = Request::create('/content/report/process', 'POST', [
+        'report' => 'Spam',
+        'contentId' => $content->id,
+    ]);
+    $firstResponse = app(ReportController::class)->reportProcess($firstRequest);
+
+    expect($firstResponse->getStatusCode())->toBe(200);
+
+    $secondRequest = Request::create('/content/report/process', 'POST', [
+        'report' => 'Spam',
+        'contentId' => $content->id,
+    ]);
+    $secondResponse = app(ReportController::class)->reportProcess($secondRequest);
+    $payload = json_decode($secondResponse->getContent(), true);
+
+    expect($secondResponse->getStatusCode())->toBe(429);
+    expect($payload['cooldown_active'])->toBeTrue();
 });
 
 test('saved content ownership comes from the signed-in user', function () {

@@ -48,6 +48,7 @@ class RegisteredUserController extends Controller
         event(new Registered($user));
 
         Auth::login($user);
+        $request->session()->forget('acting_view_mode');
 
         return redirect('/user/home');
     }

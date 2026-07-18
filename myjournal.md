@@ -54,6 +54,11 @@ AI_SHARED_SECRET
 |   006 | 2026-07-18 | Fix user middleware role check | `not a git repository` | Completed |
 |   007 | 2026-07-18 | Harden user middleware tests | `not a git repository` | Completed |
 |   008 | 2026-07-18 | Fix browser-supplied ownership values | `not a git repository` | Completed |
+|   009 | 2026-07-18 | RBAC, reporting, and author content hardening | `not committed yet` | Completed |
+|   010 | 2026-07-18 | Refresh footer navigation and demo text | `not committed yet` | Completed |
+|   011 | 2026-07-18 | Prevent attachment loss on incomplete author forms | `not committed yet` | Completed |
+|   012 | 2026-07-18 | Fix favicon asset wiring | `not committed yet` | Completed |
+|   013 | 2026-07-18 | Add static report policy and author guidelines pages | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
@@ -416,6 +421,520 @@ Answer:
 3. What would be improved in a paid production environment?
 4. Can every team member explain this change?
 5. Did this change preserve existing code where possible?
+
+---
+
+## Entry 009 - RBAC, reporting, and author content hardening
+
+### Date and time
+
+```text
+2026-07-18 14:52 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Branch and commit
+
+```text
+Branch: not a git repository
+Starting commit: 1cfa133
+Ending commit: not committed yet
+Pull request: not created
+```
+
+### Objective
+
+Implement session-based admin view modes, report cooldown protection, responsive UI fixes, and safer author content creation.
+
+### Why this work was required
+
+The review and user feedback showed that role mutation, report spam, validation loss, and brittle layouts were creating security and usability risk.
+
+### Starting state
+
+Admins could switch roles through the UI, report reasons were too exposed, content uploads lost work on validation failure, and several pages assumed wide screens.
+
+### Evidence before change
+
+```text
+php artisan test
+tests/Feature/OwnershipSecurityTest.php failed on the report reason validation
+```
+
+### Investigation
+
+Reviewed:
+
+```text
+app/Http/Controllers/Admin/AdminController.php
+app/Http/Controllers/Auther/AutherProfileController.php
+app/Http/Controllers/ContentController.php
+app/Http/Controllers/ReportController.php
+app/Http/Middleware/AdminMiddleware.php
+app/Http/Middleware/UserMiddleware.php
+app/Http/Middleware/ReadOnlyViewMiddleware.php
+resources/views/admin/layout/master.blade.php
+resources/views/user/layout/master.blade.php
+resources/views/user/home/contentPage.blade.php
+resources/views/auther/home/createContent.blade.php
+resources/views/auther/home/editContentPage.blade.php
+routes/admin.php
+routes/user.php
+database/migrations/2026_07_18_130001_make_content_image_nullable.php
+database/migrations/2026_07_18_130002_create_content_resources_table.php
+database/migrations/2026_07_18_130003_add_report_lookup_index.php
+tests/Feature/OwnershipSecurityTest.php
+tests/Feature/UserMiddlewareTest.php
+```
+
+### Commands executed
+
+```powershell
+php -l app/Http/Controllers/Auther/AutherProfileController.php
+php artisan optimize:clear
+php artisan migrate:status
+php artisan migrate
+php artisan test
+```
+
+### Files changed
+
+| File | Change | Reason |
+| --- | --- | --- |
+| `app/Http/Middleware/ReadOnlyViewMiddleware.php` | Added session-scoped read-only protection | Block writes in admin author-readonly mode |
+| `app/Http/Middleware/UserMiddleware.php` | Allowed admin user-view access | Support session-based view mode safely |
+| `app/Http/Controllers/Admin/AdminController.php` | Added view-mode switch/reset | Replace role mutation with session state |
+| `app/Http/Controllers/ReportController.php` | Added cooldown logic and content-focused report reasons | Prevent report spam |
+| `app/Http/Controllers/Auther/AutherProfileController.php` | Added optional image, resources, and validation recovery | Preserve work and support attachments |
+| `app/Http/Controllers/ContentController.php` | Added resource loading and download action | Expose attachment metadata safely |
+| `resources/views/user/home/contentPage.blade.php` | Redesigned report UI, responsive feed layout, and reason list | Reduce exposure and improve usability |
+| `resources/views/auther/home/createContent.blade.php` | Reworked create form with old input and file support | Keep author drafts recoverable |
+| `resources/views/auther/home/editContentPage.blade.php` | Reworked edit form with old input and file support | Keep editing recoverable |
+| `resources/views/auther/home/contents.blade.php` | Expanded the clickable create area | Make the create entry easier to use |
+| `resources/views/Login/login.blade.php` | Masked password input | Correct auth UX |
+| `resources/views/Login/register.blade.php` | Masked password inputs | Correct auth UX |
+| `public/user/css/style.css` | Added responsive and report-state styling | Improve mobile behavior |
+| `tests/Feature/OwnershipSecurityTest.php` | Updated report reason test and added cooldown test | Prove server-side report behavior |
+| `tests/Feature/UserMiddlewareTest.php` | Added admin user-view access test | Verify session-based RBAC |
+| `resources/views/user/home/contentPage.blade.php` | Grouped reactions, comment, and report into one footer row | Match the requested interaction layout |
+
+### Existing code preserved
+
+Existing user, author, and admin flows were kept.
+
+### Decision made
+
+Use session-based view modes and server-enforced read-only and cooldown checks instead of role mutation or client-only controls.
+
+### Alternatives considered
+
+#### Alternative A
+
+Description:
+Keep changing `users.role` from the UI.
+
+Advantages:
+Fewer session checks.
+
+Disadvantages:
+Weak security and confusing account state.
+
+Reason not selected:
+Role mutation is the wrong trust boundary for view-only admin inspection.
+
+#### Alternative B
+
+Description:
+Throttle reports only in JavaScript.
+
+Advantages:
+Quick UI change.
+
+Disadvantages:
+Easy to bypass.
+
+Reason not selected:
+Cooldown must be enforced by the server.
+
+### Architectural impact
+
+```text
+Moderate
+```
+
+### Security impact
+
+Improves authorization by separating real role from temporary admin view mode and by blocking writes in read-only admin inspection mode.
+Report spam is reduced with a 24-hour server-side cooldown and attachment uploads are validated before storage.
+
+### Performance impact
+
+```text
+Minor positive impact from the report lookup index
+```
+
+### Cost impact
+
+```text
+No direct cost
+```
+
+### Learning outcome
+
+The team learned how to use session state for safe admin view toggles, how to enforce repeat-action cooldowns in the controller, and how to keep validation failures from wiping author input.
+
+### Implementation summary
+
+Added a dedicated read-only middleware and admin view-mode switch.
+Replaced the report selector with a modal and cooldown-aware controller logic.
+Added optional featured images, attachment metadata storage, and download links.
+Cleaned up responsive layout behavior on the main user and author screens.
+Ran migrations and re-tested the suite until it passed.
+
+### Tests performed
+
+| Test | Expected | Actual | Result |
+| --- | --- | --- | --- |
+| `php artisan migrate` | New schema should apply | Three new migrations applied | Pass |
+| `php artisan test` | Existing and new checks should pass | 36 tests passed | Pass |
+
+### Commands used for testing
+
+```powershell
+php artisan optimize:clear
+php artisan migrate:status
+php artisan migrate
+php artisan test
+```
+
+### Test failures and resolution
+
+The report ownership test initially used a stale reason value.
+Updating the test to an allowed reason fixed the failure and confirmed the cooldown path works.
+
+### Manual verification
+
+Checked the feed layout, author create path, and report button flow after the code updates.
+
+### Result
+
+```text
+Completed
+```
+
+### Rollback procedure
+
+Revert the related controller, middleware, view, and migration commits, then roll back the three new migrations on the development database if needed.
+
+### Remaining issues
+
+State-changing GET routes still exist in the legacy codebase, although the read-only middleware now blocks them in the restricted admin view.
+
+### Next recommended step
+
+Move the remaining legacy GET mutators toward explicit POST or DELETE routes when the team is ready.
+
+### Project-book material
+
+This pass strengthened the app by separating temporary admin view state from real authorization, adding server-side report cooldown enforcement, and making author content creation safer to use on slower or error-prone form submissions.
+
+### Presentation-slide material
+
+```text
+- Admin role is no longer mutated for view switching
+- Read-only admin browsing is blocked server-side
+- Reports now have a 24-hour cooldown
+- Author uploads preserve input and support attachments
+- Main UI was tightened for mobile screens
+```
+
+### Speaker-note material
+
+The key idea is that convenience features, like "view as user," should be session-scoped and reversible, while security controls, like report throttling and write blocking, must stay on the server.
+
+### Diagram or screenshot required
+
+```text
+No
+Suggested evidence: test output and updated responsive pages
+```
+
+### References
+
+```text
+AGENTS.md
+PROJECT_SPEC.md
+LESSON_LEARNT.md
+app/Http/Controllers/...
+resources/views/...
+database/migrations/...
+tests/Feature/...
+```
+
+### Final reflection
+
+1. What worked? The implementation stayed focused and the tests passed.
+2. What was difficult? The feed template and author forms needed careful cleanup to keep old behavior intact.
+3. What would be improved in a paid production environment? A cleaner route design for state-changing actions and more formal attachment lifecycle handling.
+4. Can every team member explain this change? Yes, because the session mode, cooldown, and attachment design are documented.
+5. Did this change preserve existing code where possible? Yes.
+
+---
+
+## Entry 013 - Add static report policy and author guidelines pages
+
+### Date and time
+
+```text
+2026-07-18 17:19 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Objective
+
+Replace footer demo text with real static Laravel pages for Report Policy and Author Guidelines.
+
+### Why this work was required
+
+The footer needed real destinations for policy and guideline content while omitting the Contact Us support item.
+
+### Files changed
+
+| File | Change | Reason |
+| --- | --- | --- |
+| `routes/web.php` | Added `reportPolicy` and `authorGuidelines` routes | Provide real static pages |
+| `resources/views/static/layout.blade.php` | Added uniform static-page layout | Keep both pages visually consistent |
+| `resources/views/static/report-policy.blade.php` | Added standard demo report policy | Explain moderation expectations |
+| `resources/views/static/author-guidelines.blade.php` | Renders the author rules markdown | Reuse the approved rule source |
+| `resources/views/*/layout*.blade.php` | Updated footer support links | Remove Contact Us and point to real pages |
+
+### Tests performed
+
+```powershell
+php artisan route:list --name=reportPolicy
+php artisan route:list --name=authorGuidelines
+php artisan test
+```
+
+### Result
+
+```text
+Completed
+```
+
+### Remaining issues
+
+None currently known.
+
+---
+
+## Entry 012 - Fix favicon asset wiring
+
+### Date and time
+
+```text
+2026-07-18
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Objective
+
+Make the browser render the recently added Phan Mee Eain favicon correctly.
+
+### Why this work was required
+
+The browser favicon path was not explicitly wired in the Blade layouts, and the standard `/favicon.ico` asset needed to point to the valid recently added icon.
+
+### Files changed
+
+| File | Change | Reason |
+| --- | --- | --- |
+| `public/favicon.ico` | Copied from `public/phan_mee_eain_favicon.ico` | Use the valid recent favicon at the browser-standard path |
+| `resources/views/user/layout/master.blade.php` | Added favicon link | Ensure user pages request the icon directly |
+| `resources/views/admin/layout/master.blade.php` | Added favicon link | Ensure admin pages request the icon directly |
+| `resources/views/auther/layout/master.blade.php` | Added favicon link | Ensure author pages request the icon directly |
+| `resources/views/user/guest/guestUser.blade.php` | Added favicon link | Ensure guest pages request the icon directly |
+| `resources/views/Login/login.blade.php` | Added favicon link | Ensure login page requests the icon directly |
+| `resources/views/Login/register.blade.php` | Added favicon link | Ensure register page requests the icon directly |
+
+### Tests performed
+
+```powershell
+php artisan test
+```
+
+### Result
+
+```text
+Completed
+```
+
+### Remaining issues
+
+Browsers cache favicons aggressively, so a hard refresh, private window, or cache clear may be needed before the updated icon appears.
+
+---
+
+## Entry 011 - Prevent attachment loss on incomplete author forms
+
+### Date and time
+
+```text
+2026-07-18
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Objective
+
+Keep selected author attachments from being cleared when required fields are incomplete.
+
+### Why this work was required
+
+Browsers intentionally do not restore file inputs after a server validation redirect. Text fields can use `old(...)`, but selected files are cleared when the page reloads.
+
+### Files changed
+
+| File | Change | Reason |
+| --- | --- | --- |
+| `resources/views/auther/home/createContent.blade.php` | Added client-side validation before submit | Stop incomplete forms before selected files are lost |
+| `resources/views/auther/home/editContentPage.blade.php` | Added the same validation guard | Keep edit uploads selected until the form is valid |
+| `myjournal.md` | Added this entry | Keep the project record complete |
+
+### Implementation summary
+
+The author create and edit forms now validate required fields, URL format, allowed file extensions, and the 10 MB total resource limit before submitting. Server-side validation remains the authority.
+
+### Tests performed
+
+```powershell
+php artisan test
+```
+
+### Result
+
+```text
+Completed
+```
+
+### Remaining issues
+
+If the server rejects a request for a reason the browser cannot pre-check, selected files can still be cleared by the redirect. A future enhancement could add temporary draft upload storage, but this pass fixes the normal incomplete-field workflow.
+
+---
+
+## Entry 010 - Refresh footer navigation and demo text
+
+### Date and time
+
+```text
+2026-07-18 15:16 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Branch and commit
+
+```text
+Branch: not a git repository
+Starting commit: not committed yet
+Ending commit: not committed yet
+Pull request: not created
+```
+
+### Objective
+
+Replace dead footer links with real app destinations or plain demo text, and update the footer branding to Phan Mee Eain Learning Hub.
+
+### Why this work was required
+
+The footer still pointed to placeholder `.php` pages that were returning 404s.
+
+### Starting state
+
+Footer navigation in the admin, user, and guest layouts still used old static demo routes such as `/browse.php`, `/contact.php`, and `/admin-feed.php`.
+
+### Evidence before change
+
+```text
+Footer clicks were resolving to placeholder pages rather than the Laravel app routes.
+```
+
+### Files changed
+
+| File | Change | Reason |
+| --- | --- | --- |
+| `resources/views/admin/layout/master.blade.php` | Updated footer links, demo text, branding, and copyright | Remove dead links from the admin layout |
+| `resources/views/user/layout/master.blade.php` | Updated footer links, demo text, branding, and copyright | Remove dead links from the user layout |
+| `resources/views/user/guest/guestUser.blade.php` | Updated footer links, demo text, branding, and copyright | Remove dead links from the guest layout |
+| `myjournal.md` | Added this entry | Keep the project record complete |
+
+### Decision made
+
+Keep only real links for pages that exist now, and turn the remaining footer items into honest demo copy.
+
+### Security impact
+
+No material security impact.
+
+### Performance impact
+
+```text
+No runtime performance impact
+```
+
+### Test performed
+
+```text
+php artisan test
+```
+
+### Result
+
+```text
+Completed
+```
+
+### Remaining issues
+
+None currently known from this footer update.
+
+### Project-book material
+
+This small cleanup shows how a student project can gradually replace placeholder navigation with real application routes while keeping the UI honest about which pages exist and which are still demo copy.
 
 ---
 

@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Content;
+use App\Models\ContentResource;
 use App\Models\React;
+use App\Models\report;
 use App\Models\Saved;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ContentController extends Controller
 {
@@ -45,17 +48,32 @@ class ContentController extends Controller
             ->pluck('content_id')
             ->toArray();
 
+        $activeReportContentIds = report::where('user_id', Auth::id())
+            ->where('role', 1)
+            ->where('created_at', '>=', now()->subDay())
+            ->pluck('content_id')
+            ->toArray();
+
         $category = Category::get();
 
-        return view('user.home.contentPage',compact('latest','contents','savedContentIds','category','find'));
+        return view('user.home.contentPage',compact('latest','contents','savedContentIds','activeReportContentIds','category','find'));
     }
 
     private function countReact(){
     return Content::withCount(['likes', 'loves', 'unlikes','comments'])
-                    ->with(['reacts.user','comments.user'])
+                    ->with(['reacts.user','comments.user','resources'])
                     ->get()
                     ->keyBy('id');
     }
 
-}
+    public function downloadResource(ContentResource $resource)
+    {
+        abort_unless(Auth::check(), 401);
 
+        $disk = Storage::disk('local');
+        abort_unless($disk->exists($resource->storage_path), 404);
+
+        return $disk->download($resource->storage_path, $resource->original_name);
+    }
+
+}

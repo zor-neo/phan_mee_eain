@@ -9,6 +9,7 @@ use App\Models\promote;
 use App\Models\report;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use SweetAlert2\Laravel\Swal;
 
@@ -139,5 +140,27 @@ class AdminController extends Controller
     public function reportedContent($id){
         $data = Content::where('id',$id)->first();
         return view('admin.home.reportedContentPage',compact('data'));
+    }
+
+    public function switchViewMode(Request $request)
+    {
+        abort_unless(Auth::check() && Auth::user()->role === 'admin', 403);
+
+        $request->validate([
+            'mode' => ['required', 'in:admin,user,author_readonly'],
+        ]);
+
+        session(['acting_view_mode' => $request->mode]);
+
+        return back();
+    }
+
+    public function resetViewMode()
+    {
+        abort_unless(Auth::check() && Auth::user()->role === 'admin', 403);
+
+        session(['acting_view_mode' => 'admin']);
+
+        return back();
     }
 }

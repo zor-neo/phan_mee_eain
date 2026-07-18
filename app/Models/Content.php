@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Comment;
 use App\Models\React;
+use App\Models\ContentResource;
 use Illuminate\Database\Eloquent\Model;
 
 class Content extends Model
@@ -34,5 +35,10 @@ class Content extends Model
         }
     public function comments(){
         return $this->hasMany(Comment::class,'content_id');
+    }
+
+    public function resources()
+    {
+        return $this->hasMany(ContentResource::class, 'content_id');
     }
 }

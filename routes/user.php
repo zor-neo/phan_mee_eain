@@ -17,7 +17,7 @@ Route::group(['prefix'=>'user','middleware'=>'user'],function(){
 });
 
 //nev
-Route::group(['prefix'=>'layout'],function(){
+Route::group(['prefix'=>'layout','middleware'=>'readonly.view'],function(){
     Route::get('editProfile',[UserProfileController::class,'editPage'])->name('edit#Page');
     Route::post('edit/process',[UserProfileController::class,'editProcess'])->name('edit#Process');
     Route::get('profile',[UserProfileController::class,'profilePage'])->name('profile#Page');
@@ -25,7 +25,6 @@ Route::group(['prefix'=>'layout'],function(){
     Route::post('ChPass/Process',[UserProfileController::class,'ChPassProcess'])->name('ChPass#Process');
     Route::get('promote',[UserProfileController::class,'promotePage'])->name('promote#Page');
     Route::post('promote/process',[UserProfileController::class,'promoteProcess'])->name('promote#Process');
-    Route::get('switchRole',[UserProfileController::class,'switchProcess'])->name('switch#Process');
     Route::get('auther/room',[UserProfileController::class,'autherRoom'])->name('auther#Room');
     Route::get('suggestion',[UserProfileController::class,'SuggestionPage'])->name('suggestion#Page');
     Route::post('suggestion/process',[UserProfileController::class,'SuggestionProcess'])->name('suggestion#Process');
@@ -37,7 +36,7 @@ Route::group(['prefix'=>'content'],function(){
     Route::get('show/contentPage/{find?}',[ContentController::class,'contentPage'])->name('content#Page');
 });
 
-Route::group(['prefix'=>'auther'],function(){
+Route::group(['prefix'=>'auther','middleware'=>'readonly.view'],function(){
     Route::get('playlist',[AutherProfileController::class,'playlistPage'])->name('playlist#Page');
     Route::get('content',[AutherProfileController::class,'contentPage'])->name('autherContent#Page');
     Route::get('comment/{para?}',[AutherProfileController::class,'commentPage'])->name('comment#Page');
@@ -47,13 +46,14 @@ Route::group(['prefix'=>'auther'],function(){
     Route::get('createVContent',[AutherProfileController::class,'createVContentPage'])->name('createVContent#Page');
     Route::get('editContent/{id}',[AutherProfileController::class,'editContentPage'])->name('editContent#Page');
     Route::post('editContent/Process',[AutherProfileController::class,'editContentProcess'])->name('editContent#Process');
-    Route::get('deleteContent/Process/{id}/{image}',[AutherProfileController::class,'deleteContentProcess'])->name('deleteContent#Process');
+    Route::get('deleteContent/Process/{id}/{image?}',[AutherProfileController::class,'deleteContentProcess'])->name('deleteContent#Process');
 });
 
-Route::group(['prefix'=>'content'],function(){
+Route::group(['prefix'=>'content','middleware'=>'readonly.view'],function(){
     Route::post('react/{user_id}/{content_id}/{type}',[ReactController::class,'reactionProcess'])->name('reaction.Process');
     Route::post('comment',[CommentController::class,'commentProcess'])->name('comment.Process');
     Route::delete('comment/delete/{commentId}', [CommentController::class, 'commentDelete'])->name('comment.Delete');
-    Route::post('/report/process',[ReportController::class,'reportProcess'])->name('report.Process');
+    Route::post('report/process',[ReportController::class,'reportProcess'])->name('report.Process');
     Route::get('saveContent/{userId}/{contentId}',[SavedController::class,'saveContent'])->name('save.Content');
+    Route::get('resource/{resource}',[ContentController::class,'downloadResource'])->name('contentResource.download');
     });

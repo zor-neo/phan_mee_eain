@@ -8,10 +8,10 @@
                         <h4 class="fw-bold mb-4">"ဖန်မီးအိမ်"လေးရဲ့အလင်းအားဖြင့် အမှောင်ကိုလည်းခွင်းစေ၊ အလင်းကိုလည်းရစေ။</h4>
                         <p class="lead sw-muted">
                             <span class="d-inline-block fst-italic fs-4 fw-semibold text-dark border-start border-3 ps-3">
-                                &ldquo;Breakthroughs are rarely easy; they are often born in struggle,uch like the sun breaking through a dense morning fog.&rdquo;
+                                &ldquo;Breakthroughs are rarely easy; they are often born in struggle, much like the sun breaking through a dense morning fog.&rdquo;
                             </span>
                             <span class="text-primary fw-bold">Phan Mee Eain(ဖန်မီးအိမ်)</span>
-                            ဆိုတဲ့ ကျွန်ုပ်တို့ရဲ့ ခိုလုံရာလေးဟာ စဉ်ဆက်မပြတ် ဆက်လက်လေ့လာလို၊ သင်ကြားလို၊ မေတ္တာဖြင့်သင်ကြားပို့ချလိုကြသော ကျွန်ုပ်တို့ပြည်သူများအတွက် တစ်စုံတစ်ရာသော အကျိုးဖြစ်စေရန်အဖို့ငှာ "ဖန်မီးအိမ်"ကိုရည်ရွယ်ဖန်တီးခဲ့ပါသည်။ လေ့လာသင်ကြားရေးအတွက် လိုအပ်သောအရင်းအမြစ်များအား တစုတစည်းတည်း ဖြစ်စေရန် ကူညီခြင်းဖြင့် လေ့လာ၊သင်ကြား၊ပို့ချနေကြသောသူများအား မေတ္တာများနှင့်အတူ "ဖန်မီးအိမ်"မှ အမြဲအသင့်ရှိနေပါမည်။</p>
+                            ဆိုတဲ့ ကျွန်ုပ်တို့ရဲ့ ခိုလှုံရာလေးဟာ စဉ်ဆက်မပြတ် ဆက်လက်လေ့လာလို၊ သင်ကြားလို၊ မေတ္တာဖြင့်သင်ကြားပို့ချလိုကြသော ကျွန်ုပ်တို့ပြည်သူများအတွက် တစ်စုံတစ်ရာသော အကျိုးဖြစ်စေရန်အဖို့ငှာ "ဖန်မီးအိမ်"ကိုရည်ရွယ်ဖန်တီးခဲ့ပါသည်။ လေ့လာသင်ကြားရေးအတွက် လိုအပ်သောအရင်းအမြစ်များအား တစုတစည်းတည်း ဖြစ်စေရန် ကူညီခြင်းဖြင့် လေ့လာ၊သင်ကြား၊ပို့ချနေကြသောသူများအား မေတ္တာများနှင့်အတူ "ဖန်မီးအိမ်"မှ အမြဲအသင့်ရှိနေပါမည်။</p>
                         <a class="btn btn-outline-primary mt-3" href="{{route('content#Page')}}">Browse Contents</a>
                     </div>
                     <div class="col-lg-6">

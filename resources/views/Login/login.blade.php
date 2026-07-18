@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Phan Mee Ein</title>
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -332,7 +333,7 @@
                     <small class="text-danger">{{ $message }}</small>
                 @enderror
 
-                <input type="password" name="password" class="form-control" placeholder="Password">
+                <input type="password" name="password" class="form-control" placeholder="Password" autocomplete="current-password">
                 @error('password')
                     <small class="text-danger">{{ $message }}</small>
                 @enderror

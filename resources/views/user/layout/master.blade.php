@@ -6,10 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Phan Mee Eain</title>
+    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link href="{{ asset('user/vendor1/fonts/spring-wisdom-fonts.css') }}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
-    <link href="{{ asset('user/vendor1/cdn/cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css') }}.."
+    <link href="{{ asset('user/vendor1/cdn/cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css') }}"
         rel="stylesheet">
     <link href="{{ asset('user/css/style.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -41,6 +42,15 @@
 </head>
 
 <body>
+    @php
+        $actingViewMode = session('acting_view_mode', Auth::user()->role === 'admin' ? 'admin' : Auth::user()->role);
+        $canSeeAuthorRoom = Auth::user()->role === 'author' || $actingViewMode === 'author_readonly';
+        $roleLabel = $actingViewMode === 'author_readonly'
+            ? 'author (read-only)'
+            : ($actingViewMode === 'user' && Auth::user()->role === 'admin'
+                ? 'user'
+                : Auth::user()->role);
+    @endphp
 
     <nav class="navbar navbar-expand-lg sw-navbar sticky-top">
         <div class="container-lg">
@@ -52,16 +62,7 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link" href="{{ route('userHome') }}">Home</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle " href="#" role="button"
-                            data-bs-toggle="dropdown">Role Switch</a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="droupdown-item ms-3" href="{{ route('switch#Process') }}">Sign in as Admin</a>
-                            </li>
-                        </ul>
-                    </li>
-                    @if (Auth::user()->role == 'author')
+                    @if ($canSeeAuthorRoom)
                         <li class="nav-item"><a class="nav-link" href="{{ route('auther#Room') }}">Author Room</a></li>
                     @endif
                 </ul>
@@ -77,11 +78,11 @@
                     <ul class="dropdown-menu dropdown-menu-dark">
                         <li class="dropdown-header">
                             <div class="row">
-                                <img class="col-4sw-avatar"
+                                <img class="sw-avatar col-4"
                                     src="{{ asset(Auth::user()->image == null ? 'image/user-male-circle.jpg' : '/profile/' . Auth::user()->image) }}"
                                     alt="Admin Scholar profile picture">
                                 <div class="col-7 offset-1">
-                                    <strong> Role - {{ Auth::user()->role }}</strong>
+                                    <strong> Role - {{ $roleLabel }}</strong>
                                     <div class="small">{{ Auth::user()->email }}</div>
                                 </div>
                             </div>
@@ -100,7 +101,7 @@
                                 <i class="fa-regular fa-comment-dots me-3"></i> User Suggestion
                             </a>
                         </li>
-                        @if (Auth::user()->role != 'auther')
+                        @if (Auth::user()->role === 'user' || $actingViewMode === 'user')
                             <li><a class="dropdown-item" href="{{ route('promote#Page') }}"><i
                                         class="fa-solid fa-person-arrow-up-from-line me-3"></i> Request To Promote</a>
                             </li>
@@ -141,51 +142,45 @@
         <div class="container-lg py-5">
             <div class="row g-4">
                 <div class="col-lg-5">
-                    <a class="footer-brand fw-bold" href="/home.php">Spring Wisdom</a>
-                    <p class="small sw-muted mt-2 mb-3">Preserving knowledge for focused digital learning through
-                        curated readings, author contributions, and responsible moderation.</p>
+                    <a class="footer-brand fw-bold" href="{{ route('userHome') }}">Phan Mee Eain Learning Hub</a>
+                    <p class="small sw-muted mt-2 mb-3">A focused learning space for reading, writing, sharing, and responsible moderation.</p>
                     <div class="d-flex flex-wrap gap-2">
-                        <a class="footer-icon-link" href="#" aria-label="Contact Spring Wisdom"><i
+                        <a class="footer-icon-link" href="{{ route('adminHome') }}" aria-label="Open admin alerts"><i
                                 class="bi bi-envelope"></i></a>
-                        <a class="footer-icon-link" href="#" aria-label="Help Center"><i
+                        <a class="footer-icon-link" href="javascript:void(0)" aria-label="Help Center coming soon"><i
                                 class="bi bi-chat-left-text"></i></a>
-                        <a class="footer-icon-link" href="#" aria-label="Platform updates"><i
-                                class="bi bi-megaphone"></i></a>
                     </div>
                 </div>
                 <div class="col-6 col-lg-2">
                     <h2 class="footer-heading">Explore</h2>
                     <ul class="footer-links">
-                        <li><a href="/home.php">Home</a></li>
-                        <li><a href="/browse.php">Browse</a></li>
-                        <li><a href="/archives.php">All Archives</a></li>
-                        <li><a href="/admin-feed.php">Updates</a></li>
+                        <li><a href="{{ route('userHome') }}">Home</a></li>
+                        <li><a href="{{ route('content#Page') }}">Browse Contents</a></li>
                     </ul>
                 </div>
                 <div class="col-6 col-lg-2">
                     <h2 class="footer-heading">Support</h2>
                     <ul class="footer-links">
-                        <li><a href="/contact.php">Contact Us</a></li>
-                        <li><a href="/report-policy.php">Report Policy</a></li>
-                        <li><a href="/author-guidelines.php">Author Guidelines</a></li>
-                        <li><a href="/help-center.php">Help Center</a></li>
+                        <li><a href="{{ route('reportPolicy') }}">Report Policy</a></li>
+                        <li><a href="{{ route('authorGuidelines') }}">Author Guidelines</a></li>
+                        <li><span>Help Center: AI chat will be integrated later.</span></li>
                     </ul>
                 </div>
                 <div class="col-lg-3">
                     <h2 class="footer-heading">Contact</h2>
                     <address class="small sw-muted mb-0" id="contact">
-                        Spring Wisdom Learning Portal<br>
-                        Student Final Project Demo<br>
-                        Email: <a href="mailto:contact@springwisdom.test">contact@springwisdom.test</a>
+                        Phan Mee Eain Learning Hub<br>
+                        Demo contact placeholder<br>
+                        Email: will be updated when Render provides a custom address
                     </address>
                 </div>
             </div>
             <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between gap-2 mt-4 pt-4">
-                <p class="small sw-muted mb-0">&copy; 2026 Spring Wisdom. All rights reserved.</p>
+                <p class="small sw-muted mb-0">&copy; Phan Mee Eain 2026</p>
                 <div class="d-flex flex-wrap gap-3 small">
-                    <a href="/privacy-policy.php">Privacy Policy</a>
-                    <a href="/terms.php">Terms of Use</a>
-                    <a href="/accessibility.php">Accessibility</a>
+                    <span>Privacy Policy: demo text only.</span>
+                    <span>Terms of Use: demo text only.</span>
+                    <span>Accessibility: demo text only.</span>
                 </div>
             </div>
         </div>

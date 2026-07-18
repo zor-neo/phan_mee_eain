@@ -6,9 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Content;
+use App\Models\ContentResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Str;
 use SweetAlert2\Laravel\Swal;
 
@@ -78,8 +81,11 @@ class AutherProfileController extends Controller
             $image = uniqid().$request->file('image')->getClientOriginalName();
             $request->file('image')->move(public_path().'/content/',$image);
             $data['image'] = $image;
+        } else {
+            $data['image'] = null;
         }
-        Content::create($data);
+        $content = Content::create($data);
+        $this->storeResources($request, $content);
         Swal::success([
                 'title' => 'Success create Content']);
         return to_route('autherContent#Page');
@@ -126,10 +132,12 @@ class AutherProfileController extends Controller
             $data['image'] = $image;
 
         }else{
-            $data['image'] = $request->oldImage;
+            $data['image'] = $request->oldImage ?: null;
         }
 
         Content::where('id',$ContentId)->update($data);
+        $content = Content::findOrFail($ContentId);
+        $this->storeResources($request, $content);
         Swal::success([
                 'title' => 'Success create Content']);
         return to_route('autherContent#Page');
@@ -137,13 +145,23 @@ class AutherProfileController extends Controller
     }
 
     //delete content process
-    public function deleteContentProcess($id,$image){
+    public function deleteContentProcess($id, $image = null){
          //dd('id'.'='.$id);
         $Id = Str::of($id)->toInteger();
-        // dd($image);
-        Content::where('id',$Id)->delete();
-        if(file_exists(public_path('content/'.$image))){
-            unlink(public_path('content/'.$image));}
+        $content = Content::with('resources')->find($Id);
+
+        if (! $content) {
+            return to_route('autherContent#Page');
+        }
+
+        foreach ($content->resources as $resource) {
+            Storage::disk('local')->delete($resource->storage_path);
+        }
+
+        $content->delete();
+        if ($image && file_exists(public_path('content/'.$image))) {
+            unlink(public_path('content/'.$image));
+        }
         Swal::success([
                 'title' => 'Success delete Content']);
         return to_route('autherContent#Page');
@@ -154,20 +172,25 @@ class AutherProfileController extends Controller
     private function checkContentValidation($request){
         $request->validate([
             'title' => 'required',
-            'image' => 'required|mimes:png,jpg,psv,jpng',
+            'image' => 'nullable|file|mimes:png,jpg,jpeg,webp,gif',
             'object' => 'required',
             'category' => 'required',
             'content' => 'required',
+            'link' => 'nullable|url',
+            'resources' => 'nullable|array',
+            'resources.*' => 'file|mimes:png,jpg,jpeg,webp,gif,mp4,mov,avi,mkv,pdf,doc,docx,ppt,pptx,xls,xlsx,txt,zip|max:5120',
         ]);
+
+        $this->validateResourceSize($request);
     }
 
     //create content process
     private function createProcess($request){
-        if($request->has('link')){
+        if($request->filled('link')){
             return [
                 'title' => $request->title,
                 'category_id' => $request->category,
-                'role' => $request->object[0],
+                'role' => $request->object,
                 'user_id'=>Auth::id(),
                 'content' => $request->content,
                 'link' => $request->link,
@@ -176,7 +199,7 @@ class AutherProfileController extends Controller
            return [
             'title' => $request->title,
                 'category_id' => $request->category,
-                'role' => $request->object[0],
+                'role' => $request->object,
                 'user_id'=>Auth::id(),
                 'content' => $request->content,
                 'link' => null,
@@ -191,16 +214,21 @@ class AutherProfileController extends Controller
             'object' => 'required',
             'category' => 'required',
             'content' => 'required',
+            'link' => 'nullable|url',
+            'resources' => 'nullable|array',
+            'resources.*' => 'file|mimes:png,jpg,jpeg,webp,gif,mp4,mov,avi,mkv,pdf,doc,docx,ppt,pptx,xls,xlsx,txt,zip|max:5120',
         ]);
+
+        $this->validateResourceSize($request);
     }
 
     //edit content Process
     private function editProcess($request){
-        if($request->has('link')){
+        if($request->filled('link')){
             return [
                 'title' => $request->title,
                 'category_id' => $request->category,
-                'role' => $request->object[0],
+                'role' => $request->object,
                 'user_id'=>Auth::id(),
                 'content' => $request->content,
                 'link' => $request->link,
@@ -209,11 +237,52 @@ class AutherProfileController extends Controller
            return [
                 'title' => $request->title,
                 'category_id' => $request->category,
-                'role' => $request->object[0],
+                'role' => $request->object,
                 'user_id'=>Auth::id(),
                 'content' => $request->content,
                 'link' => null,
             ];
+        }
+    }
+
+    private function validateResourceSize(Request $request): void
+    {
+        $files = $request->file('resources', []);
+        $totalSize = 0;
+
+        foreach ($files as $file) {
+            $totalSize += $file->getSize();
+        }
+
+        if ($totalSize > 10 * 1024 * 1024) {
+            throw ValidationException::withMessages([
+                'resources' => 'The total resource size must be 10 MB or less.',
+            ]);
+        }
+    }
+
+    private function storeResources(Request $request, Content $content): void
+    {
+        if (! $request->hasFile('resources')) {
+            return;
+        }
+
+        foreach ($request->file('resources') as $file) {
+            if (! $file->isValid()) {
+                continue;
+            }
+
+            $storedName = Str::uuid()->toString().'_'.$file->getClientOriginalName();
+            Storage::disk('local')->putFileAs('content-resources', $file, $storedName);
+
+            ContentResource::create([
+                'content_id' => $content->id,
+                'original_name' => $file->getClientOriginalName(),
+                'storage_path' => 'content-resources/'.$storedName,
+                'mime_type' => $file->getMimeType() ?: 'application/octet-stream',
+                'extension' => strtolower($file->getClientOriginalExtension() ?: ''),
+                'size_bytes' => $file->getSize(),
+            ]);
         }
     }
 }

@@ -55,7 +55,7 @@
                                 </div>
                                 <div class="card-body">
                                     <div class=" col form-check mb-3">
-                                        <p>စာရေးသူ (Author) အဆင့်အတန်းသို့တိုးမြင့် ပေးအပ်ခြင်း၊ ပယ်ဖျက်ခြင်းနှင့် စပ်လျဉ်း၍ စီမံခန့်ခွဲမှုအဖွဲ့ (Admin Team) ၏ ဆုံးဖြတ်ချက်သာ အတည်ဖြစ်သည်။ ခိုင်လုံသော အကြောင်းပြချက်ရှိပါက စီမံခန့်ခွဲမှုအဖွဲ့သည် စာရေးသူအဆင့်အတန်းကို မည်သည့်အချိန်တွင်မဆို ပြန်လည်ရုပ်သိမ်းပိုင်ခွင့်ရှိသည်။</p>
+                                        <p>ဖြန့်ဝေမည့် အကြောင်းအရာအားလုံးသည် အသိပညာပေးရန်၊ သတင်းအချက်အလက် မျှဝေရန်နှင့် လူ့အဖွဲ့အစည်းအတွက် အကျိုးဖြစ်ထွန်းစေသော၊ လေ့လာသင်ယူမှုကို ဦးတည်သော ရည်ရွယ်ချက် ရှိရပါမည်။</p>
                                         <input class="form-check-input" name="check3" type="checkbox" id="terms">
 
                                         <label class="form-check-label" for="terms">
@@ -70,18 +70,20 @@
                             </div>
                             <div class=" col-12 card mb-3">
                                 <div class="card-title mt-3 ms-3 fw-bold fs-large">
-                                    We are Allow to following uses
+                                    REMINDERS
                                 </div>
                                 <div class="card-body">
                                     <div class=" col form-check mb-3">
                                         <ol>
-                                            <li>ဖြန့်ဝေမည့် အကြောင်းအရာအားလုံးသည် အသိပညာပေးရန်၊ သတင်းအချက်အလက် မျှဝေရန်နှင့် လူ့အဖွဲ့အစည်းအတွက် အကျိုးဖြစ်ထွန်းစေသော၊ လေ့လာသင်ယူမှုကို ဦးတည်သော ရည်ရွယ်ချက် ရှိရပါမည်။</li>
-                                            <li>အင်္ဂလိပ်ဘာသာစကား၊ မြန်မာဘာသာစကား သို့မဟုတ် ၎င်းဘာသာစကားနှစ်မျိုးစလုံးကို ပူးတွဲအသုံးပြုထားသည့် တင်ပြချက်များကိုသာ ကနဦးအနေဖြင့် လက်ခံပါမည်။ (နောင်တွင် အခြားဘာသာစကားအသုံးပြု တင်ပြမှုများကို တိုးချဲ့လက်ခံသွားနိုင်ခြင်းမျိုး ရှိနိုင်ပါသည်။)</li>
+                                            <ul>
+                                                <li>စာရေးသူ (Author) အဆင့်အတန်းသို့တိုးမြင့် ပေးအပ်ခြင်း၊ ပယ်ဖျက်ခြင်းနှင့် စပ်လျဉ်း၍ စီမံခန့်ခွဲမှုအဖွဲ့ (Admin Team) ၏ ဆုံးဖြတ်ချက်သာ အတည်ဖြစ်သည်။ ခိုင်လုံသော အကြောင်းပြချက်ရှိပါက စီမံခန့်ခွဲမှုအဖွဲ့သည် စာရေးသူအဆင့်အတန်းကို မည်သည့်အချိန်တွင်မဆို ပြန်လည်ရုပ်သိမ်းပိုင်ခွင့်ရှိသည်။</li>
+                                                <li>အင်္ဂလိပ်ဘာသာစကား၊ မြန်မာဘာသာစကား သို့မဟုတ် ၎င်းဘာသာစကားနှစ်မျိုးစလုံးကို ပူးတွဲအသုံးပြုထားသည့် တင်ပြချက်များကိုသာ ကနဦးအနေဖြင့် လက်ခံပါမည်။ (နောင်တွင် အခြားဘာသာစကားအသုံးပြု တင်ပြမှုများကို တိုးချဲ့လက်ခံသွားနိုင်ခြင်းမျိုး ရှိနိုင်ပါသည်။)</li>
+                                            </ul>
                                         </ol>
                                         <input class="form-check-input" name="check4" type="checkbox" id="terms">
 
                                         <label class="form-check-label" for="terms">
-                                            I agree to the Terms & Conditions
+                                            I acknowledge
                                         </label> <br>
                                         @error('check4')
                                             <small class="text-danger mt-2">{{ $message }}</small>
@@ -92,7 +94,7 @@
 
                             <div class="card col-12 mt-3">
                                 <div class="card-body justify-content-center">
-                                    <label for="" class='fw-bold d-flex justify-content-center'>Are you agree all terms & conditions? Confirm again!</label>
+                                    <label for="" class='fw-bold d-flex justify-content-center'>Please confirm below if you agree all terms and conditions above.</label>
                                     <div class="d-flex justify-content-center mt-3">
                                         <button type="submit" class="btn btn-outline-primary ">Confirm</button>
                                     </div>

@@ -54,3 +54,17 @@ test('admins are redirected away from user home', function () {
     expect($response->getStatusCode())->toBe(302);
     expect($response->headers->get('Location'))->toBe(url('/dashboard'));
 });
+
+test('admins can access user home in user view mode', function () {
+    $admin = User::factory()->create([
+        'role' => 'admin',
+    ]);
+
+    $this->actingAs($admin);
+    session(['acting_view_mode' => 'user']);
+    $middleware = app(UserMiddleware::class);
+    $request = Request::create('/user/home', 'GET');
+
+    $response = $middleware->handle($request, fn () => response('allowed'));
+    expect($response->getStatusCode())->toBe(200);
+});

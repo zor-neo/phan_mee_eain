@@ -90,7 +90,7 @@
                                     <h2 class="h4 fw-bold"><i class="bi bi-person-plus text-primary me-2"></i> Users
                                         Requests </h2>
                                         <small class="ms-4">Promote to Auther</small> <br>
-                                    <a href="#" class="fw-semibold mt-3">View all requests</a>
+                                        <a href="{{ route('requestToPromoPage') }}" class="fw-semibold mt-3">View all requests</a>
                                 </div>
                                 <div class="sw-panel">
                                     <h2 class="h4 fw-bold mb-3"><i class="bi bi-envelope text-primary"></i> Suggestion
