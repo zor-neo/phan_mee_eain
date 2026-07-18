@@ -170,17 +170,17 @@
                     <h2 class="footer-heading">Contact</h2>
                     <address class="small sw-muted mb-0" id="contact">
                         Phan Mee Eain Learning Hub<br>
-                        Demo contact placeholder<br>
-                        Email: will be updated when Render provides a custom address
+                        www.gurus.com<br>
+                        Email: support@gurus.com
                     </address>
                 </div>
             </div>
             <div class="footer-bottom d-flex flex-column flex-md-row justify-content-between gap-2 mt-4 pt-4">
                 <p class="small sw-muted mb-0">&copy; Phan Mee Eain 2026</p>
                 <div class="d-flex flex-wrap gap-3 small">
-                    <span>Privacy Policy: demo text only.</span>
-                    <span>Terms of Use: demo text only.</span>
-                    <span>Accessibility: demo text only.</span>
+                    <span>Privacy Policy</span>
+                    <span>Terms of Use</span>
+                    <span>Accessibility</span>
                 </div>
             </div>
         </div>
