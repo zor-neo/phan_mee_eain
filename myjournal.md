@@ -84,8 +84,99 @@ AI_SHARED_SECRET
 |   036 | 2026-07-19 | Add production operations and recovery guide | `not committed yet` | Completed |
 |   037 | 2026-07-19 | Add GitHub Actions CI workflow | `not committed yet` | Completed |
 |   038 | 2026-07-19 | Fix CI demo seeder environment handling | `not committed yet` | Completed |
+|   039 | 2026-07-19 | Disable Vite manifest dependency during tests | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 039 - Disable Vite manifest dependency during tests
+
+### Date and time
+
+```text
+2026-07-19 06:40 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment operator and coding assistant
+```
+
+### Objective
+
+Fix the second GitHub Actions failure in the Laravel test step.
+
+### Existing behavior
+
+The pushed CI repair for demo seed configuration reached GitHub Actions, but the new run still failed at `Run Laravel tests`.
+
+A clean Linux clone reproduced the failure:
+
+```text
+Vite manifest not found at: /tmp/app/public/build/manifest.json
+```
+
+The failure happened when auth tests rendered Breeze guest layout views before the CI workflow had run `npm run build`.
+
+### Root cause
+
+Local testing passed because `public/build/manifest.json` already existed from previous frontend builds. A clean GitHub checkout correctly starts without generated build assets. Some backend feature tests render views that contain `@vite`, so Laravel tried to load a manifest that had not been generated yet.
+
+### Selected solution
+
+Call Laravel's `withoutVite()` helper from the shared test base class:
+
+```text
+tests/TestCase.php
+```
+
+This keeps backend response tests focused on Laravel behavior. The workflow still runs `npm run build` later as a separate frontend validation step, so real asset build failures are still caught.
+
+### Alternative considered
+
+Moving `npm ci` and `npm run build` before `php artisan test` would also provide the manifest. That would make every backend test run depend on frontend build time and Node availability. Disabling Vite in the test base is a cleaner fit because the tests are not asserting compiled asset contents.
+
+### Commands executed
+
+```powershell
+docker run --rm composer:2 sh -lc "git clone --depth=1 https://github.com/zor-neo/phan_mee_eain.git /tmp/app && cd /tmp/app && cp .env.example .env && composer install --no-interaction --prefer-dist --no-progress && php artisan key:generate --ansi && php artisan config:clear --ansi && php artisan test --stop-on-failure"
+php artisan optimize:clear
+php artisan test --stop-on-failure
+npm run build
+php artisan config:cache
+php artisan route:cache
+php artisan optimize:clear
+php -l tests\TestCase.php
+```
+
+### Test results
+
+```text
+Clean Linux clone before fix: failed because public/build/manifest.json was missing
+Laravel tests with public/build temporarily moved aside: passed, 65 tests, 173 assertions
+npm run build: passed
+config:cache, route:cache, optimize:clear: passed
+PHP syntax check: passed
+```
+
+### Files changed
+
+```text
+tests/TestCase.php
+myjournal.md
+```
+
+### Security impact
+
+No security-sensitive runtime behavior changed. The change applies only during automated tests.
+
+### Deployment impact
+
+No migration or Render environment change is required. The next push should let the Laravel test job proceed without requiring prebuilt Vite assets.
 
 ---
 
