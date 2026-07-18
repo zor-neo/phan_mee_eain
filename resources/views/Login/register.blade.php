@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Spring Wisdom Learning Portal</title>
+    <title>Phan Mee Eain Learning Portal</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
 
     <!-- Bootstrap -->
@@ -314,14 +314,14 @@
 
         <div class="left-side">
             <div class="d-flex align-items-center">
-                <div class="logo">Phan Mee Ein (ဖန်မီးအိမ်)</div>
+                <div class="logo">Phan Mee Eain (ဖန်မီးအိမ်)</div>
             </div>
 
             <div class="welcome-text">
                 <div>
                     <h1>
                         Welcome to <br />
-                        Phan Mee Ein <br />
+                        Phan Mee Eain <br />
                         Learning Portal
                     </h1>
 
