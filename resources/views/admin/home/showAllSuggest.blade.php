@@ -6,7 +6,13 @@
                 <div class="container-lg">
                     <div class="row align-items-center g-5">
                         <div class="col-12">
-                            <label for="" class="fw-bold fs-4 mb-3">User Suggestion</label>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <label for="" class="fw-bold fs-4 mb-0">User Suggestion</label>
+                                <form action="{{ route('suggestions.markSeen') }}" method="post">
+                                    @csrf
+                                    <button type="submit" class="btn btn-outline-primary btn-sm">Mark all as seen</button>
+                                </form>
+                            </div>
                             <table class="table">
                                 <thead>
                                     <tr class="">

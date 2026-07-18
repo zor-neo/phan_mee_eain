@@ -126,7 +126,7 @@
                 <a href="{{ route('autherContent#Page') }}"
                     class="nav-link text-secondary py-3 px-4 d-flex align-items-center nav-link-custom"><i
                         class="fas fa-graduation-cap text-purple fs-5 me-3" style="width: 25px;"></i> contents</a>
-                <a href="{{ route('comment#Page',['para' => 'seen']) }}"
+                <a href="{{ route('comment#Page') }}"
                     class="nav-link text-secondary py-3 px-4 d-flex align-items-center nav-link-custom"><i
                         class="fas fa-comment text-purple fs-5 me-3" style="width: 25px;"></i> comments</a>
             </nav>

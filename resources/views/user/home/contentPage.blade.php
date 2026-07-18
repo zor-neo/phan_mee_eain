@@ -619,7 +619,7 @@
                 const icon = btn.querySelector('i');
 
                 fetch(`/content/saveContent/${ownerId}/${contentId}`, {
-                        method: 'GET',
+                        method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                             'Accept': 'application/json',

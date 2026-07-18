@@ -44,8 +44,17 @@
                                             <td>{{ $item->created_at->format('d-m-y') }}</td>
 
                                             <td>
-                                                <a href="{{route('demote#Process',$item->id)}}" class="btn btn-outline-danger fw-bold me-2 p-1">Demote <i class="fa-solid fa-turn-down ms-2"></i></a>
-                                                <a href="{{ route('deleteUserProcess', ['id' => $item->id, 'image' => $item->image]) }}"><i class="fa-solid fa-trash me-1"></i></a>
+                                                <form action="{{ route('demote#Process', $item->id) }}" method="post" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-outline-danger fw-bold me-2 p-1" onclick="return confirm('Demote this author?')">Demote <i class="fa-solid fa-turn-down ms-2"></i></button>
+                                                </form>
+                                                <form action="{{ $item->image ? route('deleteUserProcess', ['id' => $item->id, 'image' => $item->image]) : route('deleteUserProcess', ['id' => $item->id]) }}" method="post" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-link text-danger p-0" onclick="return confirm('Delete this user account?')">
+                                                        <i class="fa-solid fa-trash me-1"></i>
+                                                    </button>
+                                                </form>
                                             </td>
                                         </tr>
                                     </tbody>

@@ -9,6 +9,10 @@
             <!-- Page Title -->
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 bg-white p-3 rounded shadow-sm border">
                 <h1 class="fs-4 fw-bold text-secondary mb-0"><i class="fas fa-comments text-purple me-2"></i> User Comments</h1>
+                <form action="{{ route('comment.markSeen') }}" method="post">
+                    @csrf
+                    <button type="submit" class="btn btn-outline-primary btn-sm">Mark all as seen</button>
+                </form>
             </div>
 
             <div class="row">

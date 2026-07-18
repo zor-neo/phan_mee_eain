@@ -32,7 +32,13 @@
                                             <td>{{ $item->created_at->format('d-m-y') }}</td>
 
                                             <td>
-                                                <a href="{{ route('deleteUserProcess', ['id' => $item->id, 'image' => $item->image]) }}"><i class="fa-solid fa-trash me-1"></i></a>
+                                                <form action="{{ $item->image ? route('deleteUserProcess', ['id' => $item->id, 'image' => $item->image]) : route('deleteUserProcess', ['id' => $item->id]) }}" method="post" class="d-inline">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-link text-danger p-0" onclick="return confirm('Delete this user account?')">
+                                                        <i class="fa-solid fa-trash me-1"></i>
+                                                    </button>
+                                                </form>
                                             </td>
                                         </tr>
                                     </tbody>

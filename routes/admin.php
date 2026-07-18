@@ -14,9 +14,11 @@ Route::group(['prefix'=>'admins','middleware'=>'admin'],function(){
     Route::get('requset/promo',[AdminController::class,'requestToPromo'])->name('requestToPromoPage');
     Route::post('view-mode',[AdminController::class,'switchViewMode'])->name('viewMode#Process');
     Route::post('view-mode/reset',[AdminController::class,'resetViewMode'])->name('viewMode#Reset');
-    Route::get('demote/{id?}',[AdminController::class,'demoteProcess'])->name('demote#Process');
-    Route::get('promotion/{id?}',[AdminController::class,'promotion'])->name('promote.process');
-    Route::get('delete/user/{id?}/{image:?}',[AdminController::class,'deleteUser'])->name('deleteUserProcess');
+    Route::post('demote/{id}',[AdminController::class,'demoteProcess'])->name('demote#Process');
+    Route::post('promotion/{id}',[AdminController::class,'promotion'])->name('promote.process');
+    Route::delete('delete/user/{id}/{image?}',[AdminController::class,'deleteUser'])->name('deleteUserProcess');
+    Route::post('user/report/mark-seen',[AdminController::class,'markReportsSeen'])->name('reports.markSeen');
+    Route::post('user/suggest/mark-seen',[AdminController::class,'markSuggestionsSeen'])->name('suggestions.markSeen');
     Route::get('reportedContent/{id?}',[AdminController::class,'reportedContent'])->name('reportedContentPage');
 
 
@@ -32,5 +34,5 @@ Route::group(['prefix'=>'profile'],function(){
 Route::group(['prefix'=>'category'],function(){
     Route::get('page',[CategoryController::class,'categoryPage'])->name('category#Page');
     Route::post('Process',[CategoryController::class,'createProcess'])->middleware('readonly.view')->name('create#Process');
-    Route::get('delete/{id}',[CategoryController::class,'deleteProcess'])->middleware('readonly.view')->name('delete#Process');
+    Route::delete('delete/{id}',[CategoryController::class,'deleteProcess'])->middleware('readonly.view')->name('delete#Process');
 });

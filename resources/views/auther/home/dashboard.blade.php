@@ -38,7 +38,7 @@
                     <div class="card p-4 border shadow-sm h-100 rounded-3 bg-white position-relative overflow-hidden">
                         <h2 class="fs-1 fw-bold text-dark mb-0">{{count($comments)}}</h2>
                         <p class="text-muted small fw-bold mb-4">Unread Comments</p>
-                        <a href="{{ route('comment#Page',['para' => 'seen']) }}" class="btn btn-outline-primary w-100 mt-auto">View Comments</a>
+                        <a href="{{ route('comment#Page') }}" class="btn btn-outline-primary w-100 mt-auto">View Comments</a>
                         <i class="fas fa-comments dashboard-icon"></i>
                     </div>
                 </div>

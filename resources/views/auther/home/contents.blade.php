@@ -37,7 +37,11 @@
                                 <p class="card-text text-muted small mb-3 flex-grow-1">{{ Str::words($item->content, 50, '.....') }}</p>
                                 <div class="d-flex flex-wrap gap-2 mt-auto">
                                     <a href="{{ route('editContent#Page', $item->contentId) }}" class="btn bg-purple text-white flex-grow-1 btn-sm"><i class="fas fa-edit"></i> Edit</a>
-                                    <a href="{{ $item->image ? route('deleteContent#Process', [$item->contentId, $item->image]) : route('deleteContent#Process', [$item->contentId]) }}" class="btn btn-outline-danger btn-sm"><i class="fas fa-trash"></i></a>
+                                    <form action="{{ $item->image ? route('deleteContent#Process', [$item->contentId, $item->image]) : route('deleteContent#Process', [$item->contentId]) }}" method="post" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm" onclick="return confirm('Delete this content?')"><i class="fas fa-trash"></i></button>
+                                    </form>
                                 </div>
                             </div>
                         </div>

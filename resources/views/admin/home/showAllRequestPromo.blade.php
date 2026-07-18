@@ -33,7 +33,10 @@
                                             <td>{{ $item->created_at->format('d-m-y') }}</td>
 
                                             <td>
-                                                <a href="{{route('promote.process',$item->user_id)}}" class="btn btn-outline-success fw-bold me-2 p-1">Promote<i class="fa-solid fa-turn-up ms-2"></i></a>
+                                                <form action="{{ route('promote.process', $item->user_id) }}" method="post" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-outline-success fw-bold me-2 p-1" onclick="return confirm('Promote this user to author?')">Promote<i class="fa-solid fa-turn-up ms-2"></i></button>
+                                                </form>
                                             </td>
                                         </tr>
                                     </tbody>

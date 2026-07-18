@@ -33,7 +33,13 @@
                                 <td class="fw-bold"> {{$item -> name}}</td>
                                 <td>{{$item -> created_at->format('d-m-y')}}</td></td>
                                 <td>
-                                    <a href="{{route('delete#Process',$item->id)}}"><i class="fa-solid fa-trash me-1"></i></a>
+                                    <form action="{{ route('delete#Process', $item->id) }}" method="post" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-link text-danger p-0" onclick="return confirm('Delete this category?')">
+                                            <i class="fa-solid fa-trash me-1"></i>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         </tbody>

@@ -43,7 +43,7 @@ class AdminController extends Controller
     }
 
     //delete user process
-    public function deleteUser($id,$image){
+    public function deleteUser($id, $image = null){
 
         //delete image file
         if($image != null){{
@@ -87,24 +87,36 @@ class AdminController extends Controller
         $data = report::select('reports.user_id','reports.content_id','reports.message','reports.role','reports.created_at','users.name')
                         ->leftJoin('users','reports.user_id','=','users.id')
                         ->where('reports.role',1)->orderBy('reports.created_at','desc')->get();
+        return view('admin.home.showAllReport',compact('data'));
+    }
+
+    public function markReportsSeen()
+    {
         report::where('role',1)
                 ->where('condition','unSeen')
                 ->update([
                     'condition' => 'seen',
                 ]);
-        return view('admin.home.showAllReport',compact('data'));
+
+        return back();
     }
 
     public function allSuggest(){
         $data = report::select('reports.user_id','reports.content_id','reports.message','reports.role','reports.created_at','users.name')
                         ->leftJoin('users','reports.user_id','=','users.id')
                         ->where('reports.role',0)->orderBy('reports.created_at','desc')->get();
+        return view('admin.home.showAllSuggest',compact('data'));
+    }
+
+    public function markSuggestionsSeen()
+    {
         report::where('role',0)
                 ->where('condition','unSeen')
                 ->update([
                     'condition' => 'seen',
                 ]);
-        return view('admin.home.showAllSuggest',compact('data'));
+
+        return back();
     }
 
     //promotion page

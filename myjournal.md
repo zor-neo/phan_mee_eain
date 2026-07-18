@@ -59,6 +59,7 @@ AI_SHARED_SECRET
 |   011 | 2026-07-18 | Prevent attachment loss on incomplete author forms | `not committed yet` | Completed |
 |   012 | 2026-07-18 | Fix favicon asset wiring | `not committed yet` | Completed |
 |   013 | 2026-07-18 | Add static report policy and author guidelines pages | `not committed yet` | Completed |
+|   014 | 2026-07-18 | Convert state-changing GET routes | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
@@ -685,6 +686,60 @@ tests/Feature/...
 3. What would be improved in a paid production environment? A cleaner route design for state-changing actions and more formal attachment lifecycle handling.
 4. Can every team member explain this change? Yes, because the session mode, cooldown, and attachment design are documented.
 5. Did this change preserve existing code where possible? Yes.
+
+---
+
+## Entry 014 - Convert state-changing GET routes
+
+### Date and time
+
+```text
+2026-07-18
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Codex
+Role: Coding assistant
+```
+
+### Objective
+
+Remove legacy GET routes that changed application state.
+
+### Why this work was required
+
+GET requests should be safe to open, refresh, preview, and share. Delete, promote, demote, save, and mark-seen actions should require CSRF-protected mutating requests.
+
+### Files changed
+
+| File | Change | Reason |
+| --- | --- | --- |
+| `routes/admin.php` | Changed promote, demote, user delete, category delete, and mark-seen actions to POST/DELETE | Stop state changes through GET URLs |
+| `routes/user.php` | Changed author content delete and save toggle to DELETE/POST; added comment mark-seen POST | Stop state changes through GET URLs |
+| Admin and author Blade views | Replaced action links with CSRF forms | Match the safer route verbs |
+| `resources/views/user/home/contentPage.blade.php` | Changed save toggle AJAX to POST | Match the safer route verb |
+| `tests/Feature/StateChangingRouteVerbTest.php` | Added regression tests | Prove old GET mutators are unavailable |
+| `LESSON_LEARNT.md` | Marked the finding solved | Keep the review log current |
+
+### Tests performed
+
+```powershell
+php artisan route:list --except-vendor
+php artisan test
+```
+
+### Result
+
+```text
+Completed
+```
+
+### Remaining issues
+
+Admin report/suggestion list views no longer mark records as seen on simple page load. They now provide explicit "Mark all as seen" POST buttons.
 
 ---
 

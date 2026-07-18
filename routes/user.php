@@ -40,13 +40,14 @@ Route::group(['prefix'=>'auther','middleware'=>'readonly.view'],function(){
     Route::get('playlist',[AutherProfileController::class,'playlistPage'])->name('playlist#Page');
     Route::get('content',[AutherProfileController::class,'contentPage'])->name('autherContent#Page');
     Route::get('comment/{para?}',[AutherProfileController::class,'commentPage'])->name('comment#Page');
+    Route::post('comment/mark-seen',[AutherProfileController::class,'markCommentsSeen'])->name('comment.markSeen');
     Route::get('createContent',[AutherProfileController::class,'createContentPage'])->name('createContent#Page');
     Route::post('create',[AutherProfileController::class,'createContentProcess'])->name('createContent#Process');
     Route::get('createQuize',[AutherProfileController::class,'createQuizePage'])->name('createQuize#Page');
     Route::get('createVContent',[AutherProfileController::class,'createVContentPage'])->name('createVContent#Page');
     Route::get('editContent/{id}',[AutherProfileController::class,'editContentPage'])->name('editContent#Page');
     Route::post('editContent/Process',[AutherProfileController::class,'editContentProcess'])->name('editContent#Process');
-    Route::get('deleteContent/Process/{id}/{image?}',[AutherProfileController::class,'deleteContentProcess'])->name('deleteContent#Process');
+    Route::delete('deleteContent/Process/{id}/{image?}',[AutherProfileController::class,'deleteContentProcess'])->name('deleteContent#Process');
 });
 
 Route::group(['prefix'=>'content','middleware'=>'readonly.view'],function(){
@@ -54,6 +55,6 @@ Route::group(['prefix'=>'content','middleware'=>'readonly.view'],function(){
     Route::post('comment',[CommentController::class,'commentProcess'])->name('comment.Process');
     Route::delete('comment/delete/{commentId}', [CommentController::class, 'commentDelete'])->name('comment.Delete');
     Route::post('report/process',[ReportController::class,'reportProcess'])->name('report.Process');
-    Route::get('saveContent/{userId}/{contentId}',[SavedController::class,'saveContent'])->name('save.Content');
+    Route::post('saveContent/{userId}/{contentId}',[SavedController::class,'saveContent'])->name('save.Content');
     Route::get('resource/{resource}',[ContentController::class,'downloadResource'])->name('contentResource.download');
     });

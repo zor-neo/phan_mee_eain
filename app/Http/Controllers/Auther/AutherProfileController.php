@@ -34,18 +34,6 @@ class AutherProfileController extends Controller
 
     //message page
     public function commentPage($para = 'default'){
-
-        //change condition (unseen to seen on comment)
-        if($para == 'seen' && $para != 'default'){
-            Comment::join('contents','comments.content_id','contents.id')
-                    ->where('comments.condition','unSeen')
-                    ->whereColumn('comments.content_id','contents.id') //compire column to column. so, use 'whereColumn'
-                    ->where('contents.user_id',Auth::user()->id)
-                    ->update([
-                    'comments.condition' => 'seen',
-                    'comments.updated_at' => now(),
-                ]);
-        }
         $comments =Comment::select('comments.comment','comments.condition','comments.user_id','comments.content_id','comments.created_at',
                                 'users.id','users.name','users.image','contents.id as contentId',
                                 'contents.title','contents.user_id as contentCreaterId',
@@ -60,6 +48,20 @@ class AutherProfileController extends Controller
                             ->get();
 
         return view('auther.home.comment',compact('comments'));
+    }
+
+    public function markCommentsSeen()
+    {
+        Comment::join('contents','comments.content_id','contents.id')
+            ->where('comments.condition','unSeen')
+            ->whereColumn('comments.content_id','contents.id')
+            ->where('contents.user_id',Auth::user()->id)
+            ->update([
+                'comments.condition' => 'seen',
+                'comments.updated_at' => now(),
+            ]);
+
+        return to_route('comment#Page');
     }
 
     //create content Page
