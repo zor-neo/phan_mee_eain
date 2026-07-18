@@ -70,8 +70,79 @@ AI_SHARED_SECRET
 |   022 | 2026-07-19 | Add Docker setup for Render deployment | `not committed yet` | Completed |
 |   023 | 2026-07-19 | Open Guru chat from footer Help Center links | `not committed yet` | Completed |
 |   024 | 2026-07-19 | Fix Render HTTPS, CSS, footer, and auth form deployment issues | `not committed yet` | Completed |
+|   025 | 2026-07-19 | Restore Aiven demo user login accounts | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 025 - Restore Aiven demo user login accounts
+
+### Date and time
+
+```text
+2026-07-19 01:10 +07:00
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Deployment tester and coding assistant
+```
+
+### Objective
+
+Repair the demo login account after the user reported that the first demo user could not log in on the deployed application.
+
+### Starting state
+
+The Laravel app was connected to Aiven MySQL. A check against the configured Aiven database showed that `user1@gmail.com` did not exist, so authentication could not succeed.
+
+### What was done
+
+The three demo user accounts were restored in Aiven using Laravel's `User::updateOrCreate()` and `Hash::make()` helpers.
+
+```text
+user1@gmail.com
+user2@gmail.com
+user3@gmail.com
+```
+
+The shared demo password was not recorded in this journal.
+
+### Commands executed
+
+```powershell
+php artisan about --only=environment,drivers
+php artisan tinker --execute="..."
+php artisan cache:clear
+```
+
+### Verification
+
+The configured database connection was confirmed as Aiven MySQL.
+
+`user1@gmail.com` was verified to:
+
+```text
+exist: true
+role: user
+password_check: true
+```
+
+The Laravel cache table was cleared to remove possible login rate-limit entries from failed attempts.
+
+### Security impact
+
+This was a demo-data repair only. No production secrets or password hashes were committed to source control.
+
+### Result
+
+```text
+Completed
+```
 
 ---
 
