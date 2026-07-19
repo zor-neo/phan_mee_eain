@@ -100,10 +100,67 @@ AI_SHARED_SECRET
 |   052 | 2026-07-20 | Split brand logo and wide article fallback image | `not committed yet` | Completed |
 |   053 | 2026-07-20 | Add non-technical tester checklist | `not committed yet` | Completed |
 |   054 | 2026-07-20 | Fix access-control update redirect after role grant | `not committed yet` | Completed |
+|   055 | 2026-07-20 | Add singular admin access-control compatibility route | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
 ---
+
+## Entry 055 - Add singular admin access-control compatibility route
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+Production still returned 404 when using `/admin/access-control`. The canonical Laravel route is `/admins/access-control`, but the singular `/admin/...` path is easy to type and had already been used during testing.
+
+### Files changed
+
+```text
+routes/admin.php
+tests/Feature/SuperAdminAccessTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Added a singular compatibility GET route from `/admin/access-control` to the canonical access-control page.
+- Added a singular compatibility POST route for `/admin/access-control/{user}` so old or manually typed role update paths still work.
+- Kept the canonical route as `/admins/access-control`.
+- Added tests for both singular GET and POST behavior.
+
+### Test results
+
+```text
+php artisan test tests\Feature\SuperAdminAccessTest.php: passed, 10 tests / 24 assertions
+php artisan route:cache: passed
+php artisan optimize:clear: passed
+php artisan test: passed, 76 tests / 224 assertions
+git diff --check: passed
+```
+
+### Security impact
+
+```text
+No permission expansion
+The singular compatibility route still uses admin middleware
+Only superadmin can update access because the controller checks isSuperAdmin()
+```
+
+### Project-book material
+
+A backward-compatible route was added to reduce user-facing 404 errors caused by singular and plural admin URL confusion. The canonical route remains `/admins/access-control`.
 
 ## Entry 054 - Fix access-control update redirect after role grant
 

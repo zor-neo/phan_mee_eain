@@ -5,6 +5,11 @@ use App\Http\Controllers\Admin\profileController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
+Route::group(['prefix'=>'admin','middleware'=>'admin'],function(){
+    Route::get('access-control', fn () => to_route('accessControlPage'));
+    Route::post('access-control/{user}',[AdminController::class,'updateAccess']);
+});
+
 Route::group(['prefix'=>'admins','middleware'=>'admin'],function(){
     Route::get('page',[AdminController::class,'adminHome'])->name('adminHome');
     Route::get('all/user',[AdminController::class,'allUser'])->name('allUserPage');
