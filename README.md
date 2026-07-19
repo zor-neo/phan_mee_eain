@@ -86,6 +86,8 @@ Production operations, smoke tests, and recovery notes are documented in [`docs/
 
 The live student MVP is expected to be checked after every deploy with the production smoke-test flow in [`docs/DEMO_CHECKLIST.md`](docs/DEMO_CHECKLIST.md).
 
+Architecture boundaries, tier-specific limits, and developed rules for future changes are collected in [`docs/ARCHITECTURAL_BOUNDARIES_AND_LIMITS.md`](docs/ARCHITECTURAL_BOUNDARIES_AND_LIMITS.md).
+
 ## CI
 
 GitHub Actions runs on pushes and pull requests to `main`. The workflow installs Composer and Node dependencies, runs the Laravel test suite, validates config and route caching, builds frontend assets, and builds the Docker image.

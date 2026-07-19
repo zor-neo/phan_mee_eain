@@ -89,8 +89,101 @@ AI_SHARED_SECRET
 |   041 | 2026-07-19 | Verify production smoke test and document operations checklist | `not committed yet` | Completed |
 |   042 | 2026-07-19 | Fix admin layout CSRF metadata for superadmin logout | `not committed yet` | Completed |
 |   043 | 2026-07-19 | Improve mobile navbar and Guru chat panel layout | `not committed yet` | Completed |
+|   044 | 2026-07-19 | Document architecture boundaries and operational limits | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 044 - Document architecture boundaries and operational limits
+
+### Date and time
+
+```text
+2026-07-19
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Architecture discussion partner and documentation assistant
+```
+
+### Objective
+
+Create a single project document that collects the important configuration boundaries and operational limits across Laravel, Render, Aiven MySQL, Cloudflare R2, Gemini, uploads, CI, cache, sessions, and queue handling.
+
+### Existing behavior
+
+The project already had production operations and demo checklist documents, but the tier-specific limits and developed rules were spread across code, configuration, README notes, and discussion. This made it harder to explain the architecture clearly during presentation preparation.
+
+### Selected solution
+
+Add `docs/ARCHITECTURAL_BOUNDARIES_AND_LIMITS.md` and link it from `README.md`.
+
+The document explains:
+
+```text
+current production architecture
+planned separable AI-service architecture
+ownership boundaries
+browser trust boundary
+Laravel as security coordinator
+Aiven MySQL durability rules
+Cloudflare R2 upload rules
+upload validation limits
+Render container limitations
+AI route and context limits
+database-backed cache/session/queue behavior
+cross-tier request-size awareness
+CI and release boundaries
+security presentation points
+future-change rules
+presentation summary
+```
+
+### Important architecture clarification
+
+The document distinguishes the current MVP from the future architecture:
+
+```text
+Current MVP: AI integration runs inside the main Laravel container and calls Gemini directly.
+Future architecture: AI service can be split out and protected with HTTPS JSON plus HMAC signing.
+```
+
+### Commands executed
+
+```powershell
+Get-Content PROJECT_SPEC.md
+Get-Content README.md
+Get-ChildItem docs
+Get-Content config\ai-companion.php
+rg upload/configuration terms across app, config, routes, resources, packages, and tests
+Get-Content app\Support\UploadedMedia.php
+Get-Content config\filesystems.php
+Get-Content app\Http\Controllers\HealthCheckController.php
+Get-Content app\Http\Controllers\Auther\AutherProfileController.php
+Get-Content app\Http\Controllers\UserProfileController.php
+Get-Content .github\workflows\ci.yml
+```
+
+### Files changed
+
+```text
+docs/ARCHITECTURAL_BOUNDARIES_AND_LIMITS.md
+README.md
+myjournal.md
+```
+
+### Security impact
+
+No runtime security behavior changed. The documentation explicitly avoids recording secrets and reinforces that provider keys, database credentials, R2 secrets, and trusted role decisions stay server-side.
+
+### Deployment impact
+
+No deployment, migration, or environment variable change is required. This is documentation only.
 
 ---
 
