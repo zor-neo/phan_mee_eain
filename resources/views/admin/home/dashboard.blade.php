@@ -106,7 +106,7 @@
                     </section>
                     <script src="../assets/vendor/chart.umd.min.js"></script>
                     <script>
-                        const siteChartColors = ['#465f8a', '#b1cafb', '#665881', '#565f71', '#a3bcec', '#d0bfee'];
+                        const siteChartColors = ['#3f9fc8', '#1c8233', '#2f86ad', '#6c757d', '#e0e0e0', '#156627'];
                         const siteCategoryLegendPlugin = {
                             id: 'siteCategoryLegend',
                             afterUpdate(chart) {
@@ -159,8 +159,8 @@
                                 datasets: [{
                                     label: 'Posts',
                                     data: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1],
-                                    borderColor: '#465f8a',
-                                    backgroundColor: 'rgba(70,95,138,.14)',
+                                    borderColor: '#3f9fc8',
+                                    backgroundColor: 'rgba(63,159,200,.22)',
                                     tension: .35,
                                     fill: true
                                 }]

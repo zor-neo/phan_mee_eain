@@ -27,8 +27,8 @@
                 <div class="col-12 col-md-6 col-lg-3">
                     <div class="card p-4 border shadow-sm h-100 rounded-3 bg-white position-relative overflow-hidden">
                         <h2 class="fs-1 fw-bold text-dark mb-0">{{count($videoContent)}}</h2>
-                        <p class="text-muted small fw-bold mb-4">Videos & Quizzes</p>
-                        <a href="{{route('createVContent#Page')}}" class="btn btn-outline-primary w-100 mt-auto">Manage Playlists</a>
+                        <p class="text-muted small fw-bold mb-4">Video Lectures & Quizzes</p>
+                        <a href="{{route('createVContent#Page')}}" class="btn btn-outline-primary w-100 mt-auto">Video Lecture Tools</a>
                         <i class="fas fa-video dashboard-icon"></i>
                     </div>
                 </div>
@@ -75,7 +75,7 @@
                         </div>
                         <div class="card-body p-3 d-flex flex-column gap-2">
                             <a href="{{route('createContent#Page')}}" class="btn btn-light text-start fw-bold text-dark border"><i class="fas fa-plus-circle text-purple me-2"></i> Create New Content</a>
-                            <a href="{{route('createVContent#Page')}}" class="btn btn-light text-start fw-bold text-dark border"><i class="fas fa-cloud-upload-alt text-purple me-2"></i> Upload Video Content</a>
+                            <a href="{{route('createVContent#Page')}}" class="btn btn-light text-start fw-bold text-dark border"><i class="fas fa-cloud-upload-alt text-purple me-2"></i> Upload Video Lecture Content</a>
                             <a href="{{route('createQuize#Page')}}" class="btn btn-light text-start fw-bold text-dark border"><i class="fas fa-question-circle text-purple me-2"></i> Create Quiz Test</a>
                         </div>
                     </div>

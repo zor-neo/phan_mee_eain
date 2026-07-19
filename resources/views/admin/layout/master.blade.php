@@ -21,7 +21,7 @@
     @php($actingViewMode = session('acting_view_mode', 'admin'))
     <nav class="navbar navbar-expand-lg sw-navbar sticky-top">
         <div class="container-lg">
-            <a class="navbar-brand fw-bold" href="/home.php">Spring Wisdom</a>
+            <a class="navbar-brand fw-bold" href="{{ route('adminHome') }}">Spring Wisdom</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
                 aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -29,7 +29,7 @@
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
 
-                    <li class="nav-item"><a class="nav-link active" href="/admin-dashboard.php">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{{ route('adminHome') }}">Dashboard</a></li>
 
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle " href="#" role="button"

@@ -10,7 +10,7 @@
                         <div class="sw-panel h-100">
                             <label class="form-label fw-bold">Featured Photo <span class="text-muted">(optional)</span></label>
                             <img class="img-fluid rounded border mb-3 w-100" id="output"
-                                src="{{ asset('content/image/logo.jpg') }}" alt="Preview">
+                                src="{{ asset('content/image/default-article-wide.jpg') }}" alt="Preview">
                             <input type="file" name="image" class="form-control @error('image') is-invalid @enderror"
                                 accept=".png,.jpg,.jpeg,.webp,.gif,image/png,image/jpeg,image/webp,image/gif"
                                 onchange="loadfile(event)">
@@ -63,7 +63,7 @@
                                     @enderror
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-bold">Youtube link <span class="text-danger">optional</span></label>
+                                    <label class="form-label fw-bold">Youtube link <span class="text-muted">optional</span></label>
                                     <input type="url" name="link" class="form-control @error('link') is-invalid @enderror" value="{{ old('link') }}" placeholder="link...">
                                     @error('link')
                                         <small class="invalid-feedback d-block">{{ $message }}</small>

@@ -22,12 +22,12 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         .react-btn.active-react {
-            background-color: #e7f1ff;
-            border-color: #0d6efd;
+            background-color: #eaf6fb;
+            border-color: #3f9fc8;
         }
 
         .react-btn.active-react i {
-            color: #0d6efd;
+            color: #3f9fc8;
         }
 
         #imageModal .modal-content {
@@ -54,7 +54,7 @@
 
     <nav class="navbar navbar-expand-lg sw-navbar sticky-top">
         <div class="container-lg">
-            <a class="navbar-brand fw-bold" href="/home.php">Phan Mee Eain (Knowledge & Education)</a>
+            <a class="navbar-brand fw-bold" href="{{ route('userHome') }}">Phan Mee Eain (Knowledge & Education)</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
                 aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>

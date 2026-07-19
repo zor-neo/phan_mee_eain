@@ -29,3 +29,29 @@ test('published guru widget assets stay synced with package assets', function ()
     expect(file_get_contents(public_path('vendor/ai-companion/ai-companion/widget.js')))
         ->toBe(file_get_contents(base_path('packages/Local/AiCompanion/public/ai-companion/widget.js')));
 });
+
+test('content images cover the article frame without inner padding', function () {
+    $appCss = file_get_contents(public_path('user/css/style.css'));
+
+    expect($appCss)
+        ->toContain('.sw-content-image')
+        ->toContain('aspect-ratio: 16 / 9')
+        ->toContain('object-fit: cover')
+        ->toContain('padding: 0');
+});
+
+test('article fallbacks use wide image while brand logo keeps original logo asset', function () {
+    $readerContentView = file_get_contents(resource_path('views/user/home/contentPage.blade.php'));
+    $authorContentView = file_get_contents(resource_path('views/auther/home/contents.blade.php'));
+    $authorCreateView = file_get_contents(resource_path('views/auther/home/createContent.blade.php'));
+    $authorEditView = file_get_contents(resource_path('views/auther/home/editContentPage.blade.php'));
+
+    expect($readerContentView)
+        ->toContain("asset('content/image/logo.jpg')")
+        ->toContain('max-width: 256px')
+        ->toContain('content/image/default-article-wide.jpg');
+
+    expect($authorContentView)->toContain('content/image/default-article-wide.jpg');
+    expect($authorCreateView)->toContain('content/image/default-article-wide.jpg');
+    expect($authorEditView)->toContain('content/image/default-article-wide.jpg');
+});

@@ -11,8 +11,8 @@
     <style>
         body {
             font-family: Arial, "Noto Sans Myanmar", sans-serif;
-            background: #f7f9fb;
-            color: #243447;
+            background: #f4f4f4;
+            color: #333333;
         }
 
         .policy-shell {
@@ -21,10 +21,19 @@
         }
 
         .policy-card {
-            background: #fff;
-            border: 1px solid #dbe5ee;
+            background: #ffffff;
+            border: 1px solid #dee2e6;
             border-radius: 8px;
-            box-shadow: 0 10px 28px rgba(36, 52, 71, .08);
+            box-shadow: 0 10px 28px rgba(51, 51, 51, .08);
+        }
+
+        .btn-outline-primary {
+            --bs-btn-color: #3f9fc8;
+            --bs-btn-border-color: #3f9fc8;
+            --bs-btn-hover-bg: #3f9fc8;
+            --bs-btn-hover-border-color: #3f9fc8;
+            --bs-btn-active-bg: #2f86ad;
+            --bs-btn-active-border-color: #2f86ad;
         }
 
         .policy-content {

@@ -35,7 +35,7 @@
                     <div class="col-12 col-md-6 col-lg-4 content-box" data-playlist="english">
                         <div class="card border shadow-sm h-100 rounded-3 overflow-hidden bg-white">
                             <div class="position-relative">
-                                <img src="{{ \App\Support\UploadedMedia::url('content', $item->image, 'content/image/logo.jpg') }}" class="card-img-top sw-content-image" alt="Content">
+                                <img src="{{ \App\Support\UploadedMedia::url('content', $item->image, 'content/image/default-article-wide.jpg') }}" class="card-img-top sw-content-image" alt="Content">
                             </div>
                             <div class="card-body d-flex flex-column p-3">
                                 <span class="badge bg-secondary mb-2 align-self-start"><i class="fas fa-bars-staggered"></i> {{ $item->name }}</span>

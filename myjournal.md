@@ -90,8 +90,663 @@ AI_SHARED_SECRET
 |   042 | 2026-07-19 | Fix admin layout CSRF metadata for superadmin logout | `not committed yet` | Completed |
 |   043 | 2026-07-19 | Improve mobile navbar and Guru chat panel layout | `not committed yet` | Completed |
 |   044 | 2026-07-19 | Document architecture boundaries and operational limits | `not committed yet` | Completed |
+|   045 | 2026-07-19 | Clarify AI memory retention limits in architecture documentation | `not committed yet` | Completed |
+|   046 | 2026-07-19 | Align project book draft with real production implementation | `not committed yet` | Completed |
+|   047 | 2026-07-20 | Standardize non-auth pages with Author Room palette | `not committed yet` | Completed |
+|   048 | 2026-07-20 | Replace square article fallback image with wide version | `not committed yet` | Completed |
+|   049 | 2026-07-20 | Improve cyan readability and fix brand home links | `not committed yet` | Completed |
+|   050 | 2026-07-20 | Add professional coming-soon states for author video and quiz tools | `not committed yet` | Completed |
+|   051 | 2026-07-20 | Make article hero images fully cover their frames | `not committed yet` | Completed |
+|   052 | 2026-07-20 | Split brand logo and wide article fallback image | `not committed yet` | Completed |
+|   053 | 2026-07-20 | Add non-technical tester checklist | `not committed yet` | Completed |
+|   054 | 2026-07-20 | Fix access-control update redirect after role grant | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
+
+---
+
+## Entry 054 - Fix access-control update redirect after role grant
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The superadmin access-control form could show a 404 after updating a user role. The access-control POST route existed, but the controller used a browser-dependent `back()` redirect after update. The admin navbar also still had a legacy static dashboard link.
+
+### Files changed
+
+```text
+app/Http/Controllers/Admin/AdminController.php
+resources/views/admin/layout/master.blade.php
+tests/Feature/SuperAdminAccessTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Changed the access-control update redirect to `to_route('accessControlPage')`.
+- Replaced the admin navbar dashboard link from a legacy static path to `route('adminHome')`.
+- Added an HTTP-level regression test for superadmin role update redirect behavior.
+
+### Test results
+
+```text
+php artisan test tests\Feature\SuperAdminAccessTest.php: passed, 8 tests / 19 assertions
+php artisan test: passed, 74 tests / 219 assertions
+git diff --check: passed, with line-ending warnings only
+```
+
+### Security impact
+
+```text
+No permission expansion
+Only superadmin can use access-control update
+Normal admin remains blocked from access-control role grants
+```
+
+### Project-book material
+
+The admin role-management flow was improved by redirecting to a named Laravel route after an access update. This avoids legacy or browser-dependent paths and improves reliability in production.
+
+## Entry 053 - Add non-technical tester checklist
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The project needed a simple checklist that can be shared with non-technical testers. The checklist should help collect useful feedback without overwhelming testers with technical terms.
+
+### Files changed
+
+```text
+docs/NON_TECH_TESTER_CHECKLIST.md
+myjournal.md
+```
+
+### Main changes
+
+- Added a tester information section.
+- Added simple `OK`, `Issue`, and `Skip` result labels.
+- Covered basic page checks, login, reading content, Author Room, AI chat, and mobile testing.
+- Added internal team testing notes for the admin test account email and user self-promotion workflow.
+- Added checks for submitting an author request as a normal user and approving it from the admin side.
+- Added a short issue report form for screenshots and reproduction notes.
+- Avoided passwords, secrets, environment variables, and technical debugging steps.
+
+### Test results
+
+```text
+Documentation-only change
+git diff --check: passed, with line-ending warnings only
+```
+
+### Project-book material
+
+A simple user testing checklist was prepared for non-technical testers. This supports usability testing and helps collect feedback in a consistent format.
+
+## Entry 052 - Split brand logo and wide article fallback image
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The wide article image had been created by replacing `public/content/image/logo.jpg`. This made article cards look better, but it removed the original square brand logo. The project needs both assets: the original logo for branding and a wide fallback for article hero frames.
+
+### Files changed
+
+```text
+public/content/image/default-article-wide.jpg
+resources/views/user/home/contentPage.blade.php
+resources/views/auther/home/contents.blade.php
+resources/views/auther/home/createContent.blade.php
+resources/views/auther/home/editContentPage.blade.php
+tests/Feature/ResponsiveLayoutAssetsTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Restored `public/content/image/logo.jpg` to the original square logo.
+- Saved the generated wide image as `public/content/image/default-article-wide.jpg`.
+- Updated article/card/upload-preview fallbacks to use the wide image.
+- Kept the content page brand logo using `content/image/logo.jpg`.
+- Increased the rendered content page brand logo from `140px` to `256px`.
+- Added a test to confirm article fallbacks and brand logo use separate assets.
+
+### Asset result
+
+```text
+Brand logo: public/content/image/logo.jpg
+Size: 1280 x 1280
+
+Article fallback: public/content/image/default-article-wide.jpg
+Size: 1672 x 941
+```
+
+### Test results
+
+```text
+php artisan test tests\Feature\ResponsiveLayoutAssetsTest.php: passed, 4 tests / 22 assertions
+php artisan test: passed, 73 tests / 213 assertions
+git diff --check: passed, with line-ending warnings only
+```
+
+### Project-book material
+
+The project now separates brand imagery from content fallback imagery. The logo remains a square branding asset, while article cards use a wide fallback image designed for horizontal hero frames.
+
+## Entry 051 - Make article hero images fully cover their frames
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The new wide default article image was still leaving gray space inside article image frames. The image itself was wide enough, but the CSS class used `object-fit: contain` with inner padding.
+
+### Files changed
+
+```text
+public/user/css/style.css
+tests/Feature/ResponsiveLayoutAssetsTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Changed `.sw-content-image` from `object-fit: contain` to `object-fit: cover`.
+- Removed inner image padding by setting `padding: 0`.
+- Kept the existing `16 / 9` frame ratio and max height.
+- Added a focused layout asset test to protect this behavior.
+
+### Test results
+
+```text
+php artisan test tests\Feature\ResponsiveLayoutAssetsTest.php: passed, 3 tests / 16 assertions
+php artisan test: passed, 72 tests / 208 assertions
+git diff --check: passed, with line-ending warnings only
+```
+
+### Project-book material
+
+Article images were adjusted to fill their card frame cleanly. The fallback image now behaves like a true article hero image instead of appearing inside a padded gray box.
+
+## Entry 050 - Add professional coming-soon states for author video and quiz tools
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The Author Room quick links for video upload and quiz creation opened placeholder pages with a casual typo message. This looked unprofessional for a production-style student project demonstration.
+
+### Files changed
+
+```text
+resources/views/auther/home/createVContent.blade.php
+resources/views/auther/home/createQuize.blade.php
+resources/views/auther/home/dashboard.blade.php
+tests/Feature/AuthorComingSoonPageTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Replaced the casual placeholder error with polished `Coming Soon` cards.
+- Renamed `Upload Video Content` to `Upload Video Lecture Content`.
+- Updated the Author Room dashboard video card wording to `Video Lectures & Quizzes`.
+- Added author-friendly actions back to written content creation and Author Room.
+- Added feature tests to confirm the professional coming-soon copy and prevent the old typo message from returning.
+
+### Test results
+
+```text
+php artisan test tests\Feature\AuthorComingSoonPageTest.php: passed, 3 tests / 15 assertions
+php artisan test: passed, 71 tests / 204 assertions
+git diff --check: passed, with line-ending warnings only
+```
+
+### Security impact
+
+```text
+No security impact
+No route permission changes
+```
+
+### Project-book material
+
+Unfinished author features now show a clear coming-soon message instead of a casual error. This improves the demonstration quality while honestly showing that video lecture publishing and quiz creation are planned future features.
+
+## Entry 049 - Improve cyan readability and fix brand home links
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+After applying the Author Room palette across non-auth pages, the cyan accent was still a little light for small text, links, icons, and outline buttons. The navbar title links also pointed to `/home.php`, which can create a 404 in the Laravel deployment.
+
+### Files changed
+
+```text
+public/user/css/style.css
+resources/views/auther/layout/master.blade.php
+resources/views/user/layout/master.blade.php
+resources/views/admin/layout/master.blade.php
+resources/views/user/guest/guestUser.blade.php
+resources/views/static/layout.blade.php
+resources/views/admin/home/dashboard.blade.php
+packages/Local/AiCompanion/public/ai-companion/widget.css
+public/vendor/ai-companion/ai-companion/widget.css
+myjournal.md
+```
+
+### Main changes
+
+```text
+Old primary cyan: #76b9d8
+New primary cyan: #3f9fc8
+Old hover cyan: #4db4e3
+New hover cyan: #2f86ad
+```
+
+- Updated non-auth shared styling to use the darker cyan.
+- Updated Author Room, static pages, admin chart colors, user inline reaction styling, and Guru widget colors.
+- Left login and registration page styling unchanged.
+- Changed signed-in user brand link from `/home.php` to `route('userHome')`.
+- Changed admin brand link from `/home.php` to `route('adminHome')`.
+- Changed guest brand link from `#` to `route('guest#Place')`.
+
+### Commands executed
+
+```powershell
+php artisan route:list --name=userHome
+php artisan route:list --name=adminHome
+php artisan route:list --name=guest#Place
+rg -n "old cyan and /home.php patterns" public resources packages
+```
+
+### Test results
+
+```text
+git diff --check: passed, with line-ending warnings only
+php artisan test: passed, 68 tests / 189 assertions
+Route checks confirmed userHome, adminHome, and guest#Place exist
+Scan confirmed /home.php and old cyan are removed from non-auth targets
+```
+
+### Security impact
+
+```text
+No security impact
+No authentication behavior changed
+```
+
+### Project-book material
+
+The visual theme was adjusted for readability by using a slightly darker cyan while keeping the same design direction. Broken legacy title links were replaced with Laravel named routes so they work correctly in production.
+
+## Entry 048 - Replace square article fallback image with wide version
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The default article image was a square logo. In wide article cards and hero frames, it could look awkward because it had to be cropped or contained inside a horizontal frame.
+
+The requested fix was to create the broad article fallback directly on `public/content/image/logo.jpg`, so existing fallback references continue to work without changing Blade files.
+
+### Files changed
+
+```text
+public/content/image/logo.jpg
+myjournal.md
+```
+
+### Result
+
+The fallback image was replaced with a wide 16:9-style educational illustration based on the Phan Mee Eain lantern and books identity.
+
+```text
+Final image: public/content/image/logo.jpg
+Final size: 1672 x 941
+Aspect ratio: 1.78
+```
+
+### Commands executed
+
+```powershell
+Generated a wide image using image generation from the existing logo reference.
+Converted the generated PNG to JPEG and replaced public/content/image/logo.jpg.
+Checked final dimensions with System.Drawing.
+```
+
+### Security impact
+
+```text
+No security impact
+No secrets changed
+```
+
+### Performance impact
+
+The new JPEG is larger than the old logo fallback but still reasonable for a default article image. If page speed becomes a concern, it can later be compressed further or converted to WebP.
+
+### Project-book material
+
+The default article image was improved to match the real article card layout. A wide fallback image avoids unnatural cropping and gives article cards a more consistent appearance when authors do not upload a custom image.
+
+## Entry 047 - Standardize non-auth pages with Author Room palette
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The project had different visual color systems across page areas. Author Room used a light gray, white, cyan, and green palette, while user, admin, public, static, and AI chat areas still used older warm or blue colors.
+
+The goal was to make all non-auth pages use the current Author Room palette, while keeping login and registration pages unchanged.
+
+### Files changed
+
+```text
+public/user/css/style.css
+resources/views/auther/layout/master.blade.php
+resources/views/auther/home/createContent.blade.php
+resources/views/auther/home/editContentPage.blade.php
+resources/views/user/layout/master.blade.php
+resources/views/admin/home/dashboard.blade.php
+resources/views/static/layout.blade.php
+packages/Local/AiCompanion/public/ai-companion/widget.css
+public/vendor/ai-companion/ai-companion/widget.css
+```
+
+### Main changes
+
+```text
+Background: #f4f4f4
+Surface: #ffffff
+Primary: #76b9d8
+Primary hover: #4db4e3
+Green action: #1c8233
+Green hover: #156627
+Text: #333333
+Muted text: #6c757d
+Soft hover: #e0e0e0
+Border: #dee2e6
+```
+
+- Updated the shared non-auth CSS variables to match Author Room.
+- Added shared button and color helper overrides for cyan and green actions.
+- Added missing Author Room helper styles for `sw-panel`, `sw-muted`, buttons, dashed borders, and form focus states.
+- Updated the Guru AI chat widget source and published CSS to use the same palette.
+- Updated admin chart colors to use cyan, green, and gray tones.
+- Changed optional YouTube labels in author content forms from red to muted gray.
+- Left authentication views and Tailwind guest auth layout unchanged.
+
+### Commands executed
+
+```powershell
+rg -n -- "palette and color patterns" public resources packages
+```
+
+### Security impact
+
+```text
+No security impact
+No secrets changed
+No auth behavior changed
+```
+
+### Performance impact
+
+```text
+No expected performance impact
+CSS-only visual update
+```
+
+### Deployment impact
+
+The change requires a normal Render redeploy after commit and push. Browser cache may need refresh because shared CSS files changed.
+
+### Test results
+
+```text
+git diff --check: passed, with line-ending warnings only
+php artisan test: passed, 68 tests / 189 assertions
+```
+
+### Project-book material
+
+The user interface was standardized by applying one consistent color palette across non-authenticated and authenticated application pages, excluding login and registration. This improved visual consistency while preserving existing layouts and page behavior.
+
+## Entry 046 - Align project book draft with real production implementation
+
+### Date and time
+
+```text
+2026-07-19
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Project-book editor and documentation assistant
+```
+
+### Objective
+
+Update the full project book draft so it matches the real production state of Phan Mee Eain instead of the earlier planned version.
+
+### Existing behavior
+
+The uploaded project book draft still used older wording and planned structures, including:
+
+```text
+Learner as a formal role name
+AI chatbot listed as a future improvement
+announcements listed as completed management feature
+older sample routes such as /resources and /contents/{id}
+older controller names such as HomeController and SaveController
+database/model tables missing AI chat, reactions, content resources, and managed deployment details
+```
+
+### Documentation update
+
+Created a revised Word copy:
+
+```text
+C:\Users\kaung\Desktop\Final Project\DOCS\Phan_Mee_Eain_Project_Book_realigned.docx
+```
+
+Main alignment changes:
+
+```text
+Changed formal role wording to Guest, User, Author, Admin, and Superadmin.
+Moved Guru AI chat from future plan into completed/implemented features.
+Kept announcement module as not completed instead of completed.
+Updated route, controller, model, migration, requirement, test, screenshot, and feature tables.
+Added production references to https://gurus.onrender.com and https://github.com/zor-neo/phan_mee_eain.git.
+Updated future plan to compact student-level items such as paid AWS ecosystem, custom domain, no cold start, higher availability, community group chat, better AI operation, and scheduled cleanup.
+```
+
+### Verification
+
+Structural DOCX checks confirmed:
+
+```text
+Output file exists
+Paragraph count: 355
+Table count: 32
+No remaining formal Learner role text
+No old future-AI wording
+No old route sample terms such as HomeController, /resources, /contents/{id}, or /admin/announcements
+```
+
+Visual render QA could not be completed because LibreOffice/`soffice` is not installed or not available on PATH in the local environment.
+
+### Files changed
+
+```text
+C:\Users\kaung\Desktop\Final Project\DOCS\Phan_Mee_Eain_Project_Book_realigned.docx
+myjournal.md
+```
+
+### Deployment impact
+
+No runtime code, database, deployment, or environment variable behavior changed. This is documentation work only.
+
+---
+
+## Entry 045 - Clarify AI memory retention limits in architecture documentation
+
+### Date and time
+
+```text
+2026-07-19
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Name: Project user and Codex
+Role: Architecture discussion partner and documentation assistant
+```
+
+### Objective
+
+Clarify the AI chat memory configuration for project-book and presentation discussion.
+
+### Existing behavior
+
+The architecture limits document listed the AI memory numbers in plain English, but did not show the exact Laravel configuration shape or clearly explain the difference between retention expiry and physical database deletion.
+
+### Documentation update
+
+Added the exact AI memory configuration values:
+
+```php
+'authenticated_retention_days' => 7,
+'max_messages' => 100,
+'context_messages' => 20,
+```
+
+Also clarified:
+
+```text
+7 days creates an expiry timestamp, but does not delete rows by itself.
+100 messages is the maximum stored messages per active conversation.
+20 messages is the bounded context window sent to Gemini.
+Logout clears the session pointer but does not immediately delete DB rows.
+A future Laravel cleanup command or Render Cron Job can enforce physical deletion.
+```
+
+Added the per-request AI memory flow:
+
+```text
+Laravel reads the latest 20 previous messages from MySQL.
+Laravel combines them with the current user message and helper context.
+Laravel sends the resulting prompt to Gemini.
+Laravel saves only the new user message and new assistant reply back to MySQL.
+```
+
+### Files changed
+
+```text
+docs/ARCHITECTURAL_BOUNDARIES_AND_LIMITS.md
+myjournal.md
+```
+
+### Deployment impact
+
+No deployment, migration, environment variable, or runtime behavior change is required. This is documentation only.
 
 ---
 

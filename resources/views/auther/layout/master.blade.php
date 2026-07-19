@@ -16,34 +16,103 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            font-family: 'Nunito', sans-serif;
-            background-color: #f4f4f4;
+        :root {
+            --author-bg: #f4f4f4;
+            --author-surface: #ffffff;
+            --author-border: #dee2e6;
+            --author-text: #333333;
+            --author-muted: #6c757d;
+            --author-primary: #3f9fc8;
+            --author-primary-hover: #2f86ad;
+            --author-success: #1c8233;
+            --author-success-hover: #156627;
+            --author-soft: #e0e0e0;
+            --author-primary-soft: #eaf6fb;
         }
 
-        /* User Custom Colors */
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--author-bg);
+            color: var(--author-text);
+        }
+
+        /* Author Room colors */
         .text-purple {
-            color: #76b9d8 !important;
+            color: var(--author-primary) !important;
         }
 
         .bg-purple {
-            background-color: #76b9d8 !important;
+            background-color: var(--author-primary) !important;
             color: #fff;
         }
 
         .bg-purple:hover {
-            background-color: #4db4e3 !important;
+            background-color: var(--author-primary-hover) !important;
             color: #fff;
         }
 
         .bg-orange {
-            background-color: #1c8233 !important;
+            background-color: var(--author-success) !important;
             color: #fff;
         }
 
         .bg-orange:hover {
-            background-color: #156627 !important;
+            background-color: var(--author-success-hover) !important;
             color: #fff;
+        }
+
+        .sw-panel,
+        .card,
+        .modal-content {
+            background: var(--author-surface);
+            border: 1px solid var(--author-border);
+            border-radius: 10px;
+            box-shadow: 0 5px 16px rgba(51, 51, 51, 0.035);
+        }
+
+        .sw-panel {
+            padding: 1.35rem;
+        }
+
+        .sw-muted,
+        .text-muted {
+            color: var(--author-muted) !important;
+        }
+
+        .border-dashed {
+            border: 2px dashed var(--author-border) !important;
+        }
+
+        .btn-primary {
+            --bs-btn-bg: var(--author-primary);
+            --bs-btn-border-color: var(--author-primary);
+            --bs-btn-hover-bg: var(--author-primary-hover);
+            --bs-btn-hover-border-color: var(--author-primary-hover);
+            --bs-btn-color: #fff;
+        }
+
+        .btn-outline-primary {
+            --bs-btn-color: var(--author-primary);
+            --bs-btn-border-color: var(--author-primary);
+            --bs-btn-hover-bg: var(--author-primary);
+            --bs-btn-hover-border-color: var(--author-primary);
+            --bs-btn-active-bg: var(--author-primary-hover);
+            --bs-btn-active-border-color: var(--author-primary-hover);
+            --bs-btn-disabled-color: var(--author-muted);
+            --bs-btn-disabled-border-color: var(--author-border);
+        }
+
+        .form-control,
+        .form-select {
+            background-color: var(--author-surface);
+            border-color: var(--author-border);
+            color: var(--author-text);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--author-primary);
+            box-shadow: 0 0 0 0.2rem rgba(63, 159, 200, 0.22);
         }
 
         /* Sidebar Control */
@@ -65,31 +134,31 @@
 
         .nav-link-custom:hover,
         .nav-link-custom.active {
-            background-color: #f4f4f4;
-            color: #333 !important;
+            background-color: var(--author-bg);
+            color: var(--author-text) !important;
         }
 
         .icon-btn {
             width: 40px;
             height: 40px;
-            background-color: #f4f4f4;
+            background-color: var(--author-bg);
             display: flex;
             align-items: center;
             justify-content: center;
             border-radius: 5px;
-            color: #333;
+            color: var(--author-text);
             cursor: pointer;
             transition: 0.3s;
             border: none;
         }
 
         .icon-btn:hover {
-            background-color: #e0e0e0;
+            background-color: var(--author-soft);
         }
 
         .dashboard-icon {
             font-size: 3rem;
-            color: #76b9d8;
+            color: var(--author-primary);
             opacity: 0.2;
             position: absolute;
             right: 20px;

@@ -121,7 +121,7 @@ class AdminController extends Controller
             'text' => 'The account role has been updated.',
         ]);
 
-        return back();
+        return to_route('accessControlPage');
     }
 
     //demote process

@@ -54,7 +54,7 @@
                         <div class="text-center mb-4">
                             <div class="d-flex justify-content-center">
                                 <img src="{{ asset('content/image/logo.jpg') }}" alt=""
-                                    class="img-fluid" style="max-width: 140px;">
+                                    class="img-fluid" style="max-width: 256px;">
                             </div>
                             <p class="fw-bold fs-4 mt-3 mb-0">Knowledge and Education</p>
                         </div>
@@ -67,7 +67,7 @@
                                     $myReactType = $myReact->react ?? null;
                                     $isReported = in_array($item->contentId, $activeReportContentIds ?? [], true);
                                     $authorImageUrl = \App\Support\UploadedMedia::url('profile', $item->userImage, 'image/user-male-circle.jpg');
-                                    $contentImageUrl = \App\Support\UploadedMedia::url('content', $item->contentImage, 'content/image/logo.jpg');
+                                    $contentImageUrl = \App\Support\UploadedMedia::url('content', $item->contentImage, 'content/image/default-article-wide.jpg');
                                     $contentText = (string) $item->content;
                                     $contentPreviewLimit = 360;
                                     $hasLongContent = Str::length($contentText) > $contentPreviewLimit;

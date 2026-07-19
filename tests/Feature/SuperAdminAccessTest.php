@@ -61,6 +61,29 @@ class SuperAdminAccessTest extends TestCase
         $this->assertSame(User::ROLE_ADMIN, $user->refresh()->role);
     }
 
+    public function test_superadmin_access_update_redirects_back_to_access_control_page(): void
+    {
+        $superadmin = User::factory()->create([
+            'role' => User::ROLE_SUPERADMIN,
+        ]);
+
+        $user = User::factory()->create([
+            'role' => User::ROLE_USER,
+        ]);
+
+        $response = $this->actingAs($superadmin)->post(route('accessControl#Update', $user), [
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        $response->assertRedirect(route('accessControlPage'));
+        $this->assertSame(User::ROLE_ADMIN, $user->refresh()->role);
+
+        $this->actingAs($superadmin)
+            ->get(route('accessControlPage'))
+            ->assertOk()
+            ->assertSee($user->email);
+    }
+
     public function test_normal_admin_cannot_grant_admin_access(): void
     {
         $admin = User::factory()->create([

@@ -339,6 +339,30 @@ Browser
   -> Laravel returns JSON to browser
 ```
 
+Detailed AI memory flow per request:
+
+```text
+1. User sends a new message from the chat pane.
+2. Laravel reads the latest 20 previous messages from ai_messages for the active conversation.
+3. Laravel builds the prompt using:
+   - the latest 20 previous messages
+   - the current new user message
+   - the web helper context document, if available
+4. Laravel sends the final prompt to Gemini through HTTPS JSON.
+5. Gemini returns an assistant reply.
+6. Laravel saves the new user message into ai_messages.
+7. Laravel saves the assistant reply into ai_messages.
+8. Laravel returns the assistant reply and refreshed message list to the browser.
+```
+
+Important clarification:
+
+```text
+The latest 20 previous messages are read from the database and sent to Gemini as context.
+They are not sent "to the database" again.
+Only the new user message and new assistant reply are written after Gemini responds.
+```
+
 Current AI route settings:
 
 ```text
@@ -352,6 +376,49 @@ memory driver: database
 max stored session messages shown: 100
 context messages sent to prompt: 20
 authenticated retention days: 7
+```
+
+Current AI memory configuration in Laravel:
+
+```php
+'memory' => [
+    'driver' => 'database',
+    'session_key' => 'active_ai_conversation_id',
+    'max_messages' => 100,
+    'context_messages' => 20,
+    'authenticated_retention_days' => 7,
+],
+```
+
+Meaning:
+
+```text
+authenticated_retention_days: 7
+  New authenticated AI conversations receive an expiry timestamp 7 days ahead.
+  This is a retention rule, not an automatic database deletion by itself.
+
+max_messages: 100
+  A conversation keeps at most 100 recent messages in the database.
+  Older messages in the same active conversation are pruned.
+
+context_messages: 20
+  Only the latest 20 messages are sent back into the AI prompt as context.
+  This controls cost, latency, and prompt size.
+```
+
+Logout behavior:
+
+```text
+Logging out clears the Laravel session pointer named active_ai_conversation_id.
+It does not physically delete ai_conversations or ai_messages rows immediately.
+After a new login session, the app does not automatically reuse old rows as long-term memory.
+```
+
+Future retention enforcement:
+
+```text
+A future Laravel cleanup command or Render Cron Job can delete expired ai_conversations.
+Because ai_messages cascade on conversation delete, their messages would be removed too.
 ```
 
 Current Gemini key behavior:
@@ -527,4 +594,3 @@ Laravel on Render
   v
 GitHub Actions validates code before deploy
 ```
-
