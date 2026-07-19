@@ -101,10 +101,70 @@ AI_SHARED_SECRET
 |   053 | 2026-07-20 | Add non-technical tester checklist | `not committed yet` | Completed |
 |   054 | 2026-07-20 | Fix access-control update redirect after role grant | `not committed yet` | Completed |
 |   055 | 2026-07-20 | Add singular admin access-control compatibility route | `not committed yet` | Completed |
+|   056 | 2026-07-20 | Disable static prototype router on Laravel pages | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
 ---
+
+## Entry 056 - Disable static prototype router on Laravel pages
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+Production showed a 404 request for `/admin/dashboard.html`. This path belongs to the old static HTML prototype, while the real Laravel admin dashboard route is `/admins/page`.
+
+### Files changed
+
+```text
+resources/views/admin/layout/master.blade.php
+resources/views/user/layout/master.blade.php
+resources/views/user/guest/guestUser.blade.php
+public/user/js/static-router.js
+tests/Feature/ResponsiveLayoutAssetsTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Removed the static prototype router script from Laravel admin, user, and guest layouts.
+- Added a guard inside `static-router.js` so it only runs on static `.html` prototype pages or pages that explicitly opt in.
+- Kept the old prototype router file for reference instead of deleting it.
+
+### Test results
+
+```text
+php artisan route:list --name=adminHome: confirmed adminHome is /admins/page
+php artisan route:cache: passed
+php artisan test: passed, 77 tests / 229 assertions
+php artisan test tests\Feature\ResponsiveLayoutAssetsTest.php: passed, 5 tests / 27 assertions
+php artisan optimize:clear: passed
+git diff --check: passed with a harmless CRLF normalization warning for myjournal.md
+```
+
+### Security impact
+
+```text
+No authorization change
+No route permission change
+Reduced accidental navigation to non-Laravel static paths
+```
+
+### Project-book material
+
+The project kept the old UI prototype files for reference, but production Laravel pages no longer use the prototype router. This avoids broken `.html` navigation paths in the deployed application.
 
 ## Entry 055 - Add singular admin access-control compatibility route
 

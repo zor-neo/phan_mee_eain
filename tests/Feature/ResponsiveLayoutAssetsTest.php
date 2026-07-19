@@ -55,3 +55,18 @@ test('article fallbacks use wide image while brand logo keeps original logo asse
     expect($authorCreateView)->toContain('content/image/default-article-wide.jpg');
     expect($authorEditView)->toContain('content/image/default-article-wide.jpg');
 });
+
+test('laravel layouts do not load the static prototype router', function () {
+    $adminLayout = file_get_contents(resource_path('views/admin/layout/master.blade.php'));
+    $userLayout = file_get_contents(resource_path('views/user/layout/master.blade.php'));
+    $guestLayout = file_get_contents(resource_path('views/user/guest/guestUser.blade.php'));
+    $staticRouter = file_get_contents(public_path('user/js/static-router.js'));
+
+    expect($adminLayout)->not->toContain('static-router.js');
+    expect($userLayout)->not->toContain('static-router.js');
+    expect($guestLayout)->not->toContain('static-router.js');
+
+    expect($staticRouter)
+        ->toContain('endsWith(".html")')
+        ->toContain('data-static-router');
+});

@@ -1,4 +1,8 @@
 (() => {
+  if (!location.pathname.toLowerCase().endsWith(".html") && !document.querySelector("[data-static-router]")) {
+    return;
+  }
+
   const routes = {
     "/home.php": "public/home.html",
     "/index.php": "public/access-portal.html",

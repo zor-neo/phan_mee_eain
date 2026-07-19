@@ -135,7 +135,6 @@
     <script src="{{ asset('user/vendor1/cdn/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js') }}">
     </script>
     <script src="{{ asset('user/js/main.js') }}"></script>
-    <script src="{{ asset('user/js/static-router.js') }}"></script>
 </body>
 
 </html>
