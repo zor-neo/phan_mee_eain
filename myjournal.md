@@ -104,10 +104,67 @@ AI_SHARED_SECRET
 |   056 | 2026-07-20 | Disable static prototype router on Laravel pages | `not committed yet` | Completed |
 |   057 | 2026-07-20 | Add admin feed coming-soon placeholder | `not committed yet` | Completed |
 |   058 | 2026-07-20 | Strengthen Great Guru persona against role override | `not committed yet` | Completed |
+|   059 | 2026-07-20 | Make Great Guru responses more directive | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
 ---
+
+## Entry 059 - Make Great Guru responses more directive
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The Great Guru persona was resisting role override better, but responses still felt less directive than expected. The intended tone is an old wise mentor who gives practical guidance first, not a generic polite assistant.
+
+### Files changed
+
+```text
+packages/Local/AiCompanion/src/Services/PromptBuilder.php
+tests/Unit/PromptBuilderPersonaTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Changed output style from mentor-medium to firmly helpful.
+- Instructed Guru to start with the next useful action or answer.
+- Added guidance to prefer imperative phrasing such as "Start here", "Do this next", and "Check this".
+- Reduced the requirement to end most responses with a question.
+- Updated the persona prompt unit test to cover the more directive style.
+
+### Test results
+
+```text
+php artisan test tests\Unit\PromptBuilderPersonaTest.php: passed, 1 test / 11 assertions
+php -l packages\Local\AiCompanion\src\Services\PromptBuilder.php: passed
+php artisan test: passed, 80 tests / 249 assertions
+php artisan optimize:clear: passed
+git diff --check: passed with a harmless CRLF normalization warning for myjournal.md
+```
+
+### Security impact
+
+```text
+No route, database, or authorization change
+Keeps the previous persona-lock behavior
+```
+
+### Project-book material
+
+The AI companion tone was refined to behave more like a practical mentor. It now prioritizes direct next steps and clearer guidance while keeping the old wise Guru identity.
 
 ## Entry 058 - Strengthen Great Guru persona against role override
 
