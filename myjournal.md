@@ -160,6 +160,8 @@ Local public-directory HTTP check: GET /loaderio-d74d02f5bf8bbf874e011b1c225b0b4
 php artisan optimize:clear: passed
 php artisan test: passed, 87 tests / 289 assertions
 git diff --check: passed
+git push origin main: passed
+Production check immediately after push: /up returned 200, verification file still returned 404 while waiting for Render deployment.
 ```
 
 ### Security impact
@@ -173,7 +175,9 @@ No route, controller, database, or authorization behavior changed
 ### Deployment impact
 
 ```text
-After this change is committed and deployed to Render, Apache should serve the verification file from the application root URL.
+Commit 35b7d0c was pushed to origin/main.
+After Render deploys that commit, Apache should serve the verification file from the application root URL.
+If the file still returns 404, trigger or inspect the Render deployment for the main service.
 ```
 
 ### Project-book material
