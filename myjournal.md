@@ -183,6 +183,8 @@ php artisan optimize:clear: passed
 Local smoke check: GET /guest returned 200 and referenced user/images/featured_img-1600.webp.
 Local smoke check: GET /user/images/featured_img-1600.webp returned 200 as image/webp with 158,318 bytes.
 git diff --check: passed
+git push origin main: passed
+Production check immediately after push: optimized WebP asset still returned 404 while waiting for Render deployment.
 ```
 
 ### Alternatives considered
@@ -212,7 +214,9 @@ This should improve first page load time on /guest and the user dashboard.
 ### Deployment impact
 
 ```text
+Commit dbc0dac was pushed to origin/main.
 Requires normal application deployment so Render serves the new bundled public asset.
+If the WebP asset still returns 404, trigger or inspect the Render deployment for the main service.
 ```
 
 ### Project-book material
