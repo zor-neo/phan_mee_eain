@@ -6689,3 +6689,27 @@ git commit -m "refactor: rename Summie to Guru across widget UI and code"
 
 ### Architectural decisions
 - Renamed internal DOM IDs and CSS classes (e.g., `#summie-widget` to `#guru-widget`) to ensure the codebase remains consistent with the new product direction, avoiding technical debt where the code domain language lags behind the UI domain language.
+
+## Content Image Frame Bleed Follow-up
+
+**Date**: 2026-07-20
+**Context**: The previous CSS-only fix for default article image background bleed was not enough in the reader view. A gray strip could still appear at the bottom of some content images.
+
+### What was attempted
+- Added a dedicated `sw-content-image-frame` wrapper with a fixed 16:9 ratio and hidden overflow.
+- Changed the content image itself to simply fill that frame with `object-fit: cover`.
+- Applied the same frame pattern to the reader content page and Author Room content cards.
+
+### Files changed
+- `public/user/css/style.css`
+- `resources/views/user/home/contentPage.blade.php`
+- `resources/views/auther/home/contents.blade.php`
+- `tests/Feature/ResponsiveLayoutAssetsTest.php`
+
+### Test plan
+- Run the responsive layout asset test.
+- Run the full Laravel test suite.
+- Run `git diff --check`.
+
+### Lesson learned
+For stable article thumbnails, the frame should own the size and clipping. The image should fill that frame instead of relying on Bootstrap image sizing mixed with custom height rules.

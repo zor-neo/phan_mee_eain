@@ -101,10 +101,12 @@
                                         <h5 class="card-title fw-bold fs-5">{{ $item->title }}</h5>
                                         <div class="row g-3 align-items-start">
                                             <div class="col-12 col-lg-5">
-                                                <img class="img-fluid rounded w-100 sw-content-image"
-                                                    src="{{ $contentImageUrl }}"
-                                                    alt="..." data-bs-toggle="modal" data-bs-target="#imageModal"
-                                                    data-full-src="{{ $contentImageUrl }}">
+                                                <div class="sw-content-image-frame">
+                                                    <img class="sw-content-image"
+                                                        src="{{ $contentImageUrl }}"
+                                                        alt="..." data-bs-toggle="modal" data-bs-target="#imageModal"
+                                                        data-full-src="{{ $contentImageUrl }}">
+                                                </div>
                                             </div>
                                             <div class="col-12 col-lg-7 text-start">
                                                 <p class="card-text mb-2 sw-content-copy" data-expandable-content

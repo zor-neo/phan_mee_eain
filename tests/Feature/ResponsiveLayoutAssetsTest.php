@@ -32,13 +32,21 @@ test('published guru widget assets stay synced with package assets', function ()
 
 test('content images cover the article frame without inner padding', function () {
     $appCss = file_get_contents(public_path('user/css/style.css'));
+    $readerContentView = file_get_contents(resource_path('views/user/home/contentPage.blade.php'));
+    $authorContentView = file_get_contents(resource_path('views/auther/home/contents.blade.php'));
 
     expect($appCss)
-        ->toContain('.sw-content-image')
+        ->toContain('.sw-content-image-frame')
         ->toContain('aspect-ratio: 16 / 9')
+        ->toContain('overflow: hidden')
+        ->toContain('background: transparent')
+        ->toContain('.sw-content-image')
         ->toContain('height: 100%')
         ->toContain('object-fit: cover')
         ->toContain('padding: 0');
+
+    expect($readerContentView)->toContain('sw-content-image-frame');
+    expect($authorContentView)->toContain('sw-content-image-frame');
 });
 
 test('article fallbacks use wide image while brand logo keeps original logo asset', function () {
