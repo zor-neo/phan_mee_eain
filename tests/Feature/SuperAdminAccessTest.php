@@ -206,4 +206,59 @@ class SuperAdminAccessTest extends TestCase
             'role' => User::ROLE_SUPERADMIN,
         ]);
     }
+
+    public function test_admin_view_mode_redirects_to_selected_view(): void
+    {
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('viewMode#Process'), ['mode' => 'user'])
+            ->assertRedirect(route('userHome'));
+
+        $this->assertSame('user', session('acting_view_mode'));
+
+        $this->actingAs($admin)
+            ->post(route('viewMode#Process'), ['mode' => 'author_readonly'])
+            ->assertRedirect(route('auther#Room'));
+
+        $this->assertSame('author_readonly', session('acting_view_mode'));
+
+        $this->actingAs($admin)
+            ->post(route('viewMode#Process'), ['mode' => 'admin'])
+            ->assertRedirect(route('adminHome'));
+
+        $this->assertSame('admin', session('acting_view_mode'));
+    }
+
+    public function test_superadmin_can_use_view_mode_dropdown(): void
+    {
+        $superadmin = User::factory()->create([
+            'role' => User::ROLE_SUPERADMIN,
+        ]);
+
+        $this->actingAs($superadmin)
+            ->post(route('viewMode#Process'), ['mode' => 'user'])
+            ->assertRedirect(route('userHome'));
+
+        $this->assertSame('user', session('acting_view_mode'));
+    }
+
+    public function test_admin_layout_uses_view_mode_dropdown_without_account_back_button(): void
+    {
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        session(['acting_view_mode' => 'user']);
+
+        $this->actingAs($admin)
+            ->get(route('adminHome'))
+            ->assertOk()
+            ->assertSee('View as Admin')
+            ->assertSee('View as User')
+            ->assertSee('View as Author (Read-Only)')
+            ->assertDontSee('Back to Admin');
+    }
 }

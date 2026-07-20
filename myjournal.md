@@ -106,10 +106,70 @@ AI_SHARED_SECRET
 |   058 | 2026-07-20 | Strengthen Great Guru persona against role override | `not committed yet` | Completed |
 |   059 | 2026-07-20 | Make Great Guru responses more directive | `not committed yet` | Completed |
 |   060 | 2026-07-20 | Left-align reader comment names | `not committed yet` | Completed |
+|   061 | 2026-07-20 | Redirect admin view-mode toggle to selected view | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
 ---
+
+## Entry 061 - Redirect admin view-mode toggle to selected view
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The admin View Mode dropdown changed only session state and stayed on the current page, so the selected mode did not feel like a real view change. The user also wanted returning to admin to happen through the same View Mode dropdown, not a separate account-menu button.
+
+### Files changed
+
+```text
+app/Http/Controllers/Admin/AdminController.php
+resources/views/admin/layout/master.blade.php
+tests/Feature/SuperAdminAccessTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Kept view mode session-based instead of mutating the real user role.
+- Redirected `View as User` to the user home page.
+- Redirected `View as Author (Read-Only)` to Author Room.
+- Redirected `View as Admin` to the admin dashboard.
+- Allowed superadmin to use the same view-mode flow as admin.
+- Removed the separate `Back to Admin` button from the account menu because the dropdown now handles returning to admin.
+
+### Test results
+
+```text
+php artisan test tests\Feature\SuperAdminAccessTest.php: passed, 13 tests / 41 assertions
+php -l app\Http\Controllers\Admin\AdminController.php: passed
+php artisan test: passed, 84 tests / 269 assertions
+php artisan optimize:clear: passed
+git diff --check: passed with a harmless CRLF normalization warning for myjournal.md
+```
+
+### Security impact
+
+```text
+No real role mutation
+No new permissions beyond existing admin-role middleware
+Author mode remains read-only for admin-role users
+```
+
+### Project-book material
+
+Admin view mode remains a session-based preview feature. It now redirects admins to the selected interface immediately, while the real account role stays unchanged.
 
 ## Entry 060 - Left-align reader comment names
 

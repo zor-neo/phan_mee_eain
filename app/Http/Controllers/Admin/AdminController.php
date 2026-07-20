@@ -210,7 +210,7 @@ class AdminController extends Controller
 
     public function switchViewMode(Request $request)
     {
-        abort_unless(Auth::check() && Auth::user()->role === 'admin', 403);
+        abort_unless(Auth::check() && Auth::user()->isAdminRole(), 403);
 
         $request->validate([
             'mode' => ['required', 'in:admin,user,author_readonly'],
@@ -218,15 +218,19 @@ class AdminController extends Controller
 
         session(['acting_view_mode' => $request->mode]);
 
-        return back();
+        return match ($request->mode) {
+            'user' => to_route('userHome'),
+            'author_readonly' => to_route('auther#Room'),
+            default => to_route('adminHome'),
+        };
     }
 
     public function resetViewMode()
     {
-        abort_unless(Auth::check() && Auth::user()->role === 'admin', 403);
+        abort_unless(Auth::check() && Auth::user()->isAdminRole(), 403);
 
         session(['acting_view_mode' => 'admin']);
 
-        return back();
+        return to_route('adminHome');
     }
 }

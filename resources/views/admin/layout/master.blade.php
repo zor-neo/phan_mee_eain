@@ -86,12 +86,6 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            @if ($actingViewMode !== 'admin')
-                                <form action="{{ route('viewMode#Reset') }}" method="post" class="px-3 pb-2">
-                                    @csrf
-                                    <button class="btn btn-outline-sw btn-sm w-100">Back to Admin</button>
-                                </form>
-                            @endif
                             <form action="{{ route('logout') }}" method="post"
                                 class="d-flex align-items-center gap-3 ms-2 ">
                                 @csrf
