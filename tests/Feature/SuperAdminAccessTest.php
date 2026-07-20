@@ -261,4 +261,36 @@ class SuperAdminAccessTest extends TestCase
             ->assertSee('View as Author (Read-Only)')
             ->assertDontSee('Back to Admin');
     }
+
+    public function test_admin_view_mode_dropdown_is_visible_on_user_home(): void
+    {
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['acting_view_mode' => 'user'])
+            ->get(route('userHome'))
+            ->assertOk()
+            ->assertSee('View Mode')
+            ->assertSee('View as Admin')
+            ->assertSee('View as User')
+            ->assertSee('View as Author (Read-Only)');
+    }
+
+    public function test_admin_view_mode_dropdown_is_visible_on_author_home(): void
+    {
+        $admin = User::factory()->create([
+            'role' => User::ROLE_ADMIN,
+        ]);
+
+        $this->actingAs($admin)
+            ->withSession(['acting_view_mode' => 'author_readonly'])
+            ->get(route('auther#Room'))
+            ->assertOk()
+            ->assertSee('View Mode')
+            ->assertSee('View as Admin')
+            ->assertSee('View as User')
+            ->assertSee('View as Author (Read-Only)');
+    }
 }

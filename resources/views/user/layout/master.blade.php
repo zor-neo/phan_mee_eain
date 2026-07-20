@@ -45,6 +45,7 @@
     @php
         $actingViewMode = session('acting_view_mode', Auth::user()->role === 'admin' ? 'admin' : Auth::user()->role);
         $canSeeAuthorRoom = Auth::user()->role === 'author' || $actingViewMode === 'author_readonly';
+        $showViewModeToggle = Auth::user()->isAdminRole();
         $roleLabel = $actingViewMode === 'author_readonly'
             ? 'author (read-only)'
             : ($actingViewMode === 'user' && Auth::user()->role === 'admin'
@@ -70,15 +71,50 @@
                     <a class="btn btn-sw-primary btn-sm" href="{{ route('login') }}">Login & Register</a>
                 </div> --}}
 
-                <div class="dropdown">
-                    <button class="btn btn-outline-primary dropdown-toggle ms-3" type="button"
-                        data-bs-toggle="dropdown" aria-expanded="false"> <i class="fa-solid fa-pen me-3"></i>
-                        Edit
-                    </button>
-                    <ul class="dropdown-menu dropdown-menu-dark sw-account-menu">
-                        <li class="dropdown-header">
-                            <div class="sw-account-summary">
-                                <img class="sw-avatar"
+                <div class="d-flex align-items-center gap-2">
+                    @if ($showViewModeToggle)
+                        <div class="dropdown">
+                            <button class="btn btn-outline-sw dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                                aria-expanded="false">
+                                <i class="fa-solid fa-eye me-2"></i> View Mode
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm sw-account-menu">
+                                <li class="dropdown-header">
+                                    <div class="small sw-muted">Current - {{ $actingViewMode }}</div>
+                                </li>
+                                <li>
+                                    <form method="post" action="{{ route('viewMode#Process') }}">
+                                        @csrf
+                                        <input type="hidden" name="mode" value="admin">
+                                        <button class="dropdown-item {{ $actingViewMode === 'admin' ? 'active' : '' }}" type="submit">View as Admin</button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form method="post" action="{{ route('viewMode#Process') }}">
+                                        @csrf
+                                        <input type="hidden" name="mode" value="user">
+                                        <button class="dropdown-item {{ $actingViewMode === 'user' ? 'active' : '' }}" type="submit">View as User</button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form method="post" action="{{ route('viewMode#Process') }}">
+                                        @csrf
+                                        <input type="hidden" name="mode" value="author_readonly">
+                                        <button class="dropdown-item {{ $actingViewMode === 'author_readonly' ? 'active' : '' }}" type="submit">View as Author (Read-Only)</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    @endif
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle ms-3" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false"> <i class="fa-solid fa-pen me-3"></i>
+                            Edit
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark sw-account-menu">
+                            <li class="dropdown-header">
+                                <div class="sw-account-summary">
+                                    <img class="sw-avatar"
                                     src="{{ \App\Support\UploadedMedia::url('profile', Auth::user()->image, 'image/user-male-circle.jpg') }}"
                                     alt="Admin Scholar profile picture">
                                 <div class="sw-account-copy">

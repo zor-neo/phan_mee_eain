@@ -136,6 +136,8 @@ The admin View Mode dropdown changed only session state and stayed on the curren
 ```text
 app/Http/Controllers/Admin/AdminController.php
 resources/views/admin/layout/master.blade.php
+resources/views/user/layout/master.blade.php
+resources/views/auther/layout/master.blade.php
 tests/Feature/SuperAdminAccessTest.php
 myjournal.md
 ```
@@ -148,13 +150,14 @@ myjournal.md
 - Redirected `View as Admin` to the admin dashboard.
 - Allowed superadmin to use the same view-mode flow as admin.
 - Removed the separate `Back to Admin` button from the account menu because the dropdown now handles returning to admin.
+- Added the same view-mode dropdown to the user layout and author layout so the toggle remains visible after switching views.
 
 ### Test results
 
 ```text
-php artisan test tests\Feature\SuperAdminAccessTest.php: passed, 13 tests / 41 assertions
+php artisan test tests\Feature\SuperAdminAccessTest.php: passed, 15 tests / 51 assertions
 php -l app\Http\Controllers\Admin\AdminController.php: passed
-php artisan test: passed, 84 tests / 269 assertions
+php artisan test: passed, 86 tests / 279 assertions
 php artisan optimize:clear: passed
 git diff --check: passed with a harmless CRLF normalization warning for myjournal.md
 ```

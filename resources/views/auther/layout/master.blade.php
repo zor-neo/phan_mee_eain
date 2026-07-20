@@ -168,6 +168,10 @@
 </head>
 
 <body class="d-flex">
+    @php
+        $actingViewMode = session('acting_view_mode', Auth::user()->role === 'admin' ? 'admin' : Auth::user()->role);
+        $showViewModeToggle = Auth::user()->isAdminRole();
+    @endphp
 
     <!-- Sidebar -->
     <aside class="sidebar offcanvas-md offcanvas-start bg-white border-end position-fixed h-100" tabindex="-1"
@@ -182,6 +186,40 @@
                     alt="Profile" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
                 <h3 class="fs-5 fw-bold text-dark mb-1">{{ Auth::user()->name }}</h3>
                 <span class="text-muted small d-block mb-3">{{ Auth::user()->role }}</span>
+                @if ($showViewModeToggle)
+                    <div class="dropdown">
+                        <button class="btn btn-outline-sw btn-sm dropdown-toggle w-100" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-eye me-2"></i> View Mode
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm sw-account-menu w-100">
+                            <li class="dropdown-header">
+                                <div class="small sw-muted">Current - {{ $actingViewMode }}</div>
+                            </li>
+                            <li>
+                                <form method="post" action="{{ route('viewMode#Process') }}">
+                                    @csrf
+                                    <input type="hidden" name="mode" value="admin">
+                                    <button class="dropdown-item {{ $actingViewMode === 'admin' ? 'active' : '' }}" type="submit">View as Admin</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form method="post" action="{{ route('viewMode#Process') }}">
+                                    @csrf
+                                    <input type="hidden" name="mode" value="user">
+                                    <button class="dropdown-item {{ $actingViewMode === 'user' ? 'active' : '' }}" type="submit">View as User</button>
+                                </form>
+                            </li>
+                            <li>
+                                <form method="post" action="{{ route('viewMode#Process') }}">
+                                    @csrf
+                                    <input type="hidden" name="mode" value="author_readonly">
+                                    <button class="dropdown-item {{ $actingViewMode === 'author_readonly' ? 'active' : '' }}" type="submit">View as Author (Read-Only)</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                @endif
             </div>
             <nav class="nav flex-column py-3 w-100">
                 <!-- Home is Active -->
