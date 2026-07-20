@@ -55,8 +55,15 @@ test('landing visual image fills its frame without bottom background bleed', fun
         ->toContain('inset: 0')
         ->toContain('object-fit: cover');
 
-    expect($guestView)->toContain("asset('user/images/featured_img.png')");
-    expect($userDashboardView)->toContain("asset('user/images/featured_img.png')");
+    expect($guestView)
+        ->toContain("asset('user/images/featured_img-1600.webp')")
+        ->toContain('width="1600" height="838"');
+
+    expect($userDashboardView)
+        ->toContain("asset('user/images/featured_img-1600.webp')")
+        ->toContain('width="1600" height="838"');
+
+    expect(filesize(public_path('user/images/featured_img-1600.webp')))->toBeLessThan(700 * 1024);
 });
 
 test('article fallbacks use wide image while brand logo keeps original logo asset', function () {

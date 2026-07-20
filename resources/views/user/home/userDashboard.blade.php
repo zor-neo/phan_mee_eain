@@ -15,8 +15,8 @@
                         <a class="btn btn-outline-primary mt-3" href="{{route('content#Page')}}">Browse Contents</a>
                     </div>
                     <div class="col-lg-6">
-                        <div class="sw-visual"><img src="{{ asset('user/images/featured_img.png') }}"
-                                alt="Illustration of children learning in a difficult environment"></div>
+                        <div class="sw-visual"><img src="{{ asset('user/images/featured_img-1600.webp') }}"
+                                width="1600" height="838" alt="Illustration of children learning in a difficult environment"></div>
                     </div>
                 </div>
             </div>

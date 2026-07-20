@@ -109,10 +109,117 @@ AI_SHARED_SECRET
 |   061 | 2026-07-20 | Redirect admin view-mode toggle to selected view | `not committed yet` | Completed |
 |   062 | 2026-07-20 | Fix content image frame background bleed | `not committed yet` | Completed |
 |   063 | 2026-07-20 | Add Loader.io verification file | `not committed yet` | Completed |
+|   064 | 2026-07-20 | Optimize guest landing hero image | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
 ---
+
+## Entry 064 - Optimize guest landing hero image
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The user reported that the `/guest` landing page photo loaded slowly and wanted a smaller file while keeping the image clear and crisp.
+
+### Existing behavior
+
+```text
+resources/views/user/guest/guestUser.blade.php used asset('user/images/featured_img.png')
+resources/views/user/home/userDashboard.blade.php used asset('user/images/featured_img.png')
+public/user/images/featured_img.png size: 5,845,085 bytes
+```
+
+The image was a bundled public asset served by Render/Apache, not an R2 upload.
+
+### Files changed
+
+```text
+public/user/images/featured_img-1600.webp
+resources/views/user/guest/guestUser.blade.php
+resources/views/user/home/userDashboard.blade.php
+tests/Feature/ResponsiveLayoutAssetsTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Created a 1600px-wide WebP version of the existing landing image.
+- Updated the guest landing page and logged-in user dashboard to use the optimized WebP file.
+- Added width and height attributes to help the browser reserve the correct image layout space.
+- Kept the original PNG in place as source/reference material.
+- Added a regression check that the landing views use the optimized image and that it stays below 700 KB.
+
+### Commands executed
+
+```powershell
+ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of default=noprint_wrappers=1 public\user\images\featured_img.png
+ffmpeg -hide_banner -y -i public\user\images\featured_img.png -vf "scale='min(1600,iw)':-2:flags=lanczos" -c:v libwebp -quality 84 -compression_level 6 public\user\images\featured_img-1600.webp
+php artisan test tests\Feature\ResponsiveLayoutAssetsTest.php
+```
+
+### Test results
+
+```text
+Original PNG dimensions: 2628x1377
+Optimized WebP dimensions: 1600x838
+Original PNG size: 5,845,085 bytes
+Optimized WebP size: 158,318 bytes
+php artisan test tests\Feature\ResponsiveLayoutAssetsTest.php: passed, 6 tests / 40 assertions
+php artisan test: passed, 87 tests / 292 assertions
+php artisan optimize:clear: passed
+Local smoke check: GET /guest returned 200 and referenced user/images/featured_img-1600.webp.
+Local smoke check: GET /user/images/featured_img-1600.webp returned 200 as image/webp with 158,318 bytes.
+git diff --check: passed
+```
+
+### Alternatives considered
+
+```text
+Move the image to R2: not selected because the image is a static bundled design asset, not a user upload.
+Keep PNG but resize it: not selected because WebP gives a much smaller file with good visual quality.
+Use a very small image: not selected because the hero needs to stay clear on desktop and high-density screens.
+```
+
+### Security impact
+
+```text
+No security or authorization change
+No user-upload behavior changed
+No secrets added
+```
+
+### Performance impact
+
+```text
+Positive
+The landing hero image payload was reduced from about 5.8 MB to about 158 KB.
+This should improve first page load time on /guest and the user dashboard.
+```
+
+### Deployment impact
+
+```text
+Requires normal application deployment so Render serves the new bundled public asset.
+```
+
+### Project-book material
+
+The guest landing hero image was optimized as a static public WebP asset. This reduced the initial page image payload while preserving a clear visual for the first screen.
+
+## Entry 063 - Add Loader.io verification file
 
 ## Entry 063 - Add Loader.io verification file
 
