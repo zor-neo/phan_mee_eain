@@ -105,10 +105,64 @@ AI_SHARED_SECRET
 |   057 | 2026-07-20 | Add admin feed coming-soon placeholder | `not committed yet` | Completed |
 |   058 | 2026-07-20 | Strengthen Great Guru persona against role override | `not committed yet` | Completed |
 |   059 | 2026-07-20 | Make Great Guru responses more directive | `not committed yet` | Completed |
+|   060 | 2026-07-20 | Left-align reader comment names | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
 ---
+
+## Entry 060 - Left-align reader comment names
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The user reported that comment user names appeared visually centered depending on the comment body length. The request was to preserve the codebase as much as possible and only make the name/text block left aligned.
+
+### Files changed
+
+```text
+resources/views/user/home/contentPage.blade.php
+tests/Feature/ExpandableContentTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Added `text-start` to the existing comment text container for server-rendered comments.
+- Added the same `text-start` class to the JavaScript-created comment container after a new comment is submitted.
+- Added a small regression test for the content page markup.
+
+### Test results
+
+```text
+php artisan test tests\Feature\ExpandableContentTest.php: passed, 3 tests / 9 assertions
+php artisan test: passed, 81 tests / 252 assertions
+php artisan optimize:clear: passed
+git diff --check: passed with a harmless CRLF normalization warning for myjournal.md
+```
+
+### Security impact
+
+```text
+No security or authorization change
+UI alignment only
+```
+
+### Project-book material
+
+A small user-interface polish was made to keep comment author names and comment text left aligned for better readability.
 
 ## Entry 059 - Make Great Guru responses more directive
 

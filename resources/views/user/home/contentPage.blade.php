@@ -252,7 +252,7 @@
                                                         @forelse ($content->comments ?? [] as $comment)
                                                             <li class="list-group-item mb-2 d-flex justify-content-between"
                                                                 data-comment-id="{{ $comment->id }}">
-                                                                <div class="card border-0">
+                                                                <div class="card border-0 text-start">
                                                                     <strong>{{ $comment->user->name ?? 'Unknown' }}</strong>
                                                                     <p class="mb-0 card-text">{{ $comment->comment }}</p>
                                                                     <small class="text-muted mt-3">{{ $comment->created_at->diffForHumans() }}</small>
@@ -478,7 +478,7 @@
                             li.dataset.commentId = data.comment.id;
 
                             const div = document.createElement('div');
-                            div.className = 'card border border-0';
+                            div.className = 'card border border-0 text-start';
                             div.dataset.commentId = data.comment.id;
 
                             const strong = document.createElement('strong');
