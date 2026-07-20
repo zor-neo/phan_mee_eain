@@ -652,26 +652,18 @@ h1, h2, h3, h4, h5, h6 {
 .card-img-top {
   height: 150px;
   object-fit: cover;
-  background: transparent;
-}
-
-.sw-content-image-frame {
-  aspect-ratio: 16 / 9;
-  background: transparent;
-  border-radius: 0.375rem;
-  max-height: 240px;
-  overflow: hidden;
-  width: 100%;
+  background: var(--sw-surface-muted);
 }
 
 .sw-content-image {
-  background: transparent;
+  aspect-ratio: 16 / 9;
+  background: var(--sw-surface-muted);
   cursor: pointer;
   display: block;
   height: 100%;
+  max-height: 240px;
   object-fit: cover;
   padding: 0;
-  width: 100%;
 }
 
 .border-dashed {
