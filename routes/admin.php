@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\profileController;
+use App\Http\Controllers\AnnouncementController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,6 +20,7 @@ Route::group(['prefix'=>'admins','middleware'=>'admin'],function(){
     Route::get('user/report',[AdminController::class,'allReport'])->name('allReportPage');
     Route::get('user/suggest',[AdminController::class,'allSuggest'])->name('allSuggestPage');
     Route::get('requset/promo',[AdminController::class,'requestToPromo'])->name('requestToPromoPage');
+    Route::get('feed/create',[AnnouncementController::class,'create'])->name('adminFeed#CreatePage');
     Route::post('view-mode',[AdminController::class,'switchViewMode'])->name('viewMode#Process');
     Route::post('view-mode/reset',[AdminController::class,'resetViewMode'])->name('viewMode#Reset');
     Route::post('demote/{id}',[AdminController::class,'demoteProcess'])->name('demote#Process');

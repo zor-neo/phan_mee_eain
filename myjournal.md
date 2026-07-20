@@ -102,10 +102,71 @@ AI_SHARED_SECRET
 |   054 | 2026-07-20 | Fix access-control update redirect after role grant | `not committed yet` | Completed |
 |   055 | 2026-07-20 | Add singular admin access-control compatibility route | `not committed yet` | Completed |
 |   056 | 2026-07-20 | Disable static prototype router on Laravel pages | `not committed yet` | Completed |
+|   057 | 2026-07-20 | Add admin feed coming-soon placeholder | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
 ---
+
+## Entry 057 - Add admin feed coming-soon placeholder
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The admin sidebar had a `Create Admin Feed` item, but it was only linked to `#`. The announcements table and model existed, but the real feed publishing workflow was not implemented.
+
+### Files changed
+
+```text
+app/Http/Controllers/AnnouncementController.php
+routes/admin.php
+resources/views/admin/layout/master.blade.php
+resources/views/admin/home/createAdminFeed.blade.php
+tests/Feature/AdminComingSoonPageTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Added an admin-protected route for the admin feed placeholder page.
+- Wired the admin sidebar `Create Admin Feed` link to the new route.
+- Added a professional Coming Soon page explaining that admin feed publishing is planned for a future version.
+- Added tests to confirm the page and sidebar link are present.
+
+### Test results
+
+```text
+php artisan test tests\Feature\AdminComingSoonPageTest.php: passed, 2 tests / 9 assertions
+php artisan route:list --name=adminFeed: confirmed /admins/feed/create route
+php artisan route:cache: passed
+php artisan test: passed, 79 tests / 238 assertions
+php artisan optimize:clear: passed
+git diff --check: passed with a harmless CRLF normalization warning for myjournal.md
+```
+
+### Security impact
+
+```text
+No publishing permission added yet
+Route remains behind admin middleware
+No announcement database writes are introduced in this change
+```
+
+### Project-book material
+
+The admin feed feature is acknowledged as planned but not completed in the current release. Instead of showing a broken link, the application now displays a clear Coming Soon message from the admin portal.
 
 ## Entry 056 - Disable static prototype router on Laravel pages
 

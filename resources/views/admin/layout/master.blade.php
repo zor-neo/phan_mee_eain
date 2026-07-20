@@ -137,7 +137,7 @@
                                 <i class="bi bi-envelope me-2"></i>User Suggestion </a>
                             <a class="nav-link " href="{{route('requestToPromoPage')}}">
                                 <i class="bi bi-person-plus me-2"></i>User Requests <br> <small class="ms-4">Promote to Auther</small> </a>
-                            <a class="nav-link " href="#">
+                            <a class="nav-link " href="{{ route('adminFeed#CreatePage') }}">
                                 <i class="bi bi-rss me-2"></i>Create Admin Feed </a>
                         </nav>
                     </div>
