@@ -481,14 +481,23 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sw-visual {
-  min-height: 240px;
+  aspect-ratio: 16 / 9;
   background: var(--sw-surface-muted);
   border-radius: 14px;
   border: 1px solid var(--sw-border);
+  min-height: 0;
   overflow: hidden;
+  position: relative;
 }
 
-.sw-visual img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sw-visual img {
+  display: block;
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  position: absolute;
+  width: 100%;
+}
 .article-body { font-size: 1.04rem; line-height: 1.75; }
 .article-table-wrap {
   margin: 1.25rem 0;

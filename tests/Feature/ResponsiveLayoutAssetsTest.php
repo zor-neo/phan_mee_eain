@@ -49,6 +49,24 @@ test('content images cover the article frame without inner padding', function ()
     expect($authorContentView)->toContain('sw-content-image-frame');
 });
 
+test('landing visual image fills its frame without bottom background bleed', function () {
+    $appCss = file_get_contents(public_path('user/css/style.css'));
+    $guestView = file_get_contents(resource_path('views/user/guest/guestUser.blade.php'));
+    $userDashboardView = file_get_contents(resource_path('views/user/home/userDashboard.blade.php'));
+
+    expect($appCss)
+        ->toContain('.sw-visual')
+        ->toContain('aspect-ratio: 16 / 9')
+        ->toContain('min-height: 0')
+        ->toContain('position: relative')
+        ->toContain('position: absolute')
+        ->toContain('inset: 0')
+        ->toContain('object-fit: cover');
+
+    expect($guestView)->toContain("asset('user/images/featured_img.png')");
+    expect($userDashboardView)->toContain("asset('user/images/featured_img.png')");
+});
+
 test('article fallbacks use wide image while brand logo keeps original logo asset', function () {
     $readerContentView = file_get_contents(resource_path('views/user/home/contentPage.blade.php'));
     $authorContentView = file_get_contents(resource_path('views/auther/home/contents.blade.php'));

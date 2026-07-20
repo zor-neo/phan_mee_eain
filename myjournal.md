@@ -6713,3 +6713,25 @@ git commit -m "refactor: rename Summie to Guru across widget UI and code"
 
 ### Lesson learned
 For stable article thumbnails, the frame should own the size and clipping. The image should fill that frame instead of relying on Bootstrap image sizing mixed with custom height rules.
+
+## Guest Landing Hero Image Bleed Fix
+
+**Date**: 2026-07-20
+**Context**: The visible bottom background issue was reported again. On review, the affected surface was the guest landing page hero image (`featured_img.png`), not the article fallback image or logo.
+
+### What was attempted
+- Checked the guest landing and user dashboard views that use `public/user/images/featured_img.png`.
+- Changed `.sw-visual` into a fixed 16:9 image frame.
+- Positioned the hero image absolutely inside the frame with `object-fit: cover`.
+
+### Files changed
+- `public/user/css/style.css`
+- `tests/Feature/ResponsiveLayoutAssetsTest.php`
+
+### Test plan
+- Run the responsive layout asset test.
+- Run the full Laravel test suite.
+- Run `git diff --check`.
+
+### Lesson learned
+When an image frame shows background bleed, confirm the exact page and asset first. In this case, the landing hero container sizing was the real issue.
