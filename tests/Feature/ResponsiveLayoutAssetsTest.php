@@ -36,6 +36,7 @@ test('content images cover the article frame without inner padding', function ()
     expect($appCss)
         ->toContain('.sw-content-image')
         ->toContain('aspect-ratio: 16 / 9')
+        ->toContain('height: 100%')
         ->toContain('object-fit: cover')
         ->toContain('padding: 0');
 });

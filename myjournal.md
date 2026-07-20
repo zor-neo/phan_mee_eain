@@ -107,10 +107,64 @@ AI_SHARED_SECRET
 |   059 | 2026-07-20 | Make Great Guru responses more directive | `not committed yet` | Completed |
 |   060 | 2026-07-20 | Left-align reader comment names | `not committed yet` | Completed |
 |   061 | 2026-07-20 | Redirect admin view-mode toggle to selected view | `not committed yet` | Completed |
+|   062 | 2026-07-20 | Fix content image frame background bleed | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
 ---
+
+## Entry 062 - Fix content image frame background bleed
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The user reported a background bleed at the bottom of mobile content hero images. The existing image rule used `aspect-ratio: 16 / 9` with `height: auto`, which could leave the image box background visible below the rendered image.
+
+### Files changed
+
+```text
+public/user/css/style.css
+tests/Feature/ResponsiveLayoutAssetsTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Changed `.sw-content-image` from `height: auto` to `height: 100%`.
+- Kept the existing 16:9 aspect ratio and `object-fit: cover`.
+- Added a regression assertion for the image frame sizing rule.
+
+### Test results
+
+```text
+php artisan test tests\Feature\ResponsiveLayoutAssetsTest.php: passed, 5 tests / 28 assertions
+php artisan test: passed, 86 tests / 280 assertions
+php artisan optimize:clear: passed
+git diff --check: passed with a harmless CRLF normalization warning for myjournal.md
+```
+
+### Security impact
+
+```text
+No security or authorization change
+CSS-only image presentation fix
+```
+
+### Project-book material
+
+The article image frame was polished so default and uploaded article images cover the frame without showing background bleed.
 
 ## Entry 061 - Redirect admin view-mode toggle to selected view
 
