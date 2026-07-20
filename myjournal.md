@@ -108,10 +108,77 @@ AI_SHARED_SECRET
 |   060 | 2026-07-20 | Left-align reader comment names | `not committed yet` | Completed |
 |   061 | 2026-07-20 | Redirect admin view-mode toggle to selected view | `not committed yet` | Completed |
 |   062 | 2026-07-20 | Fix content image frame background bleed | `not committed yet` | Completed |
+|   063 | 2026-07-20 | Add Loader.io verification file | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
 ---
+
+## Entry 063 - Add Loader.io verification file
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The user needed the Loader.io verification token to be reachable from the public Render hostname at:
+
+```text
+http://gurus.onrender.com/loaderio-d74d02f5bf8bbf874e011b1c225b0b44.txt
+```
+
+The token file had been placed in the project root with the URL accidentally included in the filename, so Laravel/Apache would not serve it from the expected public URL.
+
+### Files changed
+
+```text
+public/loaderio-d74d02f5bf8bbf874e011b1c225b0b44.txt
+myjournal.md
+```
+
+### Main changes
+
+- Added the Loader.io verification file to Laravel's `public` directory.
+- Used the exact token text as the file content.
+- Removed the accidentally named root-level token file.
+
+### Test results
+
+```text
+Confirmed public/loaderio-d74d02f5bf8bbf874e011b1c225b0b44.txt exists with the expected token text.
+Local public-directory HTTP check: GET /loaderio-d74d02f5bf8bbf874e011b1c225b0b44.txt returned 200 and the expected token text.
+php artisan optimize:clear: passed
+php artisan test: passed, 87 tests / 289 assertions
+git diff --check: passed
+```
+
+### Security impact
+
+```text
+No secret was added
+Loader.io verification tokens are intended to be public
+No route, controller, database, or authorization behavior changed
+```
+
+### Deployment impact
+
+```text
+After this change is committed and deployed to Render, Apache should serve the verification file from the application root URL.
+```
+
+### Project-book material
+
+A public static verification file was added for Loader.io so the deployed Render application can prove domain ownership for load testing.
 
 ## Entry 062 - Fix content image frame background bleed
 
