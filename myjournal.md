@@ -103,10 +103,68 @@ AI_SHARED_SECRET
 |   055 | 2026-07-20 | Add singular admin access-control compatibility route | `not committed yet` | Completed |
 |   056 | 2026-07-20 | Disable static prototype router on Laravel pages | `not committed yet` | Completed |
 |   057 | 2026-07-20 | Add admin feed coming-soon placeholder | `not committed yet` | Completed |
+|   058 | 2026-07-20 | Strengthen Great Guru persona against role override | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
 ---
+
+## Entry 058 - Strengthen Great Guru persona against role override
+
+### Date and time
+
+```text
+2026-07-20
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The AI persona could become too generic, especially when users asked it to roleplay or ignore its normal identity. The intended persona is an old wise Guru character, not a bland support assistant.
+
+### Files changed
+
+```text
+packages/Local/AiCompanion/src/Services/PromptBuilder.php
+tests/Unit/PromptBuilderPersonaTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Strengthened the Great Guru identity as an old wise man and true Guru.
+- Added a persona lock section to resist identity override and unsafe roleplay requests.
+- Clarified that safe roleplay may continue, but the assistant must remain the Great Guru.
+- Reduced overly polite or corporate assistant behavior in the prompt.
+- Added a unit test to confirm the persona-lock instructions remain in the generated prompt.
+
+### Test results
+
+```text
+php artisan test tests\Unit\PromptBuilderPersonaTest.php: passed, 1 test / 8 assertions
+php -l packages\Local\AiCompanion\src\Services\PromptBuilder.php: passed
+php artisan test: passed, 80 tests / 246 assertions
+php artisan optimize:clear: passed
+git diff --check: passed with a harmless CRLF normalization warning for myjournal.md
+```
+
+### Security impact
+
+```text
+Positive prompt-safety impact
+Reduces prompt-injection style identity override attempts
+No database, authorization, or route changes
+```
+
+### Project-book material
+
+The AI companion persona was strengthened so it remains a consistent old wise Guru character during normal chat and safe roleplay. This improves user experience and helps prevent users from overriding the assistant identity through prompt instructions.
 
 ## Entry 057 - Add admin feed coming-soon placeholder
 
