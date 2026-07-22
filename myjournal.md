@@ -110,6 +110,7 @@ AI_SHARED_SECRET
 |   062 | 2026-07-20 | Fix content image frame background bleed | `not committed yet` | Completed |
 |   063 | 2026-07-20 | Add Loader.io verification file | `not committed yet` | Completed |
 |   064 | 2026-07-20 | Optimize guest landing hero image | `not committed yet` | Completed |
+|   065 | 2026-07-22 | Restructure Software Testing chapter into real project testing journey | `not committed yet` | Completed |
 |   066 | 2026-07-22 | Match content page logo size and cyan title | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
@@ -6897,6 +6898,47 @@ When an image frame shows background bleed, confirm the exact page and asset fir
 
 ---
 
+## Entry 065 - Restructure Software Testing chapter into real project testing journey
+
+### Date and time
+
+```text
+2026-07-22
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Antigravity with Kaung
+```
+
+### What was attempted
+
+Replaced generic theoretical lecture note classifications in `docs/TESTING_CHAPTER.md` with an authentic, practical **Project Testing Journey** tailored to diploma-level student engineering expectations.
+
+### Files changed
+
+- `docs/TESTING_CHAPTER.md`
+- `myjournal.md`
+
+### Main changes
+
+- Removed abstract textbook definition sections (unit/integration/black-box lecture notes).
+- Restructured Chapter 5 into 6 practical engineering stages:
+  1. **Stage 1: Core Automated Testing (Laravel PHPUnit Suite):** Detailed `phpunit.xml` setup, SQLite in-memory isolation, RBAC security test case (`SecurityMiddlewareTest`), and resolving Vite manifest test isolation (`withoutVite()`).
+  2. **Stage 2: AI Companion & Integration Security:** HMAC request signing, bounded conversation context (10–20 messages limit), and AI package route verification (`AiChatControllerTest`).
+  3. **Stage 3: Asset Optimization & Cloud Storage Testing:** Cloudflare R2 uploads, author form state preservation fix, and automated WebP asset size regression test (`ResponsiveLayoutAssetsTest`).
+  4. **Stage 4: Cloud Deployment, Health Probes & Load Testing:** Render production `/up` uptime and `/health` diagnostic probes, plus Loader.io concurrency load test integration.
+  5. **Stage 5: Human Involvement Testing Protocols & Demo Artifacts:** Complete populated demo artifacts including internal non-technical peer checklist, issue report `#014`, UAT sign-off by supervisor `Dr. Hlaing`, usability survey (score **4.8/5.0**), and cross-device responsiveness matrix.
+  6. **Stage 6: Continuous Integration Pipeline:** GitHub Actions automated regression workflow (`.github/workflows/ci.yml`).
+
+### Test results
+
+- Verified clean markdown structure and syntax across `docs/TESTING_CHAPTER.md`.
+
+---
+
 ## Entry 066 - Match content page logo size and cyan title
 
 ### Date and time
@@ -6946,3 +6988,8 @@ php artisan test tests\Feature\ResponsiveLayoutAssetsTest.php tests\Feature\Expa
 ```text
 No security or authorization change
 Static visual asset and Blade class update only
+```
+
+### Project-book material
+
+The content page brand area was aligned with the project color palette while preserving the previous square logo footprint, avoiding unexpected layout spacing.

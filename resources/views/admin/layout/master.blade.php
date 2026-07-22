@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Admin Dashboard - Spring Wisdom</title>
+    <title>Admin Dashboard - Phan Mee Eain</title>
     <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
     <link href="{{ asset('user/vendor1/fonts/spring-wisdom-fonts.css') }}" rel="stylesheet">
     <link href="{{ asset('user/vendor1/cdn/cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css') }}"
@@ -21,7 +21,7 @@
     @php($actingViewMode = session('acting_view_mode', 'admin'))
     <nav class="navbar navbar-expand-lg sw-navbar sticky-top">
         <div class="container-lg">
-            <a class="navbar-brand fw-bold" href="{{ route('adminHome') }}">Spring Wisdom</a>
+            <a class="navbar-brand fw-bold" href="{{ route('adminHome') }}">Phan Mee Eain</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav"
                 aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -110,7 +110,7 @@
                     <div class="admin-sidebar-card">
                         <div class="mb-3 px-2">
                             <strong class="d-block">Admin Portal</strong>
-                            <span class="small sw-muted">Spring Wisdom Management</span>
+                            <span class="small sw-muted">Phan Mee Eain Management</span>
                         </div>
                         <nav class="nav flex-column gap-1">
                             <a class="nav-link" href="{{route('adminHome')}}">
