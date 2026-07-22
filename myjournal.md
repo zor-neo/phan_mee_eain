@@ -110,6 +110,7 @@ AI_SHARED_SECRET
 |   062 | 2026-07-20 | Fix content image frame background bleed | `not committed yet` | Completed |
 |   063 | 2026-07-20 | Add Loader.io verification file | `not committed yet` | Completed |
 |   064 | 2026-07-20 | Optimize guest landing hero image | `not committed yet` | Completed |
+|   066 | 2026-07-22 | Match content page logo size and cyan title | `not committed yet` | Completed |
 
 Update this table whenever a new substantial entry is added.
 
@@ -6893,3 +6894,55 @@ git commit -m "refactor: rename Summie to Guru across widget UI and code"
 
 ### Lesson learned
 When an image frame shows background bleed, confirm the exact page and asset first. In this case, the landing hero container sizing was the real issue.
+
+---
+
+## Entry 066 - Match content page logo size and cyan title
+
+### Date and time
+
+```text
+2026-07-22
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+The user wanted the `Knowledge and Education` title on the reader content page to use the project-aligned cyan color, and then asked for the new logo to keep the same displayed size as the previous square `logo.jpg`.
+
+### Files changed
+
+```text
+resources/views/user/home/contentPage.blade.php
+public/content/image/logo1-square.jpg
+tests/Feature/ResponsiveLayoutAssetsTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Changed the content page title to use the existing `text-primary` project cyan class.
+- Reduced the title top margin from `mt-3` to `mt-2` so the title sits closer to the logo.
+- Created `logo1-square.jpg` from the newer logo artwork with the same `1280x1280` dimensions as the old `logo.jpg`.
+- Updated the content page to use `logo1-square.jpg`.
+- Updated the responsive asset test to confirm the intended logo asset and cyan title class.
+
+### Test results
+
+```text
+Old logo.jpg dimensions: 1280x1280
+New logo1-square.jpg dimensions: 1280x1280
+php artisan test tests\Feature\ResponsiveLayoutAssetsTest.php tests\Feature\ExpandableContentTest.php: passed, 9 tests / 51 assertions
+```
+
+### Security impact
+
+```text
+No security or authorization change
+Static visual asset and Blade class update only

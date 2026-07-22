@@ -53,10 +53,10 @@
                     <div class="card-body">
                         <div class="text-center mb-4">
                             <div class="d-flex justify-content-center">
-                                <img src="{{ asset('content/image/logo.jpg') }}" alt=""
+                                <img src="{{ asset('content/image/logo1-square.jpg') }}" alt=""
                                     class="img-fluid" style="max-width: 256px;">
                             </div>
-                            <p class="fw-bold fs-4 mt-3 mb-0">Knowledge and Education</p>
+                            <p class="fw-bold fs-4 mt-2 mb-0 text-primary">Knowledge and Education</p>
                         </div>
 
                         <div class="d-grid gap-3">

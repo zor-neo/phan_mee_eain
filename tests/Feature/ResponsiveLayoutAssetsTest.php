@@ -73,7 +73,9 @@ test('article fallbacks use wide image while brand logo keeps original logo asse
     $authorEditView = file_get_contents(resource_path('views/auther/home/editContentPage.blade.php'));
 
     expect($readerContentView)
-        ->toContain("asset('content/image/logo.jpg')")
+        ->toContain("asset('content/image/logo1-square.jpg')")
+        ->toContain('Knowledge and Education')
+        ->toContain('text-primary')
         ->toContain('max-width: 256px')
         ->toContain('content/image/default-article-wide.jpg');
 
