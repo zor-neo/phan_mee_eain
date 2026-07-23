@@ -6993,3 +6993,61 @@ Static visual asset and Blade class update only
 ### Project-book material
 
 The content page brand area was aligned with the project color palette while preserving the previous square logo footprint, avoiding unexpected layout spacing.
+
+---
+
+## Entry 067 - Brave-backed web search for the AI module
+
+### Date and time
+
+```text
+2026-07-23
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+Added a Brave-backed live web search path for the Guru AI package so current facts can be checked before Gemini answers time-sensitive questions. The earlier cache experiment was split into its own separate branch and is not part of this branch.
+
+### Files changed
+
+- `packages/Local/AiCompanion/src/Services/BraveSearchClient.php`
+- `packages/Local/AiCompanion/src/Services/WebSearchIntentDetector.php`
+- `packages/Local/AiCompanion/src/Services/PromptBuilder.php`
+- `packages/Local/AiCompanion/src/Http/Controllers/AiChatController.php`
+- `packages/Local/AiCompanion/config/ai-companion.php`
+- `README.md`
+- `packages/Local/AiCompanion/README.md`
+- `.env.example`
+- `tests/Feature/AiWebSearchTest.php`
+- `tests/Unit/WebSearchIntentDetectorTest.php`
+- `tests/Unit/PromptBuilderPersonaTest.php`
+
+### Main changes
+
+- Added a Brave Search client that calls the Brave live-context endpoint, caches fresh search results briefly, and feeds them into the AI prompt.
+- Added a lightweight intent detector so only current or time-sensitive questions trigger web search.
+- Updated the Guru prompt so live search context is preferred for fresh facts.
+
+### Commands executed
+
+- `php -l` on the changed PHP files
+- `php artisan test tests/Feature/ExpandableContentTest.php tests/Feature/AiChatAuthTest.php tests/Feature/AiDatabaseMemoryTest.php tests/Feature/AiWebSearchTest.php tests/Feature/ProfileTest.php tests/Feature/StateChangingRouteVerbTest.php tests/Feature/UserProfileRoleTest.php tests/Feature/OwnershipSecurityTest.php tests/Feature/ResponsiveLayoutAssetsTest.php tests/Unit/PromptBuilderPersonaTest.php tests/Unit/WebSearchIntentDetectorTest.php tests/Unit/ContentDisplayCacheTest.php`
+- `git diff --check`
+
+### Test results
+
+```text
+42 passed, 159 assertions
+```
+
+### Lessons learned
+
+- Free web search is best handled by a small intent check plus a provider API, not by forcing every AI message through live search.
+- Controller dependencies used in tests should stay nullable or be resolved lazily so direct test calls do not break.

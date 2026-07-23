@@ -6,8 +6,10 @@ use Throwable;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Local\AiCompanion\Services\BraveSearchClient;
 use Local\AiCompanion\Services\GeminiClient;
 use Local\AiCompanion\Services\PromptBuilder;
+use Local\AiCompanion\Services\WebSearchIntentDetector;
 use Local\AiCompanion\Services\SessionMemoryManager;
 
 class AiChatController extends Controller
@@ -23,7 +25,9 @@ class AiChatController extends Controller
         Request $request,
         SessionMemoryManager $memory,
         PromptBuilder $promptBuilder,
-        GeminiClient $gemini
+        GeminiClient $gemini,
+        WebSearchIntentDetector $webSearchIntentDetector,
+        BraveSearchClient $braveSearchClient
     ): JsonResponse {
         $validated = $request->validate([
             'message' => ['required', 'string', 'max:2000'],
@@ -49,7 +53,16 @@ class AiChatController extends Controller
                 $webContext = file_get_contents($webhelperPath);
             }
 
-            $prompt = $promptBuilder->build($messages, $userMessage, $webContext);
+            $liveWebContext = '';
+            if ($webSearchIntentDetector->shouldSearch($userMessage)) {
+                try {
+                    $liveWebContext = $braveSearchClient->search($userMessage);
+                } catch (Throwable $searchException) {
+                    report($searchException);
+                }
+            }
+
+            $prompt = $promptBuilder->build($messages, $userMessage, $webContext, $liveWebContext);
 
             $reply = $gemini->generate($prompt);
 

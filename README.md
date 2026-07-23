@@ -55,6 +55,7 @@ AWS_URL=
 AWS_USE_PATH_STYLE_ENDPOINT=true
 AI_COMPANION_ENABLED=true
 GEMINI_API_KEY_1=[REDACTED]
+BRAVE_SEARCH_API_KEY=[REDACTED]
 ```
 
 Run migrations as a controlled release step:

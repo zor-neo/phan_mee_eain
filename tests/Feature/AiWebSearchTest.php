@@ -1,0 +1,93 @@
+<?php
+
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
+
+uses(RefreshDatabase::class);
+
+test('current information requests call brave search before gemini', function () {
+    config([
+        'ai-companion.gemini.keys' => ['test-gemini-key'],
+        'ai-companion.search.brave.api_key' => 'test-brave-key',
+    ]);
+
+    Http::fake([
+        'api.search.brave.com/res/v1/llm/context*' => Http::response([
+            'grounding' => [
+                'generic' => [
+                    [
+                        'title' => 'Laravel Documentation',
+                        'url' => 'https://laravel.com/docs',
+                        'snippets' => ['Laravel 12 is the current stable release.'],
+                    ],
+                ],
+            ],
+        ], 200),
+        'generativelanguage.googleapis.com/*' => Http::response([
+            'candidates' => [
+                [
+                    'content' => [
+                        'parts' => [
+                            ['text' => 'Laravel 12 is the current stable release.'],
+                        ],
+                    ],
+                ],
+            ],
+        ], 200),
+    ]);
+
+    $user = User::factory()->create(['role' => 'user']);
+
+    $response = $this->actingAs($user)->postJson('/ai/chat', [
+        'message' => 'What is the latest Laravel version?',
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('reply', 'Laravel 12 is the current stable release.');
+
+    Http::assertSent(function (Request $request): bool {
+        return str_contains($request->url(), 'api.search.brave.com/res/v1/llm/context')
+            && (($request->data()['q'] ?? null) === 'what is the latest laravel version?');
+    });
+
+    Http::assertSent(function (Request $request): bool {
+        return str_contains($request->url(), 'generativelanguage.googleapis.com/v1beta/models/')
+            && str_contains($request->body(), 'LIVE WEB SEARCH CONTEXT')
+            && str_contains($request->body(), 'Laravel Documentation')
+            && str_contains($request->body(), 'Laravel 12 is the current stable release.');
+    });
+});
+
+test('ordinary learning questions skip brave search and answer directly', function () {
+    config([
+        'ai-companion.gemini.keys' => ['test-gemini-key'],
+        'ai-companion.search.brave.api_key' => 'test-brave-key',
+    ]);
+
+    Http::fake([
+        'generativelanguage.googleapis.com/*' => Http::response([
+            'candidates' => [
+                [
+                    'content' => [
+                        'parts' => [
+                            ['text' => 'Start with routes, controllers, and views.'],
+                        ],
+                    ],
+                ],
+            ],
+        ], 200),
+    ]);
+
+    $user = User::factory()->create(['role' => 'user']);
+
+    $response = $this->actingAs($user)->postJson('/ai/chat', [
+        'message' => 'Explain Laravel MVC for a beginner.',
+    ]);
+
+    $response->assertOk()
+        ->assertJsonPath('reply', 'Start with routes, controllers, and views.');
+
+    Http::assertSentCount(1);
+});

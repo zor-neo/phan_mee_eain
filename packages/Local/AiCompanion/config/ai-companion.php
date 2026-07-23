@@ -19,6 +19,18 @@ return [
         'timeout' => env('AI_COMPANION_TIMEOUT', 30),
     ],
 
+    'search' => [
+        'enabled' => env('AI_COMPANION_SEARCH_ENABLED', true),
+
+        'cache_ttl' => env('AI_COMPANION_SEARCH_CACHE_TTL', 600),
+
+        'timeout' => env('AI_COMPANION_SEARCH_TIMEOUT', 12),
+
+        'brave' => [
+            'api_key' => env('BRAVE_SEARCH_API_KEY'),
+        ],
+    ],
+
     'memory' => [
         'driver' => 'database',
         'session_key' => 'active_ai_conversation_id',
