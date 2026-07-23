@@ -6996,7 +6996,7 @@ The content page brand area was aligned with the project color palette while pre
 
 ---
 
-## Entry 067 - Versioned feed cache and Brave-backed web search
+## Entry 067 - Brave-backed web search for the AI module
 
 ### Date and time
 
@@ -7013,22 +7013,10 @@ Codex with Kaung
 
 ### What was attempted
 
-Added two free-tier optimization paths:
-
-1. A versioned cache layer for the content display flow so repeated feed rendering can reuse shared page data instead of rebuilding the same joins and counts every request.
-2. A Brave-backed live web search path for the Guru AI package so current facts can be checked before Gemini answers time-sensitive questions.
+Added a Brave-backed live web search path for the Guru AI package so current facts can be checked before Gemini answers time-sensitive questions. The earlier cache experiment was split into its own separate branch and is not part of this branch.
 
 ### Files changed
 
-- `app/Support/ContentDisplayCache.php`
-- `app/Http/Controllers/ContentController.php`
-- `app/Http/Controllers/Auther/AutherProfileController.php`
-- `app/Http/Controllers/CategoryController.php`
-- `app/Http/Controllers/CommentController.php`
-- `app/Http/Controllers/ReactController.php`
-- `app/Http/Controllers/UserProfileController.php`
-- `app/Http/Controllers/ProfileController.php`
-- `app/Http/Controllers/Admin/AdminController.php`
 - `packages/Local/AiCompanion/src/Services/BraveSearchClient.php`
 - `packages/Local/AiCompanion/src/Services/WebSearchIntentDetector.php`
 - `packages/Local/AiCompanion/src/Services/PromptBuilder.php`
@@ -7038,15 +7026,11 @@ Added two free-tier optimization paths:
 - `packages/Local/AiCompanion/README.md`
 - `.env.example`
 - `tests/Feature/AiWebSearchTest.php`
-- `tests/Unit/ContentDisplayCacheTest.php`
 - `tests/Unit/WebSearchIntentDetectorTest.php`
 - `tests/Unit/PromptBuilderPersonaTest.php`
 
 ### Main changes
 
-- Added `ContentDisplayCache` with versioned keys for the content feed, content card counts, and category list.
-- Cached the shared content-page reads and reduced the count query to only the visible content IDs.
-- Bumped the shared cache version after content, comment, reaction, category, and profile writes that affect what the feed shows.
 - Added a Brave Search client that calls the Brave live-context endpoint, caches fresh search results briefly, and feeds them into the AI prompt.
 - Added a lightweight intent detector so only current or time-sensitive questions trigger web search.
 - Updated the Guru prompt so live search context is preferred for fresh facts.
@@ -7065,6 +7049,5 @@ Added two free-tier optimization paths:
 
 ### Lessons learned
 
-- Cache helps the real content feed, not the root redirect-only landing path.
 - Free web search is best handled by a small intent check plus a provider API, not by forcing every AI message through live search.
 - Controller dependencies used in tests should stay nullable or be resolved lazily so direct test calls do not break.

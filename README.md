@@ -77,8 +77,6 @@ Uploaded profile images, content images, and content resources use Laravel stora
 
 Leave `AWS_URL` empty unless a public R2/custom domain is intentionally configured. The app does not need a public bucket for the current MVP.
 
-If you provision a Redis-compatible cache service, switch `CACHE_STORE` to `redis` in production so the content-page cache can reduce repeated read work on MySQL. The code still falls back safely if the cache store is unavailable.
-
 Health checks:
 
 - `/up` is Laravel's lightweight process health endpoint and is suitable for Render's normal health check path.
