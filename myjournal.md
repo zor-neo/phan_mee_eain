@@ -7087,7 +7087,7 @@ myjournal.md
 
 - Loaded open-source Google Fonts only inside the AI companion widget include.
 - Used `Inter` and `Noto Sans Myanmar` for AI chat UI controls.
-- Used `Source Serif 4` and `Noto Serif Myanmar` for assistant answer bubbles.
+- Initially used `Source Serif 4` and `Noto Serif Myanmar` for assistant answer bubbles.
 - Kept all CSS scoped under `#guru-widget` so normal Laravel pages, dashboards, and content views keep their existing fonts.
 - Updated the published widget CSS so production uses the same asset as the package source.
 
@@ -7102,6 +7102,57 @@ php artisan test tests/Feature/ResponsiveLayoutAssetsTest.php: passed, 7 tests /
 ```text
 No backend, authorization, database, or AI-provider behavior changed.
 Adds a small external font request only on pages where the AI widget is included.
+```
+
+---
+
+## Entry 070 - Simplify AI chat pane to sans fonts
+
+### Date and time
+
+```text
+2026-07-23
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+Changed the AI chat pane away from mixed serif/sans typography after review showed the serif assistant response font was harder to read inside the small floating chat window.
+
+### Files changed
+
+```text
+packages/Local/AiCompanion/resources/views/widget.blade.php
+packages/Local/AiCompanion/public/ai-companion/widget.css
+public/vendor/ai-companion/ai-companion/widget.css
+tests/Feature/ResponsiveLayoutAssetsTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Kept `Inter` for English chat UI and text.
+- Kept `Noto Sans Myanmar` for Burmese text so Burmese sizing stays uniform.
+- Removed `Source Serif 4` and `Noto Serif Myanmar` from the widget font request.
+- Made assistant responses use the same sans stack, with readability controlled by font size, weight, and line-height.
+
+### Test results
+
+```text
+php artisan test tests/Feature/ResponsiveLayoutAssetsTest.php: passed, 7 tests / 54 assertions
+```
+
+### User experience impact
+
+```text
+The chat pane should feel more consistent and easier to scan in a compact window.
+No backend, database, authorization, or AI-provider behavior changed.
 ```
 
 ---

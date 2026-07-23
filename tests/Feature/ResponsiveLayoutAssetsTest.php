@@ -16,9 +16,11 @@ test('mobile layout assets include overflow and chat viewport safeguards', funct
         ->toContain('calc(100dvh - 108px')
         ->toContain('overscroll-behavior: contain')
         ->toContain('--guru-font-ui: "Inter", "Noto Sans Myanmar", Arial, sans-serif')
-        ->toContain('--guru-font-reading: "Source Serif 4", "Noto Serif Myanmar", Georgia, serif')
+        ->toContain('--guru-font-reading: var(--guru-font-ui)')
         ->toContain('.guru-assistant')
-        ->toContain('font-family: var(--guru-font-reading)');
+        ->toContain('font-family: var(--guru-font-reading)')
+        ->not->toContain('Source Serif 4')
+        ->not->toContain('Noto Serif Myanmar');
 
     expect($widgetJs)
         ->toContain("document.body.classList.add('guru-chat-open')")
@@ -33,8 +35,8 @@ test('ai companion widget loads scoped chat fonts only with the widget', functio
         ->toContain('fonts.googleapis.com')
         ->toContain('family=Inter')
         ->toContain('family=Noto+Sans+Myanmar')
-        ->toContain('family=Noto+Serif+Myanmar')
-        ->toContain('family=Source+Serif+4')
+        ->not->toContain('family=Noto+Serif+Myanmar')
+        ->not->toContain('family=Source+Serif+4')
         ->toContain("asset('vendor/ai-companion/ai-companion/widget.css')");
 });
 
