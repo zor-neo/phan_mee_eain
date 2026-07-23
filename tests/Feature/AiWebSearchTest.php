@@ -74,9 +74,17 @@ test('gemini can request brave search tool before final answer', function () {
     });
 
     Http::assertSent(function (Request $request): bool {
+        $functionCallingConfig = data_get(
+            $request->data(),
+            'toolConfig.functionCallingConfig',
+            []
+        );
+
         return str_contains($request->url(), 'generativelanguage.googleapis.com/v1beta/models/')
             && str_contains($request->body(), 'functionDeclarations')
-            && str_contains($request->body(), 'brave_search');
+            && str_contains($request->body(), 'brave_search')
+            && (($functionCallingConfig['mode'] ?? null) === 'AUTO')
+            && ! array_key_exists('allowedFunctionNames', $functionCallingConfig);
     });
 
     Http::assertSent(function (Request $request): bool {

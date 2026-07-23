@@ -7280,3 +7280,65 @@ PDF rendered successfully with 9 pages.
 ```text
 The handbook gives a student-friendly explanation of how the main Laravel app, AI package, Gemini, Brave Search, MySQL, and R2 fit together in the same secure architecture.
 ```
+
+---
+
+## Entry 072 - Repair Gemini AUTO tool-calling request
+
+### Date and time
+
+```text
+2026-07-23
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### Problem and existing behavior
+
+After Brave Search was configured in production, every Gemini request containing the tool declaration failed with HTTP 400. Google returned: `Please set allowed_function_names only when function calling mode is ANY.` Local tests had not exposed the issue because they used mocked HTTP responses, and local live testing skipped the tool payload when no Brave key was configured.
+
+### Selected solution
+
+Kept function-calling mode as `AUTO` so Gemini can decide whether fresh web information is needed, and removed `allowedFunctionNames`. Only the trusted `brave_search` function is declared, so removing that redundant list does not allow any additional tool.
+
+### Alternative considered
+
+Changing the mode to `ANY` would satisfy the rejected field combination, but it would force a Brave Search call for every message. That would remove the intended model decision and waste search quota for ordinary questions.
+
+### Files changed
+
+```text
+packages/Local/AiCompanion/src/Services/GeminiClient.php
+tests/Feature/AiWebSearchTest.php
+myjournal.md
+```
+
+### Validation plan
+
+```text
+php -l packages/Local/AiCompanion/src/Services/GeminiClient.php
+php artisan test tests/Feature/AiWebSearchTest.php
+php artisan test tests/Feature/AiChatAuthTest.php tests/Feature/AiDatabaseMemoryTest.php tests/Feature/AiWebSearchTest.php tests/Unit/PromptBuilderPersonaTest.php
+Live provider request with Brave tool availability enabled
+```
+
+### Test results
+
+```text
+Gemini live tool-enabled request: TOOL_PAYLOAD_OK
+AiWebSearchTest: 2 passed, 10 assertions
+Focused AI suite: 12 passed, 55 assertions
+Full Laravel suite: 90 passed, 322 assertions
+```
+
+### Security, performance, cost, and architecture impact
+
+- No security-boundary or architecture change.
+- The browser still cannot call Gemini or Brave directly.
+- Gemini remains responsible for choosing whether to request the only declared tool.
+- Avoiding forced `ANY` mode prevents unnecessary Brave Search requests and quota use.

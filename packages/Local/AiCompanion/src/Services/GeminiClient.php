@@ -318,9 +318,6 @@ class GeminiClient
             'toolConfig' => [
                 'functionCallingConfig' => [
                     'mode' => 'AUTO',
-                    'allowedFunctionNames' => [
-                        self::BRAVE_SEARCH_TOOL,
-                    ],
                 ],
             ],
         ];
