@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
-use App\Support\ContentDisplayCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,8 +10,7 @@ class CommentController extends Controller
 {
     //comment process
 
-    public function commentProcess(Request $request, ?ContentDisplayCache $cache = null){
-        $cache = $cache ?? app(ContentDisplayCache::class);
+    public function commentProcess(Request $request){
         abort_unless(Auth::check(), 401);
 
         $comment = Comment::create([
@@ -21,7 +19,6 @@ class CommentController extends Controller
                     'user_id' => Auth::id(),
                     'content_id' => $request->contentId,
         ]);
-        $cache->bumpVersion();
 
         $comment->load('user');   // user data ပါ ယူမယ်
 
@@ -38,8 +35,7 @@ class CommentController extends Controller
             ],
         ]);
     }
-    public function commentDelete($commentId, ?ContentDisplayCache $cache = null){
-        $cache = $cache ?? app(ContentDisplayCache::class);
+    public function commentDelete($commentId){
         $comment = Comment::find($commentId);
 
         if (!$comment) {
@@ -52,7 +48,6 @@ class CommentController extends Controller
 
         $contentId = $comment->content_id;
         $comment->delete();
-        $cache->bumpVersion();
 
         $commentCount = Comment::where('content_id', $contentId)->count();
 

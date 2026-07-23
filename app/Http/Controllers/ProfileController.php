@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
-use App\Support\ContentDisplayCache;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -25,9 +24,8 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request, ?ContentDisplayCache $cache = null): RedirectResponse
+    public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $cache = $cache ?? app(ContentDisplayCache::class);
         $request->user()->fill($request->validated());
 
         if ($request->user()->isDirty('email')) {
@@ -35,7 +33,6 @@ class ProfileController extends Controller
         }
 
         $request->user()->save();
-        $cache->bumpVersion();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
@@ -43,9 +40,8 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request, ?ContentDisplayCache $cache = null): RedirectResponse
+    public function destroy(Request $request): RedirectResponse
     {
-        $cache = $cache ?? app(ContentDisplayCache::class);
         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
@@ -55,7 +51,6 @@ class ProfileController extends Controller
         Auth::logout();
 
         $user->delete();
-        $cache->bumpVersion();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();

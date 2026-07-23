@@ -8,7 +8,6 @@ use App\Models\Content;
 use App\Models\promote;
 use App\Models\report;
 use App\Models\User;
-use App\Support\ContentDisplayCache;
 use App\Support\UploadedMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -46,8 +45,7 @@ class AdminController extends Controller
     }
 
     //delete user process
-    public function deleteUser($id, $image = null, ?ContentDisplayCache $cache = null){
-        $cache = $cache ?? app(ContentDisplayCache::class);
+    public function deleteUser($id, $image = null){
         $user = User::findOrFail($id);
 
         abort_if($user->isSuperAdmin(), 403);
@@ -57,7 +55,6 @@ class AdminController extends Controller
         UploadedMedia::delete('profile', $image);
 
         $user->delete();
-        $cache->bumpVersion();
         Swal::success([
             'title' => 'Success Message',
             'text'=>'Delete Success']);
