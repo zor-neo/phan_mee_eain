@@ -14,12 +14,28 @@ test('mobile layout assets include overflow and chat viewport safeguards', funct
         ->toContain('body.guru-chat-open')
         ->toContain('position: fixed')
         ->toContain('calc(100dvh - 108px')
-        ->toContain('overscroll-behavior: contain');
+        ->toContain('overscroll-behavior: contain')
+        ->toContain('--guru-font-ui: "Inter", "Noto Sans Myanmar", Arial, sans-serif')
+        ->toContain('--guru-font-reading: "Source Serif 4", "Noto Serif Myanmar", Georgia, serif')
+        ->toContain('.guru-assistant')
+        ->toContain('font-family: var(--guru-font-reading)');
 
     expect($widgetJs)
         ->toContain("document.body.classList.add('guru-chat-open')")
         ->toContain("document.body.classList.remove('guru-chat-open')")
         ->toContain("window.matchMedia('(max-width: 520px)').matches");
+});
+
+test('ai companion widget loads scoped chat fonts only with the widget', function () {
+    $widgetView = file_get_contents(base_path('packages/Local/AiCompanion/resources/views/widget.blade.php'));
+
+    expect($widgetView)
+        ->toContain('fonts.googleapis.com')
+        ->toContain('family=Inter')
+        ->toContain('family=Noto+Sans+Myanmar')
+        ->toContain('family=Noto+Serif+Myanmar')
+        ->toContain('family=Source+Serif+4')
+        ->toContain("asset('vendor/ai-companion/ai-companion/widget.css')");
 });
 
 test('published guru widget assets stay synced with package assets', function () {
