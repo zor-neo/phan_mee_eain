@@ -7051,3 +7051,55 @@ Added a Brave-backed live web search path for the Guru AI package so current fac
 
 - Free web search is best handled by a small intent check plus a provider API, not by forcing every AI message through live search.
 - Controller dependencies used in tests should stay nullable or be resolved lazily so direct test calls do not break.
+
+---
+
+## Entry 068 - Scope Claude-like open-source fonts to AI chat pane
+
+### Date and time
+
+```text
+2026-07-23
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+Introduced a cleaner chat reading style inspired by Claude-like typography without copying proprietary Anthropic fonts and without changing the rest of the application typography.
+
+### Files changed
+
+```text
+packages/Local/AiCompanion/resources/views/widget.blade.php
+packages/Local/AiCompanion/public/ai-companion/widget.css
+public/vendor/ai-companion/ai-companion/widget.css
+tests/Feature/ResponsiveLayoutAssetsTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Loaded open-source Google Fonts only inside the AI companion widget include.
+- Used `Inter` and `Noto Sans Myanmar` for AI chat UI controls.
+- Used `Source Serif 4` and `Noto Serif Myanmar` for assistant answer bubbles.
+- Kept all CSS scoped under `#guru-widget` so normal Laravel pages, dashboards, and content views keep their existing fonts.
+- Updated the published widget CSS so production uses the same asset as the package source.
+
+### Test results
+
+```text
+php artisan test tests/Feature/ResponsiveLayoutAssetsTest.php: passed, 7 tests / 52 assertions
+```
+
+### Security and performance impact
+
+```text
+No backend, authorization, database, or AI-provider behavior changed.
+Adds a small external font request only on pages where the AI widget is included.
+```

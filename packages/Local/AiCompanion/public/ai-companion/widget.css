@@ -3,8 +3,10 @@
     right: 24px;
     bottom: 24px;
     z-index: 9999;
-    font-family: Arial, sans-serif;
+    font-family: var(--guru-font-ui);
     max-width: 100vw;
+    --guru-font-ui: "Inter", "Noto Sans Myanmar", Arial, sans-serif;
+    --guru-font-reading: "Source Serif 4", "Noto Serif Myanmar", Georgia, serif;
     --guru-bg: #f4f4f4;
     --guru-surface: #ffffff;
     --guru-border: #dee2e6;
@@ -122,6 +124,9 @@
 .guru-assistant {
     align-self: flex-start;
     margin-right: auto;
+    font-family: var(--guru-font-reading);
+    font-size: 15px;
+    line-height: 1.55;
     background: var(--guru-surface);
     color: var(--guru-text);
     border: 1px solid var(--guru-border);
@@ -178,6 +183,7 @@
 .guru-table {
     width: 100%;
     border-collapse: collapse;
+    font-family: var(--guru-font-ui);
     font-size: 13px;
     background: var(--guru-surface);
 }
