@@ -7,6 +7,7 @@ use App\Models\Content;
 use App\Models\promote;
 use App\Models\report;
 use App\Models\User;
+use App\Support\ContentDisplayCache;
 use App\Support\UploadedMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,8 @@ class UserProfileController extends Controller
     }
 
     //edit process
-    public function editProcess(Request $request){
+    public function editProcess(Request $request, ?ContentDisplayCache $cache = null){
+         $cache = $cache ?? app(ContentDisplayCache::class);
          $this->editValidateProcess($request);
          $data = $this->insertProcess($request);
 
@@ -39,6 +41,7 @@ class UserProfileController extends Controller
 
          //update data to database
          User::where('id',auth()->user()->id)->update($data);
+         $cache->bumpVersion();
 
          Swal::success([
                 'title' => 'Success Message',

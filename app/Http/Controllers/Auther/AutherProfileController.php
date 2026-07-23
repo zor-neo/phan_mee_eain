@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Content;
 use App\Models\ContentResource;
+use App\Support\ContentDisplayCache;
 use App\Support\UploadedMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -72,7 +73,8 @@ class AutherProfileController extends Controller
     }
 
     //create content process
-    public function createContentProcess(Request $request){
+    public function createContentProcess(Request $request, ?ContentDisplayCache $cache = null){
+        $cache = $cache ?? app(ContentDisplayCache::class);
         // dd($request->all());
         abort_unless(Auth::check(), 401);
         $request->merge(['userId' => Auth::id()]);
@@ -86,6 +88,7 @@ class AutherProfileController extends Controller
         }
         $content = Content::create($data);
         $this->storeResources($request, $content);
+        $cache->bumpVersion();
         Swal::success([
                 'title' => 'Success create Content']);
         return to_route('autherContent#Page');
@@ -115,7 +118,8 @@ class AutherProfileController extends Controller
     }
 
     //edit Content process
-    public function editContentProcess(Request $request){
+    public function editContentProcess(Request $request, ?ContentDisplayCache $cache = null){
+        $cache = $cache ?? app(ContentDisplayCache::class);
         abort_unless(Auth::check(), 401);
         $request->merge(['userId' => Auth::id()]);
         $ContentId =  Str::of($request->contentId)->toInteger();
@@ -134,6 +138,7 @@ class AutherProfileController extends Controller
         Content::where('id',$ContentId)->update($data);
         $content = Content::findOrFail($ContentId);
         $this->storeResources($request, $content);
+        $cache->bumpVersion();
         Swal::success([
                 'title' => 'Success create Content']);
         return to_route('autherContent#Page');
@@ -141,7 +146,8 @@ class AutherProfileController extends Controller
     }
 
     //delete content process
-    public function deleteContentProcess($id, $image = null){
+    public function deleteContentProcess($id, $image = null, ?ContentDisplayCache $cache = null){
+        $cache = $cache ?? app(ContentDisplayCache::class);
          //dd('id'.'='.$id);
         $Id = Str::of($id)->toInteger();
         $content = Content::with('resources')->find($Id);
@@ -156,6 +162,7 @@ class AutherProfileController extends Controller
 
         $content->delete();
         UploadedMedia::delete('content', $image);
+        $cache->bumpVersion();
         Swal::success([
                 'title' => 'Success delete Content']);
         return to_route('autherContent#Page');

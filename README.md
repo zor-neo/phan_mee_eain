@@ -55,6 +55,7 @@ AWS_URL=
 AWS_USE_PATH_STYLE_ENDPOINT=true
 AI_COMPANION_ENABLED=true
 GEMINI_API_KEY_1=[REDACTED]
+BRAVE_SEARCH_API_KEY=[REDACTED]
 ```
 
 Run migrations as a controlled release step:
@@ -75,6 +76,8 @@ The main seeder is idempotent. It creates or repairs the superadmin account, dem
 Uploaded profile images, content images, and content resources use Laravel storage. In production set `UPLOADS_DISK=s3` with Cloudflare R2 credentials. The R2 bucket can stay private because the app serves uploaded images through an authenticated Laravel route and downloads resources after Laravel checks the request.
 
 Leave `AWS_URL` empty unless a public R2/custom domain is intentionally configured. The app does not need a public bucket for the current MVP.
+
+If you provision a Redis-compatible cache service, switch `CACHE_STORE` to `redis` in production so the content-page cache can reduce repeated read work on MySQL. The code still falls back safely if the cache store is unavailable.
 
 Health checks:
 

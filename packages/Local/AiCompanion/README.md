@@ -9,6 +9,7 @@ Guru is a standalone Laravel 12 AI learning companion package using Gemini API.
 - Multiple API key rotation
 - Fallback model support
 - Database-backed temporary conversation memory
+- Brave web search for fresh facts
 - CSRF-protected chat request
 - Rate-limited chat endpoint
 - Configurable route prefix
@@ -23,6 +24,11 @@ AI_COMPANION_ENABLED=true
 GEMINI_API_KEY_1=
 GEMINI_API_KEY_2=
 GEMINI_API_KEY_3=
+BRAVE_SEARCH_API_KEY=
+
+AI_COMPANION_SEARCH_ENABLED=true
+AI_COMPANION_SEARCH_CACHE_TTL=600
+AI_COMPANION_SEARCH_TIMEOUT=12
 
 AI_COMPANION_MODEL=gemini-3.1-flash-lite
 AI_COMPANION_FALLBACK_MODEL=gemini-3.5-flash
@@ -216,6 +222,8 @@ ai_messages
 ```
 
 The Laravel session stores only the active conversation ID.
+
+When a question depends on current news, pricing, releases, trends, or other fresh facts, the package can ask Brave Search first and then feed the results into Gemini.
 
 ### 6. Publish the frontend assets
 

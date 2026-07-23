@@ -4,13 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Content;
 use App\Models\React;
+use App\Support\ContentDisplayCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ReactController extends Controller
 {
     //react
-    public function reactionProcess($userId,$contentId,$react){
+    public function reactionProcess($userId,$contentId,$react, ?ContentDisplayCache $cache = null){
+        $cache = $cache ?? app(ContentDisplayCache::class);
         abort_unless(Auth::check(), 401);
 
         $userId = Auth::id();
@@ -34,6 +36,7 @@ class ReactController extends Controller
                 'react' => $react,
             ]);
         }
+        $cache->bumpVersion();
         //count react in single content
         $counts = Content::withCount(['likes', 'loves', 'unlikes'])
                         ->where('id', $contentId)
