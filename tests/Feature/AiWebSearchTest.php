@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Http;
 
 uses(RefreshDatabase::class);
 
-test('current information requests call brave search before gemini', function () {
+test('gemini can request brave search tool before final answer', function () {
     config([
         'ai-companion.gemini.keys' => ['test-gemini-key'],
         'ai-companion.search.brave.api_key' => 'test-brave-key',
@@ -25,17 +25,38 @@ test('current information requests call brave search before gemini', function ()
                 ],
             ],
         ], 200),
-        'generativelanguage.googleapis.com/*' => Http::response([
-            'candidates' => [
-                [
-                    'content' => [
-                        'parts' => [
-                            ['text' => 'Laravel 12 is the current stable release.'],
+        'generativelanguage.googleapis.com/*' => Http::sequence()
+            ->push([
+                'candidates' => [
+                    [
+                        'content' => [
+                            'role' => 'model',
+                            'parts' => [
+                                [
+                                    'functionCall' => [
+                                        'id' => 'call_1',
+                                        'name' => 'brave_search',
+                                        'args' => [
+                                            'query' => 'latest Laravel version',
+                                        ],
+                                    ],
+                                ],
+                            ],
                         ],
                     ],
                 ],
-            ],
-        ], 200),
+            ], 200)
+            ->push([
+                'candidates' => [
+                    [
+                        'content' => [
+                            'parts' => [
+                                ['text' => 'Laravel 12 is the current stable release.'],
+                            ],
+                        ],
+                    ],
+                ],
+            ], 200),
     ]);
 
     $user = User::factory()->create(['role' => 'user']);
@@ -49,18 +70,24 @@ test('current information requests call brave search before gemini', function ()
 
     Http::assertSent(function (Request $request): bool {
         return str_contains($request->url(), 'api.search.brave.com/res/v1/llm/context')
-            && (($request->data()['q'] ?? null) === 'what is the latest laravel version?');
+            && (($request->data()['q'] ?? null) === 'latest laravel version');
     });
 
     Http::assertSent(function (Request $request): bool {
         return str_contains($request->url(), 'generativelanguage.googleapis.com/v1beta/models/')
-            && str_contains($request->body(), 'LIVE WEB SEARCH CONTEXT')
+            && str_contains($request->body(), 'functionDeclarations')
+            && str_contains($request->body(), 'brave_search');
+    });
+
+    Http::assertSent(function (Request $request): bool {
+        return str_contains($request->url(), 'generativelanguage.googleapis.com/v1beta/models/')
+            && str_contains($request->body(), 'functionResponse')
             && str_contains($request->body(), 'Laravel Documentation')
             && str_contains($request->body(), 'Laravel 12 is the current stable release.');
     });
 });
 
-test('ordinary learning questions skip brave search and answer directly', function () {
+test('gemini can answer directly without running brave search', function () {
     config([
         'ai-companion.gemini.keys' => ['test-gemini-key'],
         'ai-companion.search.brave.api_key' => 'test-brave-key',
@@ -90,4 +117,14 @@ test('ordinary learning questions skip brave search and answer directly', functi
         ->assertJsonPath('reply', 'Start with routes, controllers, and views.');
 
     Http::assertSentCount(1);
+
+    Http::assertSent(function (Request $request): bool {
+        return str_contains($request->url(), 'generativelanguage.googleapis.com/v1beta/models/')
+            && str_contains($request->body(), 'functionDeclarations')
+            && str_contains($request->body(), 'brave_search');
+    });
+
+    Http::assertNotSent(function (Request $request): bool {
+        return str_contains($request->url(), 'api.search.brave.com/res/v1/llm/context');
+    });
 });

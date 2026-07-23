@@ -7103,3 +7103,77 @@ php artisan test tests/Feature/ResponsiveLayoutAssetsTest.php: passed, 7 tests /
 No backend, authorization, database, or AI-provider behavior changed.
 Adds a small external font request only on pages where the AI widget is included.
 ```
+
+---
+
+## Entry 069 - Convert Brave search from keyword trigger to Gemini tool calling
+
+### Date and time
+
+```text
+2026-07-23
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+Changed the AI module from a traditional keyword-based web search decision to true model-driven tool calling while keeping the same architecture boundary: browser requests still go through the main Laravel application and only server-side package code can call external services.
+
+### Files changed
+
+```text
+packages/Local/AiCompanion/src/Http/Controllers/AiChatController.php
+packages/Local/AiCompanion/src/Services/GeminiClient.php
+packages/Local/AiCompanion/src/Services/PromptBuilder.php
+packages/Local/AiCompanion/src/Services/WebSearchIntentDetector.php
+packages/Local/AiCompanion/README.md
+tests/Feature/AiWebSearchTest.php
+tests/Unit/PromptBuilderPersonaTest.php
+tests/Unit/WebSearchIntentDetectorTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Removed the `WebSearchIntentDetector` keyword decision from the chat flow.
+- Added a `brave_search` Gemini function declaration in `GeminiClient`.
+- Let Gemini decide in `AUTO` tool mode whether Brave Search is needed.
+- Kept tool execution server-side: PHP executes only the allow-listed Brave Search client and sends a `functionResponse` back to Gemini.
+- If Brave Search is disabled or no Brave API key is configured, the tool is not offered and Gemini answers normally.
+- Updated tests to verify the real loop: Gemini returns `functionCall`, Laravel calls Brave, then Gemini receives `functionResponse` and writes the final answer.
+
+### Commands executed
+
+```text
+php -l packages/Local/AiCompanion/src/Services/GeminiClient.php
+php -l packages/Local/AiCompanion/src/Http/Controllers/AiChatController.php
+php -l packages/Local/AiCompanion/src/Services/PromptBuilder.php
+rg -n "WebSearchIntentDetector" packages tests app routes -S
+php artisan test tests/Feature/AiChatAuthTest.php tests/Feature/AiDatabaseMemoryTest.php tests/Feature/AiWebSearchTest.php tests/Unit/PromptBuilderPersonaTest.php
+```
+
+### Test results
+
+```text
+12 passed, 55 assertions
+php artisan test: passed, 90 tests / 320 assertions
+```
+
+### Architecture impact
+
+```text
+No outer architecture change.
+The main Laravel app still owns authentication, conversation storage, and the browser-facing boundary.
+The AI package still owns provider/tool orchestration.
+The browser never calls Brave or Gemini directly.
+```
+
+### Lesson learned
+
+True tool calling does not mean the model directly calls external services. The model chooses a function name and arguments; trusted application code validates and executes the allowed tool.
