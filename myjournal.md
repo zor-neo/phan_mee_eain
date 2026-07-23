@@ -6993,3 +6993,57 @@ Static visual asset and Blade class update only
 ### Project-book material
 
 The content page brand area was aligned with the project color palette while preserving the previous square logo footprint, avoiding unexpected layout spacing.
+
+---
+
+## Entry 067 - Park feed display cache on separate branch
+
+### Date and time
+
+```text
+2026-07-23
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+Prepared the earlier feed display cache optimization as separate future work so the Brave web search integration can be merged independently.
+
+### Files changed
+
+```text
+app/Http/Controllers/Admin/AdminController.php
+app/Http/Controllers/Auther/AutherProfileController.php
+app/Http/Controllers/CategoryController.php
+app/Http/Controllers/CommentController.php
+app/Http/Controllers/ContentController.php
+app/Http/Controllers/ProfileController.php
+app/Http/Controllers/ReactController.php
+app/Http/Controllers/UserProfileController.php
+app/Support/ContentDisplayCache.php
+tests/Unit/ContentDisplayCacheTest.php
+myjournal.md
+```
+
+### Main changes
+
+- Added a small `ContentDisplayCache` helper for forgetting cached feed display data after content, comment, reaction, and profile changes.
+- Kept this optimization isolated on a cache-only branch because the current merge target is Brave search only.
+
+### Test results
+
+```text
+php artisan test tests/Unit/ContentDisplayCacheTest.php: passed, 1 test / 3 assertions
+```
+
+### Deployment impact
+
+```text
+No deployment change until this separate cache branch is intentionally merged later.
+```
