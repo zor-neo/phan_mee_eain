@@ -7228,3 +7228,55 @@ The browser never calls Brave or Gemini directly.
 ### Lesson learned
 
 True tool calling does not mean the model directly calls external services. The model chooses a function name and arguments; trusted application code validates and executes the allowed tool.
+
+---
+
+## Entry 071 - Create presentation guidebook for AI component
+
+### Date and time
+
+```text
+2026-07-23
+Timezone: Asia/Bangkok
+```
+
+### Contributor
+
+```text
+Codex with Kaung
+```
+
+### What was attempted
+
+Created a beginner-friendly presentation preparation handbook for the AI component, covering architecture, RAG, tool calling, model selection, API key usage, database memory, storage boundaries, and common viva questions.
+
+### Files changed
+
+```text
+output/pdf/PhanMeeEin_AI_Presentation_Guidebook.pdf
+myjournal.md
+```
+
+### Main changes
+
+- Produced a polished multi-page PDF guidebook with the project-specific AI architecture story.
+- Added sections for the main app boundary, AI package responsibilities, RAG, tool calling, model selection, key rotation, MySQL memory, and R2 storage.
+- Included a rehearsal script, short answers for common examiner questions, and a code map for last-minute review.
+
+### Validation
+
+```text
+Rendered the PDF to PNG pages with PyMuPDF and checked the cover page and closing page visually.
+```
+
+### Test results
+
+```text
+PDF rendered successfully with 9 pages.
+```
+
+### Project-book material
+
+```text
+The handbook gives a student-friendly explanation of how the main Laravel app, AI package, Gemini, Brave Search, MySQL, and R2 fit together in the same secure architecture.
+```
